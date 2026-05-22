@@ -1,0 +1,194 @@
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Heart, Send } from 'lucide-react'
+import {
+  ref,
+  push,
+  onValue,
+  query,
+  limitToLast,
+  serverTimestamp,
+} from 'firebase/database'
+import { db, isConfigured } from '../firebase/config.js'
+import { useLanguage } from '../contexts/LanguageContext.jsx'
+import FadeIn from './FadeIn.jsx'
+
+const DEMO_WISHES = [
+  {
+    id: 'demo-1',
+    name: 'Mai & Phong',
+    message:
+      'Chúc hai bạn mãi mãi hạnh phúc — wishing you a lifetime of love and laughter!',
+    createdAt: Date.now() - 1000 * 60 * 60 * 5,
+  },
+  {
+    id: 'demo-2',
+    name: 'Linh',
+    message:
+      'So happy for both of you! Cannot wait to celebrate in July & August!',
+    createdAt: Date.now() - 1000 * 60 * 60 * 20,
+  },
+]
+
+export default function Wishes() {
+  const { t, lang } = useLanguage()
+  const [wishes, setWishes] = useState([])
+  const [loading, setLoading] = useState(true)
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm()
+
+  useEffect(() => {
+    if (!isConfigured || !db) {
+      setWishes(DEMO_WISHES)
+      setLoading(false)
+      return
+    }
+    const q = query(ref(db, 'wishes'), limitToLast(50))
+    const unsub = onValue(
+      q,
+      (snap) => {
+        const list = []
+        snap.forEach((child) => {
+          list.push({ id: child.key, ...child.val() })
+        })
+        list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+        setWishes(list)
+        setLoading(false)
+      },
+      () => setLoading(false),
+    )
+    return () => unsub()
+  }, [])
+
+  const onSubmit = async ({ name, message }) => {
+    try {
+      if (isConfigured && db) {
+        await push(ref(db, 'wishes'), {
+          name,
+          message,
+          createdAt: serverTimestamp(),
+        })
+      } else {
+        setWishes((prev) => [
+          { id: `local-${Date.now()}`, name, message, createdAt: Date.now() },
+          ...prev,
+        ])
+      }
+      reset()
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const fieldClass =
+    'w-full rounded-xl border border-line bg-bg px-4 py-3 text-ink placeholder:text-muted focus:border-accent transition-colors'
+  const labelClass = 'block text-[11px] tracking-[0.22em] uppercase text-muted mb-2'
+
+  return (
+    <section id="wishes" className="section-padding relative bg-bg overflow-hidden">
+      <div className="max-w-5xl mx-auto px-6">
+        <FadeIn className="text-center">
+          <p className="eyebrow">{t('wishes.eyebrow')}</p>
+          <h2 className="font-display mt-3 text-4xl md:text-6xl">
+            {t('wishes.title')}
+          </h2>
+          <div className="divider-leaf my-6">
+            <Heart size={16} className="text-accent" />
+          </div>
+          <p className="text-muted">{t('wishes.subtitle')}</p>
+        </FadeIn>
+
+        <FadeIn delay={0.1}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="mt-12 glass rounded-3xl p-6 md:p-8 grid md:grid-cols-3 gap-4"
+          >
+            <div>
+              <label className={labelClass}>{t('wishes.name')}</label>
+              <input
+                type="text"
+                className={fieldClass}
+                {...register('name', { required: true, maxLength: 60 })}
+              />
+              {errors.name && (
+                <p className="text-xs text-red-500 mt-1">
+                  {t('rsvp.validation.required')}
+                </p>
+              )}
+            </div>
+            <div className="md:col-span-2">
+              <label className={labelClass}>{t('wishes.message')}</label>
+              <textarea
+                rows={2}
+                className={fieldClass}
+                {...register('message', { required: true, maxLength: 400 })}
+              />
+              {errors.message && (
+                <p className="text-xs text-red-500 mt-1">
+                  {t('rsvp.validation.required')}
+                </p>
+              )}
+            </div>
+            <div className="md:col-span-3 flex justify-end">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="btn-primary disabled:opacity-60"
+              >
+                <Send size={16} />
+                {isSubmitting ? t('wishes.submitting') : t('wishes.submit')}
+              </button>
+            </div>
+          </form>
+        </FadeIn>
+
+        <div className="mt-12 grid sm:grid-cols-2 gap-4 md:gap-5">
+          {loading && (
+            <p className="text-muted text-sm col-span-full text-center">
+              {t('wishes.loading')}
+            </p>
+          )}
+          {!loading && wishes.length === 0 && (
+            <p className="text-muted text-sm col-span-full text-center">
+              {t('wishes.empty')}
+            </p>
+          )}
+          <AnimatePresence initial={false}>
+            {wishes.map((w) => (
+              <motion.article
+                key={w.id}
+                layout
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="rounded-2xl border border-line bg-surface p-5"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <h4 className="font-display text-xl">{w.name}</h4>
+                  <Heart size={14} className="text-accent mt-1 shrink-0" />
+                </div>
+                <p className="text-sm md:text-base text-ink/90 mt-2 leading-relaxed">
+                  {w.message}
+                </p>
+                {w.createdAt && (
+                  <p className="eyebrow text-[10px] mt-3">
+                    {new Intl.DateTimeFormat(
+                      lang === 'vi' ? 'vi-VN' : 'en-GB',
+                      { dateStyle: 'medium' },
+                    ).format(new Date(w.createdAt))}
+                  </p>
+                )}
+              </motion.article>
+            ))}
+          </AnimatePresence>
+        </div>
+      </div>
+    </section>
+  )
+}
