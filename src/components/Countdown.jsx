@@ -86,17 +86,32 @@ export default function Countdown() {
                 [now.h, t('countdown.hours')],
                 [now.m, t('countdown.minutes')],
                 [now.s, t('countdown.seconds')],
-              ].map(([n, lbl], i) => (
-                <div
-                  key={i}
-                  className="glass rounded-2xl py-6 md:py-9 flex flex-col items-center"
-                >
-                  <span className="font-display text-4xl md:text-6xl tabular-nums">
-                    {String(n).padStart(2, '0')}
-                  </span>
-                  <span className="eyebrow mt-2 text-[10px]">{lbl}</span>
-                </div>
-              ))}
+              ].map(([n, lbl], i) => {
+                const drift = [
+                  { y: [0, -6, 4, -3, 0], x: [0, 3, -2, 4, 0], rotate: [0, 1.2, -0.8, 1, 0], duration: 6.5 },
+                  { y: [0, 5, -4, 3, 0], x: [0, -3, 2, -4, 0], rotate: [0, -1, 1.2, -0.6, 0], duration: 7.2 },
+                  { y: [0, -4, 5, -3, 0], x: [0, 4, -3, 2, 0], rotate: [0, 0.8, -1.4, 0.6, 0], duration: 8 },
+                  { y: [0, 4, -5, 3, 0], x: [0, -2, 3, -3, 0], rotate: [0, -1.2, 0.6, -1, 0], duration: 6.8 },
+                ][i]
+                return (
+                  <motion.div
+                    key={i}
+                    animate={{ y: drift.y, x: drift.x, rotate: drift.rotate }}
+                    transition={{
+                      duration: drift.duration,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                      delay: i * 0.4,
+                    }}
+                    className="glass rounded-2xl py-6 md:py-9 flex flex-col items-center will-change-transform"
+                  >
+                    <span className="font-display text-4xl md:text-6xl tabular-nums">
+                      {String(n).padStart(2, '0')}
+                    </span>
+                    <span className="eyebrow mt-2 text-[10px]">{lbl}</span>
+                  </motion.div>
+                )
+              })}
             </div>
           </ParallaxFade>
         ) : (
