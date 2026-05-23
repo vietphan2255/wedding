@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
-import FadeIn from './FadeIn.jsx'
+import ParallaxFade from './ParallaxFade.jsx'
 
 function pickEvent(dates) {
   const vuquy = new Date(dates.vuquyStart)
@@ -56,7 +56,7 @@ export default function Countdown() {
       className="section-padding relative bg-surface text-ink overflow-hidden"
     >
       <div className="max-w-5xl mx-auto px-6 text-center">
-        <FadeIn>
+        <ParallaxFade strength={30}>
           <p className="eyebrow">{t('countdown.eyebrow')}</p>
           <h2 className="font-display mt-3 text-3xl md:text-5xl">
             {upcoming ? t('countdown.titleNext') : ''}
@@ -69,10 +69,10 @@ export default function Countdown() {
           <p className="mt-1 text-sm md:text-base text-muted tracking-wide">
             {dateLabel}
           </p>
-        </FadeIn>
+        </ParallaxFade>
 
         {upcoming ? (
-          <FadeIn delay={0.15}>
+          <ParallaxFade strength={60} className="block">
             <div className="mt-12 grid grid-cols-4 gap-2 sm:gap-5">
               {[
                 [now.d, t('countdown.days')],
@@ -91,13 +91,13 @@ export default function Countdown() {
                 </div>
               ))}
             </div>
-          </FadeIn>
+          </ParallaxFade>
         ) : (
-          <FadeIn delay={0.15}>
+          <ParallaxFade strength={30}>
             <p className="mt-10 font-display text-2xl text-accent">
               {t('countdown.passed')}
             </p>
-          </FadeIn>
+          </ParallaxFade>
         )}
       </div>
     </section>

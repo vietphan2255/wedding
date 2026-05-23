@@ -1,6 +1,6 @@
 import { useLanguage } from '../contexts/LanguageContext.jsx'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
-import FadeIn from './FadeIn.jsx'
+import ParallaxFade from './ParallaxFade.jsx'
 import ParallaxImage from './ParallaxImage.jsx'
 
 export default function Story() {
@@ -11,7 +11,7 @@ export default function Story() {
   return (
     <section id="story" className="section-padding relative bg-bg overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
-        <FadeIn className="text-center max-w-2xl mx-auto">
+        <ParallaxFade strength={40} className="text-center max-w-2xl mx-auto">
           <p className="eyebrow">{t('story.eyebrow')}</p>
           <h2 className="font-display mt-3 text-4xl md:text-6xl">
             {t('story.title')}
@@ -20,7 +20,7 @@ export default function Story() {
             <span className="font-script text-2xl">v &amp; n</span>
           </div>
           <p className="text-muted leading-relaxed">{t('story.intro')}</p>
-        </FadeIn>
+        </ParallaxFade>
 
         <div className="mt-20 relative">
           <div
@@ -37,9 +37,8 @@ export default function Story() {
                   key={item.id}
                   className="grid md:grid-cols-2 gap-8 md:gap-16 items-center"
                 >
-                  <FadeIn
-                    delay={0.05}
-                    y={40}
+                  <ParallaxFade
+                    strength={60}
                     className={`${isLeft ? 'md:order-1' : 'md:order-2'} relative`}
                   >
                     <ParallaxImage
@@ -53,10 +52,9 @@ export default function Story() {
                       className="hidden md:block absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-accent ring-4 ring-bg"
                       style={isLeft ? { right: '-2.1rem' } : { left: '-2.1rem' }}
                     />
-                  </FadeIn>
-                  <FadeIn
-                    delay={0.15}
-                    y={40}
+                  </ParallaxFade>
+                  <ParallaxFade
+                    strength={30}
                     className={isLeft ? 'md:order-2' : 'md:order-1'}
                   >
                     <p className="font-script text-4xl text-accent">
@@ -68,7 +66,7 @@ export default function Story() {
                     <p className="text-muted leading-relaxed mt-4">
                       {body}
                     </p>
-                  </FadeIn>
+                  </ParallaxFade>
                 </li>
               )
             })}
