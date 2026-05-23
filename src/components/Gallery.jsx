@@ -2,31 +2,26 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
 import FadeIn from './FadeIn.jsx'
-
-const PHOTOS = Array.from({ length: 12 }, (_, i) => {
-  const ratio = i % 5 === 0 ? '900/1300' : i % 3 === 0 ? '1300/900' : '1000/1000'
-  return {
-    src: `https://picsum.photos/seed/vn-gallery-${i + 1}/${ratio}`,
-    rowSpan: i % 5 === 0 ? 'row-span-2' : '',
-  }
-})
 
 export default function Gallery() {
   const { t } = useLanguage()
+  const { config } = useWeddingConfig()
+  const photos = config.gallery
   const [open, setOpen] = useState(null)
 
   const close = useCallback(() => setOpen(null), [])
   const next = useCallback(
-    () => setOpen((i) => (i === null ? null : (i + 1) % PHOTOS.length)),
-    [],
+    () => setOpen((i) => (i === null ? null : (i + 1) % photos.length)),
+    [photos.length],
   )
   const prev = useCallback(
     () =>
       setOpen((i) =>
-        i === null ? null : (i - 1 + PHOTOS.length) % PHOTOS.length,
+        i === null ? null : (i - 1 + photos.length) % photos.length,
       ),
-    [],
+    [photos.length],
   )
 
   useEffect(() => {
@@ -59,12 +54,14 @@ export default function Gallery() {
         </FadeIn>
 
         <div className="mt-14 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[180px] md:auto-rows-[220px] gap-3 md:gap-4">
-          {PHOTOS.map((p, i) => (
+          {photos.map((p, i) => (
             <FadeIn
-              key={p.src}
+              key={p.id}
               delay={(i % 4) * 0.05}
               y={30}
-              className={`relative group cursor-pointer overflow-hidden rounded-xl ${p.rowSpan}`}
+              className={`relative group cursor-pointer overflow-hidden rounded-xl ${
+                p.tall ? 'row-span-2' : ''
+              }`}
             >
               <button
                 onClick={() => setOpen(i)}
@@ -85,7 +82,7 @@ export default function Gallery() {
       </div>
 
       <AnimatePresence>
-        {open !== null && (
+        {open !== null && photos[open] && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -113,7 +110,7 @@ export default function Gallery() {
             </button>
             <motion.img
               key={open}
-              src={PHOTOS[open].src.replace(/\/\d+\/\d+$/, '/1600/1200')}
+              src={photos[open].src.replace(/\/\d+\/\d+$/, '/1600/1200')}
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.96 }}

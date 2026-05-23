@@ -1,16 +1,13 @@
 import { useLanguage } from '../contexts/LanguageContext.jsx'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
 import FadeIn from './FadeIn.jsx'
 import ParallaxImage from './ParallaxImage.jsx'
 
-const ITEMS = [
-  { id: 1, img: 'https://picsum.photos/seed/vn-story-1/900/1100' },
-  { id: 2, img: 'https://picsum.photos/seed/vn-story-2/900/1100' },
-  { id: 3, img: 'https://picsum.photos/seed/vn-story-3/900/1100' },
-  { id: 4, img: 'https://picsum.photos/seed/vn-story-4/900/1100' },
-]
-
 export default function Story() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
+  const { config } = useWeddingConfig()
+  const items = config.story
+
   return (
     <section id="story" className="section-padding relative bg-bg overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
@@ -31,8 +28,10 @@ export default function Story() {
             className="hidden md:block absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-px bg-line"
           />
           <ul className="space-y-20 md:space-y-28">
-            {ITEMS.map((item, idx) => {
+            {items.map((item, idx) => {
               const isLeft = idx % 2 === 0
+              const title = lang === 'vi' ? item.title_vi : item.title_en
+              const body = lang === 'vi' ? item.body_vi : item.body_en
               return (
                 <li
                   key={item.id}
@@ -61,13 +60,13 @@ export default function Story() {
                     className={isLeft ? 'md:order-2' : 'md:order-1'}
                   >
                     <p className="font-script text-4xl text-accent">
-                      {t(`story.${item.id}.year`)}
+                      {item.year}
                     </p>
                     <h3 className="font-display text-3xl md:text-4xl mt-2">
-                      {t(`story.${item.id}.title`)}
+                      {title}
                     </h3>
                     <p className="text-muted leading-relaxed mt-4">
-                      {t(`story.${item.id}.body`)}
+                      {body}
                     </p>
                   </FadeIn>
                 </li>

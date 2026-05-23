@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
 import FadeIn from './FadeIn.jsx'
 
-const VUQUY = new Date('2026-07-26T09:00:00+07:00')
-const THANHHON = new Date('2026-08-02T18:00:00+07:00')
-
-function pickEvent() {
+function pickEvent(dates) {
+  const vuquy = new Date(dates.vuquyStart)
+  const thanhhon = new Date(dates.thanhhonStart)
   const now = Date.now()
-  if (now < VUQUY.getTime()) return { date: VUQUY, key: 'vuquy' }
-  if (now < THANHHON.getTime()) return { date: THANHHON, key: 'thanhhon' }
+  if (now < vuquy.getTime()) return { date: vuquy, key: 'vuquy' }
+  if (now < thanhhon.getTime()) return { date: thanhhon, key: 'thanhhon' }
   return null
 }
 
@@ -24,11 +24,13 @@ function diff(target) {
 
 export default function Countdown() {
   const { t, lang } = useLanguage()
-  const upcoming = useMemo(() => pickEvent(), [])
-  const [now, setNow] = useState(diff(upcoming?.date ?? new Date()))
+  const { config } = useWeddingConfig()
+  const upcoming = useMemo(() => pickEvent(config.dates), [config.dates])
+  const [now, setNow] = useState(() => diff(upcoming?.date ?? new Date()))
 
   useEffect(() => {
     if (!upcoming) return
+    setNow(diff(upcoming.date))
     const id = setInterval(() => setNow(diff(upcoming.date)), 1000)
     return () => clearInterval(id)
   }, [upcoming])

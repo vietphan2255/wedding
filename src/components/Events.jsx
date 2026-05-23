@@ -1,5 +1,6 @@
 import { Calendar, Clock, MapPin, Shirt } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
 import FadeIn from './FadeIn.jsx'
 import ParallaxImage from './ParallaxImage.jsx'
 
@@ -27,23 +28,27 @@ function buildIcs({ title, start, end, location, description }) {
   return `data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}`
 }
 
-const EVENTS = [
+const STATIC = [
   {
     key: 'vuquy',
     img: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1600&q=80',
-    start: new Date('2026-07-26T09:00:00+07:00'),
-    end: new Date('2026-07-26T12:00:00+07:00'),
   },
   {
     key: 'thanhhon',
     img: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1600&q=80',
-    start: new Date('2026-08-02T18:00:00+07:00'),
-    end: new Date('2026-08-02T22:00:00+07:00'),
   },
 ]
 
 export default function Events() {
   const { t } = useLanguage()
+  const { config } = useWeddingConfig()
+
+  const events = STATIC.map((e) => ({
+    ...e,
+    start: new Date(config.dates[`${e.key}Start`]),
+    end: new Date(config.dates[`${e.key}End`]),
+  }))
+
   return (
     <section id="events" className="section-padding relative bg-bg overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
@@ -59,7 +64,7 @@ export default function Events() {
         </FadeIn>
 
         <div className="mt-14 grid md:grid-cols-2 gap-7 md:gap-10">
-          {EVENTS.map((e, i) => {
+          {events.map((e, i) => {
             const ics = buildIcs({
               title: `${t(`events.${e.key}.name`)} — Viet & Nguyen`,
               start: e.start,
