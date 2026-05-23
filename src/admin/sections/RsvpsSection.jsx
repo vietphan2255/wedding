@@ -9,12 +9,6 @@ const EVENTS_LABELS = {
   thanhhon: 'Lễ Thành Hôn',
   both: 'Both',
 }
-const MEAL_LABELS = {
-  standard: 'Standard',
-  vegetarian: 'Vegetarian',
-  vegan: 'Vegan',
-  glutenFree: 'Gluten-free',
-}
 
 function formatDate(ts) {
   if (!ts) return '—'
@@ -32,12 +26,10 @@ function toCsv(rows) {
   const headers = [
     'createdAt',
     'name',
-    'email',
     'phone',
     'attending',
     'events',
     'guests',
-    'meal',
     'message',
   ]
   const escape = (v) => {
@@ -50,12 +42,10 @@ function toCsv(rows) {
       [
         new Date(r.createdAt || 0).toISOString(),
         r.name,
-        r.email,
         r.phone,
         r.attending,
         r.events,
         r.guests,
-        r.meal,
         r.message,
       ]
         .map(escape)
@@ -94,7 +84,7 @@ export default function RsvpsSection() {
     if (!query.trim()) return rsvps
     const q = query.toLowerCase()
     return rsvps.filter((r) =>
-      [r.name, r.email, r.phone, r.message]
+      [r.name, r.phone, r.message]
         .filter(Boolean)
         .some((v) => String(v).toLowerCase().includes(q)),
     )
@@ -170,7 +160,7 @@ export default function RsvpsSection() {
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search name, email, phone…"
+              placeholder="Search name, phone, message…"
               className="w-full rounded-xl border border-line bg-bg pl-9 pr-4 py-2.5 text-sm focus:border-accent transition-colors"
             />
           </div>
@@ -215,26 +205,15 @@ export default function RsvpsSection() {
                         {r.guests} guest{Number(r.guests) === 1 ? '' : 's'}
                       </Pill>
                     )}
-                    {r.attending === 'yes' && r.meal && (
-                      <Pill>{MEAL_LABELS[r.meal] || r.meal}</Pill>
-                    )}
                   </div>
                   <p className="text-xs text-muted mt-2">
                     {formatDate(r.createdAt)}
                   </p>
-                  <dl className="mt-3 grid sm:grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
-                    {r.email && (
-                      <Row label="Email">
-                        <a
-                          href={`mailto:${r.email}`}
-                          className="hover:text-accent break-all"
-                        >
-                          {r.email}
-                        </a>
-                      </Row>
-                    )}
-                    {r.phone && <Row label="Phone">{r.phone}</Row>}
-                  </dl>
+                  {r.phone && (
+                    <dl className="mt-3 grid sm:grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
+                      <Row label="Phone">{r.phone}</Row>
+                    </dl>
+                  )}
                   {r.message && (
                     <p className="text-sm text-ink/90 mt-3 leading-relaxed whitespace-pre-wrap">
                       {r.message}

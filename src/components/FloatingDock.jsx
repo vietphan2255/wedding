@@ -1,11 +1,51 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Music, Pause } from 'lucide-react'
+import { Send, Heart, Music, Pause } from 'lucide-react'
+import { useLanguage } from '../contexts/LanguageContext.jsx'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
 
-const STORAGE_KEY = 'vn-music-playing'
+const MUSIC_STORAGE_KEY = 'vn-music-playing'
 
-export default function BackgroundMusic() {
+export default function FloatingDock() {
+  const { t } = useLanguage()
+  const onHome =
+    typeof window !== 'undefined' &&
+    (window.location.pathname === '/' || window.location.pathname === '')
+  const rsvpHref = onHome ? '#rsvp' : '/#rsvp'
+  const wishesHref = onHome ? '#wishes' : '/#wishes'
+
+  return (
+    <div className="fixed bottom-5 right-5 z-50 flex flex-col-reverse gap-3 items-end">
+      <MusicButton />
+      <DockButton href={wishesHref} label={t('nav.wishes')}>
+        <Heart size={18} />
+      </DockButton>
+      <DockButton href={rsvpHref} label={t('nav.rsvp')}>
+        <Send size={18} />
+      </DockButton>
+    </div>
+  )
+}
+
+function DockButton({ href, label, children }) {
+  return (
+    <div className="group relative flex items-center">
+      <span className="hidden sm:block absolute right-full mr-3 px-2.5 py-1 rounded-md bg-ink text-bg text-[11px] tracking-[0.18em] uppercase whitespace-nowrap opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 -translate-x-1 group-hover:translate-x-0 group-focus-within:translate-x-0 transition-all duration-200 pointer-events-none">
+        {label}
+      </span>
+      <a
+        href={href}
+        aria-label={label}
+        title={label}
+        className="w-12 h-12 rounded-full bg-accent text-bg shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+      >
+        {children}
+      </a>
+    </div>
+  )
+}
+
+function MusicButton() {
   const { config } = useWeddingConfig()
   const music = config.music || {}
   const audioRef = useRef(null)
@@ -13,20 +53,18 @@ export default function BackgroundMusic() {
 
   const enabled = Boolean(music.enabled && music.url)
 
-  // When the source changes, reset element so the new URL is loaded.
   useEffect(() => {
     const el = audioRef.current
     if (!el) return
     el.volume = clampVolume(music.volume)
   }, [music.volume])
 
-  // Try to auto-resume if the user previously opted in.
   useEffect(() => {
     if (!enabled) return
     const el = audioRef.current
     if (!el) return
     el.volume = clampVolume(music.volume)
-    const wasPlaying = sessionStorage.getItem(STORAGE_KEY) === '1'
+    const wasPlaying = sessionStorage.getItem(MUSIC_STORAGE_KEY) === '1'
     if (wasPlaying) {
       el.play()
         .then(() => setPlaying(true))
@@ -42,12 +80,12 @@ export default function BackgroundMusic() {
     if (playing) {
       el.pause()
       setPlaying(false)
-      sessionStorage.setItem(STORAGE_KEY, '0')
+      sessionStorage.setItem(MUSIC_STORAGE_KEY, '0')
     } else {
       try {
         await el.play()
         setPlaying(true)
-        sessionStorage.setItem(STORAGE_KEY, '1')
+        sessionStorage.setItem(MUSIC_STORAGE_KEY, '1')
       } catch (err) {
         console.warn('[music] play() blocked', err)
         setPlaying(false)
@@ -56,7 +94,10 @@ export default function BackgroundMusic() {
   }
 
   return (
-    <>
+    <div className="group relative flex items-center">
+      <span className="hidden sm:block absolute right-full mr-3 px-2.5 py-1 rounded-md bg-ink text-bg text-[11px] tracking-[0.18em] uppercase whitespace-nowrap opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all duration-200 pointer-events-none">
+        {music.title || (playing ? 'Pause' : 'Play')}
+      </span>
       <audio
         ref={audioRef}
         src={music.url}
@@ -69,8 +110,7 @@ export default function BackgroundMusic() {
         type="button"
         onClick={toggle}
         aria-label={playing ? 'Pause background music' : 'Play background music'}
-        title={music.title || (playing ? 'Pause music' : 'Play music')}
-        className="fixed bottom-5 right-5 z-50 w-12 h-12 rounded-full bg-accent text-bg shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+        className="w-12 h-12 rounded-full bg-accent text-bg shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
       >
         <AnimatePresence mode="wait" initial={false}>
           {playing ? (
@@ -101,7 +141,7 @@ export default function BackgroundMusic() {
           )}
         </AnimatePresence>
       </button>
-    </>
+    </div>
   )
 }
 

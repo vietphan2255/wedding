@@ -95,7 +95,6 @@ export default {
   'rsvp.title': 'Bạn sẽ đến chứ?',
   'rsvp.subtitle': 'Phản hồi của bạn là niềm vui lớn của tụi mình. Xin gửi trước ngày 30/06/2026.',
   'rsvp.name': 'Họ và tên',
-  'rsvp.email': 'Email',
   'rsvp.phone': 'Số điện thoại',
   'rsvp.attending': 'Bạn có tham dự không?',
   'rsvp.attending.yes': 'Có, mình sẽ đến',
@@ -105,11 +104,6 @@ export default {
   'rsvp.events.thanhhon': 'Lễ Thành Hôn (02/08)',
   'rsvp.events.both': 'Cả hai',
   'rsvp.guests': 'Số người',
-  'rsvp.meal': 'Khẩu phần',
-  'rsvp.meal.standard': 'Bình thường',
-  'rsvp.meal.vegetarian': 'Chay',
-  'rsvp.meal.vegan': 'Thuần chay',
-  'rsvp.meal.glutenFree': 'Không gluten',
   'rsvp.message': 'Lời nhắn (không bắt buộc)',
   'rsvp.submit': 'Gửi xác nhận',
   'rsvp.submitting': 'Đang gửi…',
@@ -117,7 +111,6 @@ export default {
   'rsvp.success.body': 'Tụi mình đã nhận được xác nhận. Hẹn gặp bạn trong ngày trọng đại.',
   'rsvp.error': 'Đã có lỗi xảy ra. Vui lòng thử lại.',
   'rsvp.validation.required': 'Vui lòng điền thông tin này',
-  'rsvp.validation.email': 'Vui lòng nhập email hợp lệ',
 
   // Wishes
   'wishes.eyebrow': 'Sổ lưu bút',

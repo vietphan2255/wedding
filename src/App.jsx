@@ -9,7 +9,7 @@ import CeremonyTimeline from './components/CeremonyTimeline.jsx'
 import RSVP from './components/RSVP.jsx'
 import Wishes from './components/Wishes.jsx'
 import Footer from './components/Footer.jsx'
-import BackgroundMusic from './components/BackgroundMusic.jsx'
+import FloatingDock from './components/FloatingDock.jsx'
 import Admin from './admin/Admin.jsx'
 import EngagementPage from './pages/EngagementPage.jsx'
 
@@ -36,7 +36,7 @@ function WeddingSite() {
         <Wishes />
       </main>
       <Footer />
-      <BackgroundMusic />
+      <FloatingDock />
     </>
   )
 }

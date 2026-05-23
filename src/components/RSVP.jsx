@@ -20,7 +20,6 @@ export default function RSVP() {
       attending: 'yes',
       events: 'both',
       guests: '1',
-      meal: 'standard',
     },
   })
   const [status, setStatus] = useState(null) // 'success' | 'error'
@@ -102,26 +101,7 @@ export default function RSVP() {
                   )}
                 </div>
 
-                <div>
-                  <label className={labelClass}>{t('rsvp.email')}</label>
-                  <input
-                    type="email"
-                    className={fieldClass}
-                    {...register('email', {
-                      required: true,
-                      pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    })}
-                  />
-                  {errors.email && (
-                    <p className="text-xs text-red-500 mt-1">
-                      {errors.email.type === 'pattern'
-                        ? t('rsvp.validation.email')
-                        : t('rsvp.validation.required')}
-                    </p>
-                  )}
-                </div>
-
-                <div>
+                <div className="md:col-span-2">
                   <label className={labelClass}>{t('rsvp.phone')}</label>
                   <input
                     type="tel"
@@ -178,22 +158,6 @@ export default function RSVP() {
                             {n}
                           </option>
                         ))}
-                      </select>
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <label className={labelClass}>{t('rsvp.meal')}</label>
-                      <select className={fieldClass} {...register('meal')}>
-                        <option value="standard">
-                          {t('rsvp.meal.standard')}
-                        </option>
-                        <option value="vegetarian">
-                          {t('rsvp.meal.vegetarian')}
-                        </option>
-                        <option value="vegan">{t('rsvp.meal.vegan')}</option>
-                        <option value="glutenFree">
-                          {t('rsvp.meal.glutenFree')}
-                        </option>
                       </select>
                     </div>
                   </>

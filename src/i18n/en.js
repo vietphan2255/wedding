@@ -95,7 +95,6 @@ export default {
   'rsvp.title': 'Will you join us?',
   'rsvp.subtitle': 'Your response means the world. Please reply by 30 June 2026.',
   'rsvp.name': 'Full name',
-  'rsvp.email': 'Email',
   'rsvp.phone': 'Phone',
   'rsvp.attending': 'Will you attend?',
   'rsvp.attending.yes': 'Joyfully attending',
@@ -105,11 +104,6 @@ export default {
   'rsvp.events.thanhhon': 'Lễ Thành Hôn (02/08)',
   'rsvp.events.both': 'Both ceremonies',
   'rsvp.guests': 'Number of guests',
-  'rsvp.meal': 'Meal preference',
-  'rsvp.meal.standard': 'Standard',
-  'rsvp.meal.vegetarian': 'Vegetarian',
-  'rsvp.meal.vegan': 'Vegan',
-  'rsvp.meal.glutenFree': 'Gluten-free',
   'rsvp.message': 'Personal message (optional)',
   'rsvp.submit': 'Send RSVP',
   'rsvp.submitting': 'Sending…',
@@ -117,7 +111,6 @@ export default {
   'rsvp.success.body': "Your RSVP has been received. We can't wait to celebrate with you.",
   'rsvp.error': 'Something went wrong. Please try again.',
   'rsvp.validation.required': 'This field is required',
-  'rsvp.validation.email': 'Please enter a valid email',
 
   // Wishes
   'wishes.eyebrow': 'Guestbook',
