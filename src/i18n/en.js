@@ -2,9 +2,8 @@ export default {
   // Navbar
   'nav.home': 'Home',
   'nav.story': 'Our Story',
-  'nav.engagement': 'Engagement',
   'nav.gallery': 'Gallery',
-  'nav.events': 'Events',
+  'nav.timeline': 'Ceremonies',
   'nav.rsvp': 'RSVP',
   'nav.wishes': 'Wishes',
 
@@ -46,23 +45,25 @@ export default {
   'story.4.body':
     'Surrounded by family, tea, and red envelopes — a promise made official under the eyes of our ancestors.',
 
-  // Engagement
-  'engagement.eyebrow': 'A promise kept',
-  'engagement.title': 'Our Engagement',
-  'engagement.subtitle': 'Lễ Đính Hôn  ·  Already celebrated',
-  'engagement.body':
-    'Last autumn we held our traditional engagement ceremony at home, sharing tea with our families and the wisdom of those who came before us. These are a few of our favorite moments from that morning.',
-  'engagement.date': 'October 2025',
-
   // Gallery
   'gallery.eyebrow': 'Moments',
   'gallery.title': 'Through the lens',
   'gallery.subtitle': 'A small look into the chapters that brought us here',
 
-  // Events
-  'events.eyebrow': 'You are invited to',
-  'events.title': 'The Ceremonies',
-  'events.subtitle': 'Two days, two families, one story',
+  // Ceremony Timeline
+  'timeline.eyebrow': 'Save these dates',
+  'timeline.title': 'Ceremony Timeline',
+  'timeline.subtitle': 'The journey to our wedding day, one ceremony at a time',
+  'timeline.alreadyCelebrated': 'Already celebrated',
+  'timeline.showDetails': 'Show details',
+  'timeline.hideDetails': 'Hide details',
+  'timeline.openMap': 'Open in Google Maps',
+  'timeline.addCalendar': 'Add to calendar',
+  'timeline.engagement.name': 'Lễ Đính Hôn',
+  'timeline.engagement.subtitle': 'Engagement Ceremony',
+  'timeline.engagement.date': 'October 2025',
+  'timeline.engagement.body':
+    'Surrounded by family, tea, and red envelopes — a promise made official under the eyes of our ancestors.',
   'events.vuquy.name': 'Lễ Vu Quy',
   'events.vuquy.subtitle': "Bride's Farewell Ceremony",
   'events.vuquy.date': '26 July 2026  ·  Sunday',
@@ -75,7 +76,6 @@ export default {
   'events.thanhhon.time': '6:00 PM',
   'events.thanhhon.venue': 'Grand Ballroom  ·  Ho Chi Minh City',
   'events.thanhhon.dress': 'Formal',
-  'events.addCalendar': 'Add to calendar',
 
   // RSVP
   'rsvp.eyebrow': 'Kindly respond',

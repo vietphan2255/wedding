@@ -7,9 +7,8 @@ import LanguageToggle from './LanguageToggle.jsx'
 
 const LINKS = [
   ['#story', 'nav.story'],
-  ['#engagement', 'nav.engagement'],
   ['#gallery', 'nav.gallery'],
-  ['#events', 'nav.events'],
+  ['#ceremonies', 'nav.timeline'],
   ['#rsvp', 'nav.rsvp'],
   ['#wishes', 'nav.wishes'],
 ]

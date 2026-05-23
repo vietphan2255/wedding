@@ -2,9 +2,8 @@ export default {
   // Navbar
   'nav.home': 'Trang chủ',
   'nav.story': 'Chuyện chúng mình',
-  'nav.engagement': 'Lễ Đính Hôn',
   'nav.gallery': 'Hình ảnh',
-  'nav.events': 'Sự kiện',
+  'nav.timeline': 'Sự kiện',
   'nav.rsvp': 'Xác nhận',
   'nav.wishes': 'Lời chúc',
 
@@ -46,23 +45,25 @@ export default {
   'story.4.body':
     'Bên gia đình, trà sen và những phong bao đỏ — một lời hứa chính thức dưới sự chứng giám của tổ tiên.',
 
-  // Engagement
-  'engagement.eyebrow': 'Lời hứa đã trao',
-  'engagement.title': 'Lễ Đính Hôn',
-  'engagement.subtitle': 'Đã được tổ chức trang trọng',
-  'engagement.body':
-    'Mùa thu năm ngoái, tụi mình đã tổ chức lễ đính hôn truyền thống tại nhà, cùng dâng trà mời hai bên gia đình và nghe những lời dạy của các bậc tiền bối. Đây là vài khoảnh khắc đáng nhớ trong buổi sáng hôm ấy.',
-  'engagement.date': 'Tháng 10, 2025',
-
   // Gallery
   'gallery.eyebrow': 'Khoảnh khắc',
   'gallery.title': 'Qua ống kính',
   'gallery.subtitle': 'Một góc nhỏ của những chương đã đưa tụi mình đến hôm nay',
 
-  // Events
-  'events.eyebrow': 'Trân trọng kính mời',
-  'events.title': 'Hai ngày trọng đại',
-  'events.subtitle': 'Hai ngày, hai gia đình, một câu chuyện',
+  // Ceremony Timeline
+  'timeline.eyebrow': 'Lưu lại các ngày',
+  'timeline.title': 'Hành trình lễ cưới',
+  'timeline.subtitle': 'Mỗi nghi lễ là một chương của hành trình đến ngày trọng đại',
+  'timeline.alreadyCelebrated': 'Đã tổ chức',
+  'timeline.showDetails': 'Xem chi tiết',
+  'timeline.hideDetails': 'Ẩn chi tiết',
+  'timeline.openMap': 'Mở Google Maps',
+  'timeline.addCalendar': 'Thêm vào lịch',
+  'timeline.engagement.name': 'Lễ Đính Hôn',
+  'timeline.engagement.subtitle': 'Lễ Đính Hôn truyền thống',
+  'timeline.engagement.date': 'Tháng 10, 2025',
+  'timeline.engagement.body':
+    'Bên gia đình, trà sen và những phong bao đỏ — một lời hứa chính thức dưới sự chứng giám của tổ tiên.',
   'events.vuquy.name': 'Lễ Vu Quy',
   'events.vuquy.subtitle': 'Tại nhà gái',
   'events.vuquy.date': 'Chủ nhật  ·  26 Tháng 07, 2026',
@@ -75,7 +76,6 @@ export default {
   'events.thanhhon.time': '6:00 chiều',
   'events.thanhhon.venue': 'Trung tâm tiệc cưới  ·  TP. Hồ Chí Minh',
   'events.thanhhon.dress': 'Trang phục lịch sự',
-  'events.addCalendar': 'Thêm vào lịch',
 
   // RSVP
   'rsvp.eyebrow': 'Xin vui lòng phản hồi',

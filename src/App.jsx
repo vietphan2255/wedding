@@ -4,9 +4,8 @@ import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
 import Countdown from './components/Countdown.jsx'
 import Story from './components/Story.jsx'
-import Engagement from './components/Engagement.jsx'
 import Gallery from './components/Gallery.jsx'
-import Events from './components/Events.jsx'
+import CeremonyTimeline from './components/CeremonyTimeline.jsx'
 import RSVP from './components/RSVP.jsx'
 import Wishes from './components/Wishes.jsx'
 import Footer from './components/Footer.jsx'
@@ -26,9 +25,8 @@ function WeddingSite() {
         <Hero />
         <Countdown />
         <Story />
-        <Engagement />
         <Gallery />
-        <Events />
+        <CeremonyTimeline />
         <RSVP />
         <Wishes />
       </main>
