@@ -17,7 +17,7 @@ export default function Engagement() {
     <section id="engagement" className="section-padding relative bg-surface overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid lg:grid-cols-12 gap-10 items-center">
-          <FadeIn className="lg:col-span-5">
+          <FadeIn from="left" x={80} className="lg:col-span-5">
             <p className="eyebrow">{t('engagement.eyebrow')}</p>
             <h2 className="font-display mt-3 text-4xl md:text-6xl">
               {t('engagement.title')}
