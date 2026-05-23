@@ -7,6 +7,7 @@ export default function ParallaxFade({
   strength = 40,
   as = 'div',
   direction = 'up',
+  fadeOut = true,
   fadeRange = [0, 0.25, 0.75, 1],
 }) {
   const ref = useRef(null)
@@ -16,7 +17,11 @@ export default function ParallaxFade({
     offset: ['start end', 'end start'],
   })
 
-  const opacity = useTransform(scrollYProgress, fadeRange, [0, 1, 1, 0])
+  const opacity = useTransform(
+    scrollYProgress,
+    fadeRange,
+    fadeOut ? [0, 1, 1, 0] : [0, 1, 1, 1],
+  )
 
   const isHorizontal = direction === 'left' || direction === 'right'
   const sign = direction === 'right' ? 1 : -1
@@ -24,12 +29,14 @@ export default function ParallaxFade({
   const y = useTransform(
     scrollYProgress,
     [0, 0.5, 1],
-    isHorizontal ? [0, 0, 0] : [strength, 0, -strength],
+    isHorizontal ? [0, 0, 0] : [strength, 0, fadeOut ? -strength : 0],
   )
   const x = useTransform(
     scrollYProgress,
     [0, 0.5, 1],
-    isHorizontal ? [sign * strength, 0, sign * strength * 0.4] : [0, 0, 0],
+    isHorizontal
+      ? [sign * strength, 0, fadeOut ? sign * strength * 0.4 : 0]
+      : [0, 0, 0],
   )
 
   const MotionTag = motion[as] || motion.div

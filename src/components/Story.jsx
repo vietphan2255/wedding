@@ -11,7 +11,7 @@ export default function Story() {
   return (
     <section id="story" className="section-padding relative bg-bg overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
-        <ParallaxFade strength={40} className="text-center max-w-2xl mx-auto">
+        <ParallaxFade strength={40} fadeOut={false} className="text-center max-w-2xl mx-auto">
           <p className="eyebrow">{t('story.eyebrow')}</p>
           <h2 className="font-display mt-3 text-4xl md:text-6xl">
             {t('story.title')}
@@ -40,6 +40,7 @@ export default function Story() {
                   <ParallaxFade
                     strength={220}
                     direction={isLeft ? 'left' : 'right'}
+                    fadeOut={false}
                     className={`${isLeft ? 'md:order-1' : 'md:order-2'} relative`}
                   >
                     <ParallaxImage
@@ -57,6 +58,7 @@ export default function Story() {
                   <ParallaxFade
                     strength={220}
                     direction={isLeft ? 'right' : 'left'}
+                    fadeOut={false}
                     className={isLeft ? 'md:order-2' : 'md:order-1'}
                   >
                     <p className="font-script text-4xl text-accent">
