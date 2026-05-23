@@ -60,6 +60,12 @@ export const DEFAULT_CONFIG = {
       order: 3,
     },
   ],
+  music: {
+    enabled: false,
+    url: '',
+    title: '',
+    volume: 0.4,
+  },
   gallery: Array.from({ length: 12 }, (_, i) => ({
     id: `default-${i + 1}`,
     src:
@@ -108,6 +114,7 @@ export function WeddingConfigProvider({ children }) {
         } else {
           setConfig({
             dates: { ...DEFAULT_CONFIG.dates, ...(data.dates || {}) },
+            music: { ...DEFAULT_CONFIG.music, ...(data.music || {}) },
             story:
               data.story && Object.keys(data.story).length > 0
                 ? sortByOrder(toArray(data.story))

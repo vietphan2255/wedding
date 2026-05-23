@@ -8,6 +8,7 @@ import {
   AlertTriangle,
   ClipboardList,
   MessageCircle,
+  Music,
 } from 'lucide-react'
 import { isConfigured } from '../firebase/config.js'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
@@ -15,6 +16,7 @@ import AdminAuth, { isAuthed, clearAuth } from './AdminAuth.jsx'
 import DatesSection from './sections/DatesSection.jsx'
 import StorySection from './sections/StorySection.jsx'
 import GallerySection from './sections/GallerySection.jsx'
+import MusicSection from './sections/MusicSection.jsx'
 import RsvpsSection from './sections/RsvpsSection.jsx'
 import WishesSection from './sections/WishesSection.jsx'
 
@@ -22,6 +24,7 @@ const TABS = [
   { id: 'dates', label: 'Dates', icon: Calendar },
   { id: 'story', label: 'Story', icon: Heart },
   { id: 'gallery', label: 'Gallery', icon: Image },
+  { id: 'music', label: 'Music', icon: Music },
   { id: 'rsvps', label: 'RSVPs', icon: ClipboardList },
   { id: 'wishes', label: 'Wishes', icon: MessageCircle },
 ]
@@ -135,6 +138,7 @@ export default function Admin() {
         {tab === 'dates' && <DatesSection />}
         {tab === 'story' && <StorySection />}
         {tab === 'gallery' && <GallerySection />}
+        {tab === 'music' && <MusicSection />}
         {tab === 'rsvps' && <RsvpsSection />}
         {tab === 'wishes' && <WishesSection />}
       </main>

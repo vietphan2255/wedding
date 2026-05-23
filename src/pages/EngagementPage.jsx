@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
 import FadeIn from '../components/FadeIn.jsx'
 import ParallaxImage from '../components/ParallaxImage.jsx'
+import BackgroundMusic from '../components/BackgroundMusic.jsx'
 import useSmoothScroll from '../hooks/useSmoothScroll.js'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
 
@@ -119,6 +120,7 @@ export default function EngagementPage() {
         </section>
       </main>
       <Footer />
+      <BackgroundMusic />
     </>
   )
 }
