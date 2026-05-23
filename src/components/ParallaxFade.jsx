@@ -6,6 +6,7 @@ export default function ParallaxFade({
   className = '',
   strength = 40,
   as = 'div',
+  direction = 'up',
   fadeRange = [0, 0.25, 0.75, 1],
 }) {
   const ref = useRef(null)
@@ -16,7 +17,20 @@ export default function ParallaxFade({
   })
 
   const opacity = useTransform(scrollYProgress, fadeRange, [0, 1, 1, 0])
-  const y = useTransform(scrollYProgress, [0, 0.5, 1], [strength, 0, -strength])
+
+  const isHorizontal = direction === 'left' || direction === 'right'
+  const sign = direction === 'right' ? 1 : -1
+
+  const y = useTransform(
+    scrollYProgress,
+    [0, 0.5, 1],
+    isHorizontal ? [0, 0, 0] : [strength, 0, -strength],
+  )
+  const x = useTransform(
+    scrollYProgress,
+    [0, 0.5, 1],
+    isHorizontal ? [sign * strength, 0, sign * strength * 0.4] : [0, 0, 0],
+  )
 
   const MotionTag = motion[as] || motion.div
 
@@ -28,7 +42,7 @@ export default function ParallaxFade({
   return (
     <MotionTag
       ref={ref}
-      style={{ opacity, y, willChange: 'opacity, transform' }}
+      style={{ opacity, x, y, willChange: 'opacity, transform' }}
       className={className}
     >
       {children}

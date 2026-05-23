@@ -38,7 +38,8 @@ export default function Story() {
                   className="grid md:grid-cols-2 gap-8 md:gap-16 items-center"
                 >
                   <ParallaxFade
-                    strength={60}
+                    strength={220}
+                    direction={isLeft ? 'left' : 'right'}
                     className={`${isLeft ? 'md:order-1' : 'md:order-2'} relative`}
                   >
                     <ParallaxImage
@@ -54,7 +55,8 @@ export default function Story() {
                     />
                   </ParallaxFade>
                   <ParallaxFade
-                    strength={30}
+                    strength={220}
+                    direction={isLeft ? 'right' : 'left'}
                     className={isLeft ? 'md:order-2' : 'md:order-1'}
                   >
                     <p className="font-script text-4xl text-accent">
