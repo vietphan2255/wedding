@@ -1,16 +1,29 @@
 import { useState } from 'react'
-import { Calendar, Image, Heart, LogOut, ExternalLink, AlertTriangle } from 'lucide-react'
+import {
+  Calendar,
+  Image,
+  Heart,
+  LogOut,
+  ExternalLink,
+  AlertTriangle,
+  ClipboardList,
+  MessageCircle,
+} from 'lucide-react'
 import { isConfigured } from '../firebase/config.js'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
 import AdminAuth, { isAuthed, clearAuth } from './AdminAuth.jsx'
 import DatesSection from './sections/DatesSection.jsx'
 import StorySection from './sections/StorySection.jsx'
 import GallerySection from './sections/GallerySection.jsx'
+import RsvpsSection from './sections/RsvpsSection.jsx'
+import WishesSection from './sections/WishesSection.jsx'
 
 const TABS = [
   { id: 'dates', label: 'Dates', icon: Calendar },
   { id: 'story', label: 'Story', icon: Heart },
   { id: 'gallery', label: 'Gallery', icon: Image },
+  { id: 'rsvps', label: 'RSVPs', icon: ClipboardList },
+  { id: 'wishes', label: 'Wishes', icon: MessageCircle },
 ]
 
 export default function Admin() {
@@ -102,12 +115,12 @@ export default function Admin() {
           </div>
         )}
 
-        <nav className="flex gap-2 border-b border-line mb-8">
+        <nav className="flex gap-2 border-b border-line mb-8 overflow-x-auto -mx-5 px-5 md:mx-0 md:px-0">
           {TABS.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               onClick={() => setTab(id)}
-              className={`flex items-center gap-2 px-4 py-3 text-sm tracking-wide border-b-2 -mb-px transition ${
+              className={`flex items-center gap-2 px-4 py-3 text-sm tracking-wide border-b-2 -mb-px transition whitespace-nowrap ${
                 tab === id
                   ? 'border-accent text-ink'
                   : 'border-transparent text-muted hover:text-ink'
@@ -122,6 +135,8 @@ export default function Admin() {
         {tab === 'dates' && <DatesSection />}
         {tab === 'story' && <StorySection />}
         {tab === 'gallery' && <GallerySection />}
+        {tab === 'rsvps' && <RsvpsSection />}
+        {tab === 'wishes' && <WishesSection />}
       </main>
     </div>
   )
