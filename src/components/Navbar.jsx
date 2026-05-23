@@ -6,11 +6,11 @@ import ThemeSwitcher from './ThemeSwitcher.jsx'
 import LanguageToggle from './LanguageToggle.jsx'
 
 const LINKS = [
-  ['#story', 'nav.story'],
-  ['#gallery', 'nav.gallery'],
-  ['#ceremonies', 'nav.timeline'],
-  ['#rsvp', 'nav.rsvp'],
-  ['#wishes', 'nav.wishes'],
+  ['/#story', 'nav.story'],
+  ['/#gallery', 'nav.gallery'],
+  ['/#ceremonies', 'nav.timeline'],
+  ['/#rsvp', 'nav.rsvp'],
+  ['/#wishes', 'nav.wishes'],
 ]
 
 export default function Navbar() {
@@ -39,7 +39,7 @@ export default function Navbar() {
       }`}
     >
       <nav className="max-w-7xl mx-auto px-5 md:px-8 h-16 flex items-center justify-between">
-        <a href="#home" className="font-display text-xl tracking-wider">
+        <a href="/" className="font-display text-xl tracking-wider">
           V <span className="text-accent">&</span> N
         </a>
 

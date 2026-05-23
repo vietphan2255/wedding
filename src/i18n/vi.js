@@ -64,6 +64,19 @@ export default {
   'timeline.engagement.date': 'Tháng 10, 2025',
   'timeline.engagement.body':
     'Bên gia đình, trà sen và những phong bao đỏ — một lời hứa chính thức dưới sự chứng giám của tổ tiên.',
+  'timeline.engagement.explore': 'Khám phá',
+
+  // Engagement page
+  'engagementPage.eyebrow': 'Lời hứa đã trao',
+  'engagementPage.title': 'Ngày Đính Hôn của chúng mình',
+  'engagementPage.date': 'Tháng 10, 2025  ·  Đã tổ chức',
+  'engagementPage.intro':
+    'Một buổi sáng trà sen, phong bao đỏ và những nghi thức trang trọng — ngày tụi mình chính thức trao lời hứa trước hai bên gia đình.',
+  'engagementPage.body':
+    'Mùa thu năm ngoái, tụi mình cùng ba mẹ, ông bà và những người thân yêu nhất sum họp tại nhà để cử hành lễ đính hôn truyền thống. Trầu cau được trao, những chén trà được mời, và những lời dạy của các bậc tiền bối còn vang mãi. Đây là vài khoảnh khắc đáng nhớ trong buổi sáng hôm ấy.',
+  'engagementPage.galleryEyebrow': 'Buổi sáng hôm ấy',
+  'engagementPage.galleryTitle': 'Qua những bức ảnh',
+  'engagementPage.back': 'Trở lại các nghi lễ',
   'events.vuquy.name': 'Lễ Vu Quy',
   'events.vuquy.subtitle': 'Tại nhà gái',
   'events.vuquy.date': 'Chủ nhật  ·  26 Tháng 07, 2026',

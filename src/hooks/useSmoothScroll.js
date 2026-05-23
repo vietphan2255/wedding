@@ -21,10 +21,19 @@ export default function useSmoothScroll() {
     rafId = requestAnimationFrame(raf)
 
     const onAnchor = (e) => {
-      const a = e.target.closest('a[href^="#"]')
+      const a = e.target.closest('a[href]')
       if (!a) return
-      const id = a.getAttribute('href')
-      if (id.length < 2) return
+      const href = a.getAttribute('href')
+      let id = null
+      if (href.startsWith('#')) {
+        id = href
+      } else if (
+        href.startsWith('/#') &&
+        (window.location.pathname === '/' || window.location.pathname === '')
+      ) {
+        id = href.slice(1)
+      }
+      if (!id || id.length < 2) return
       const el = document.querySelector(id)
       if (!el) return
       e.preventDefault()

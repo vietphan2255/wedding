@@ -64,6 +64,19 @@ export default {
   'timeline.engagement.date': 'October 2025',
   'timeline.engagement.body':
     'Surrounded by family, tea, and red envelopes — a promise made official under the eyes of our ancestors.',
+  'timeline.engagement.explore': 'Explore',
+
+  // Engagement page
+  'engagementPage.eyebrow': 'A promise kept',
+  'engagementPage.title': 'Our Engagement Day',
+  'engagementPage.date': 'October 2025  ·  Already celebrated',
+  'engagementPage.intro':
+    'A morning of tea, red envelopes, and the quiet weight of tradition — the day we made our promise official under the eyes of our families.',
+  'engagementPage.body':
+    'Last autumn we gathered with our parents, grandparents, and closest relatives at home for the traditional engagement ceremony. We exchanged betel and areca, shared cups of tea, and listened to the wisdom of those who walked this road before us. These are a few of our favorite moments from that morning.',
+  'engagementPage.galleryEyebrow': 'That morning',
+  'engagementPage.galleryTitle': 'In photographs',
+  'engagementPage.back': 'Back to ceremonies',
   'events.vuquy.name': 'Lễ Vu Quy',
   'events.vuquy.subtitle': "Bride's Farewell Ceremony",
   'events.vuquy.date': '26 July 2026  ·  Sunday',

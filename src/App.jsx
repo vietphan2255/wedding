@@ -10,10 +10,14 @@ import RSVP from './components/RSVP.jsx'
 import Wishes from './components/Wishes.jsx'
 import Footer from './components/Footer.jsx'
 import Admin from './admin/Admin.jsx'
+import EngagementPage from './pages/EngagementPage.jsx'
 
-function isAdminRoute() {
-  if (typeof window === 'undefined') return false
-  return window.location.pathname.replace(/\/+$/, '') === '/admin'
+function getRoute() {
+  if (typeof window === 'undefined') return 'site'
+  const path = window.location.pathname.replace(/\/+$/, '')
+  if (path === '/admin') return 'admin'
+  if (path === '/engagement') return 'engagement'
+  return 'site'
 }
 
 function WeddingSite() {
@@ -36,13 +40,15 @@ function WeddingSite() {
 }
 
 export default function App() {
-  const [route, setRoute] = useState(() => (isAdminRoute() ? 'admin' : 'site'))
+  const [route, setRoute] = useState(getRoute)
 
   useEffect(() => {
-    const onPop = () => setRoute(isAdminRoute() ? 'admin' : 'site')
+    const onPop = () => setRoute(getRoute())
     window.addEventListener('popstate', onPop)
     return () => window.removeEventListener('popstate', onPop)
   }, [])
 
-  return route === 'admin' ? <Admin /> : <WeddingSite />
+  if (route === 'admin') return <Admin />
+  if (route === 'engagement') return <EngagementPage />
+  return <WeddingSite />
 }

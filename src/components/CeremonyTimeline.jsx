@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   ChevronDown,
   MapPinned,
+  ArrowUpRight,
 } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
@@ -103,30 +104,47 @@ export default function CeremonyTimeline() {
 function EngagementCard({ t }) {
   return (
     <FadeIn>
-      <article className="group relative h-full overflow-hidden rounded-3xl bg-surface border border-line">
-        <div className="relative">
-          <ParallaxImage src={ENGAGEMENT_IMG} strength={40} className="h-56" overlay />
-          <span className="absolute top-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-bg/85 backdrop-blur px-3 py-1 text-[10px] tracking-[0.22em] uppercase text-accent border border-accent/30">
-            <CheckCircle2 size={11} />
-            {t('timeline.alreadyCelebrated')}
-          </span>
-        </div>
-        <div className="p-7">
-          <p className="eyebrow text-accent">
-            {t('timeline.engagement.subtitle')}
-          </p>
-          <h3 className="font-display text-3xl md:text-4xl mt-2">
-            {t('timeline.engagement.name')}
-          </h3>
-          <p className="mt-4 flex items-center gap-2 text-sm">
-            <Calendar size={16} className="text-accent shrink-0" />
-            <span>{t('timeline.engagement.date')}</span>
-          </p>
-          <p className="text-muted text-sm leading-relaxed mt-5">
-            {t('timeline.engagement.body')}
-          </p>
-        </div>
-      </article>
+      <a
+        href="/engagement"
+        aria-label={t('timeline.engagement.name')}
+        className="group block h-full"
+      >
+        <motion.article
+          whileHover={{ y: -6 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 18 }}
+          className="relative h-full overflow-hidden rounded-3xl bg-surface border border-line group-hover:border-accent/40 group-hover:shadow-[0_18px_40px_-20px_var(--color-accent)] transition-colors"
+        >
+          <div className="relative">
+            <ParallaxImage src={ENGAGEMENT_IMG} strength={40} className="h-56" overlay />
+            <span className="absolute top-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-bg/85 backdrop-blur px-3 py-1 text-[10px] tracking-[0.22em] uppercase text-accent border border-accent/30">
+              <CheckCircle2 size={11} />
+              {t('timeline.alreadyCelebrated')}
+            </span>
+          </div>
+          <div className="p-7">
+            <p className="eyebrow text-accent">
+              {t('timeline.engagement.subtitle')}
+            </p>
+            <h3 className="font-display text-3xl md:text-4xl mt-2">
+              {t('timeline.engagement.name')}
+            </h3>
+            <p className="mt-4 flex items-center gap-2 text-sm">
+              <Calendar size={16} className="text-accent shrink-0" />
+              <span>{t('timeline.engagement.date')}</span>
+            </p>
+            <p className="text-muted text-sm leading-relaxed mt-5">
+              {t('timeline.engagement.body')}
+            </p>
+          </div>
+
+          <div className="absolute inset-0 flex items-center justify-center bg-ink/55 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+            <span className="inline-flex items-center gap-2 rounded-full bg-accent text-bg px-5 py-2.5 text-[12px] tracking-[0.22em] uppercase font-medium shadow-lg translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+              {t('timeline.engagement.explore')}
+              <ArrowUpRight size={14} />
+            </span>
+          </div>
+        </motion.article>
+      </a>
     </FadeIn>
   )
 }
