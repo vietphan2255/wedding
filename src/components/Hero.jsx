@@ -14,9 +14,10 @@ export default function Hero() {
     offset: ['start start', 'end start'],
   })
   const yImg = useTransform(scrollYProgress, [0, 1], ['0%', '40%'])
-  const scaleImg = useTransform(scrollYProgress, [0, 1], [1.05, 1.2])
+  const scaleImg = useTransform(scrollYProgress, [0, 1], [1.05, 1.08])
   const yText = useTransform(scrollYProgress, [0, 1], ['0%', '-30%'])
-  const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0])
+  const scaleText = useTransform(scrollYProgress, [0, 1], [1, 0.45])
+  const opacity = useTransform(scrollYProgress, [0, 0.85], [1, 0])
 
   return (
     <section
@@ -40,8 +41,8 @@ export default function Hero() {
       </motion.div>
 
       <motion.div
-        style={{ y: yText, opacity }}
-        className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6"
+        style={{ y: yText, opacity, scale: scaleText }}
+        className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6 will-change-transform"
       >
         <motion.p
           initial={{ opacity: 0, y: 16 }}

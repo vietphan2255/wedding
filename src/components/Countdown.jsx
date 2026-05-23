@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
 import ParallaxFade from './ParallaxFade.jsx'
@@ -55,7 +56,13 @@ export default function Countdown() {
       id="countdown"
       className="section-padding relative bg-surface text-ink overflow-hidden"
     >
-      <div className="max-w-5xl mx-auto px-6 text-center">
+      <motion.div
+        initial={{ scale: 0.7, opacity: 0 }}
+        whileInView={{ scale: 1, opacity: 1 }}
+        viewport={{ once: true, margin: '-15%' }}
+        transition={{ type: 'spring', stiffness: 110, damping: 11, mass: 0.9 }}
+        className="max-w-5xl mx-auto px-6 text-center will-change-transform"
+      >
         <ParallaxFade strength={30}>
           <p className="eyebrow">{t('countdown.eyebrow')}</p>
           <h2 className="font-display mt-3 text-3xl md:text-5xl">
@@ -99,7 +106,7 @@ export default function Countdown() {
             </p>
           </ParallaxFade>
         )}
-      </div>
+      </motion.div>
     </section>
   )
 }
