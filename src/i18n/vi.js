@@ -22,6 +22,8 @@ export default {
   'countdown.minutes': 'Phút',
   'countdown.seconds': 'Giây',
   'countdown.passed': 'Chúng mình đã thành đôi! Cảm ơn bạn đã ở đây cùng tụi mình.',
+  'countdown.prevEvent': 'Sự kiện trước',
+  'countdown.nextEvent': 'Sự kiện kế tiếp',
 
   // Story
   'story.eyebrow': 'Hành trình của chúng mình',
@@ -59,6 +61,9 @@ export default {
   'timeline.hideDetails': 'Ẩn chi tiết',
   'timeline.openMap': 'Mở Google Maps',
   'timeline.addCalendar': 'Thêm vào lịch',
+  'timeline.showMap': 'Xem bản đồ',
+  'timeline.hideMap': 'Ẩn bản đồ',
+  'timeline.dressCode': 'Trang phục',
   'timeline.engagement.name': 'Lễ Đính Hôn',
   'timeline.engagement.subtitle': 'Lễ Đính Hôn truyền thống',
   'timeline.engagement.date': 'Tháng 10, 2025',
@@ -126,4 +131,48 @@ export default {
   // Footer
   'footer.tagline': 'Thực hiện bằng cả trái tim · 2026',
   'footer.contact': 'Mọi thắc mắc xin liên hệ',
+
+  // Share
+  'share.title': 'Chia sẻ niềm vui',
+  'share.facebook': 'Chia sẻ lên Facebook',
+  'share.messenger': 'Chia sẻ qua Messenger',
+  'share.zalo': 'Chia sẻ qua Zalo',
+  'share.whatsapp': 'Chia sẻ qua WhatsApp',
+  'share.copy': 'Sao chép liên kết',
+  'share.copied': 'Đã sao chép!',
+  'share.caption':
+    'Tụi mình sắp cưới rồi! Cùng tụi mình đón ngày vui — Viet & Nguyen · 26.07.2026 & 02.08.2026',
+
+  // Gift / Lì Xì
+  'gift.eyebrow': 'Mừng cưới',
+  'gift.title': 'Gửi mừng cưới',
+  'gift.subtitle':
+    'Sự có mặt của bạn đã là món quà lớn nhất — nhưng nếu bạn muốn gửi mừng cưới, đây là thông tin tài khoản.',
+  'gift.bride': 'Tài khoản cô dâu',
+  'gift.groom': 'Tài khoản chú rể',
+  'gift.bank': 'Ngân hàng',
+  'gift.holder': 'Chủ tài khoản',
+  'gift.account': 'Số tài khoản',
+  'gift.copy': 'Sao chép',
+  'gift.copied': 'Đã sao chép!',
+  'gift.qrLabel': 'Quét QR để chuyển khoản',
+
+  // FAQ
+  'faq.eyebrow': 'Có thể bạn quan tâm',
+  'faq.title': 'Câu hỏi thường gặp',
+  'faq.subtitle': 'Vài câu hỏi nhanh trước ngày trọng đại.',
+
+  // Dress code icons
+  'dress.aodai': 'Áo dài',
+  'dress.formal': 'Lịch sự',
+  'dress.cocktail': 'Cocktail',
+
+  // Invitation overlay
+  'invitation.tap': 'Chạm để mở',
+  'invitation.eyebrow': 'Trân trọng kính mời',
+  'invitation.line': 'Lễ cưới của chúng mình',
+
+  // Mobile RSVP bar
+  'mobileRsvp.cta': 'Xác nhận tham dự',
+  'mobileRsvp.days': 'ngày nữa',
 }

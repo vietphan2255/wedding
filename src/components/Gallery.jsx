@@ -4,6 +4,7 @@ import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
 import FadeIn from './FadeIn.jsx'
+import BlurImage from './BlurImage.jsx'
 
 export default function Gallery() {
   const { t } = useLanguage()
@@ -53,28 +54,26 @@ export default function Gallery() {
           <p className="text-muted">{t('gallery.subtitle')}</p>
         </FadeIn>
 
-        <div className="mt-14 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[180px] md:auto-rows-[220px] gap-3 md:gap-4">
+        <div className="mt-14 columns-2 md:columns-3 lg:columns-4 gap-3 md:gap-4 [column-fill:_balance]">
           {photos.map((p, i) => (
             <FadeIn
               key={p.id}
-              delay={(i % 4) * 0.05}
-              y={30}
-              className={`relative group cursor-pointer overflow-hidden rounded-xl ${
-                p.tall ? 'row-span-2' : ''
-              }`}
+              delay={(i % 6) * 0.04}
+              y={20}
+              className="mb-3 md:mb-4 break-inside-avoid"
             >
               <button
                 onClick={() => setOpen(i)}
-                className="absolute inset-0 w-full h-full"
+                className="group block w-full overflow-hidden rounded-xl cursor-pointer relative"
                 aria-label={`Open photo ${i + 1}`}
               >
-                <img
+                <BlurImage
                   src={p.src}
-                  alt=""
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                  placeholder={p.placeholder}
+                  className="w-full"
+                  imgClassName="h-auto transition-transform duration-700 ease-out group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/15 transition-colors" />
+                <span className="absolute inset-0 bg-ink/0 group-hover:bg-ink/15 transition-colors" />
               </button>
             </FadeIn>
           ))}

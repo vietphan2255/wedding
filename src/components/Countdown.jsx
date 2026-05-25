@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
 import ParallaxFade from './ParallaxFade.jsx'
 
-function pickEvent(dates) {
-  const vuquy = new Date(dates.vuquyStart)
-  const thanhhon = new Date(dates.thanhhonStart)
+function pickUpcomingEvents(dates) {
+  const events = [
+    { key: 'vuquy', date: new Date(dates.vuquyStart) },
+    { key: 'thanhhon', date: new Date(dates.thanhhonStart) },
+  ]
   const now = Date.now()
-  if (now < vuquy.getTime()) return { date: vuquy, key: 'vuquy' }
-  if (now < thanhhon.getTime()) return { date: thanhhon, key: 'thanhhon' }
-  return null
+  return events.filter((e) => now < e.date.getTime())
 }
 
 function diff(target) {
@@ -26,30 +27,45 @@ function diff(target) {
 export default function Countdown() {
   const { t, lang } = useLanguage()
   const { config } = useWeddingConfig()
-  const upcoming = useMemo(() => pickEvent(config.dates), [config.dates])
-  const [now, setNow] = useState(() => diff(upcoming?.date ?? new Date()))
+  const upcomingEvents = useMemo(
+    () => pickUpcomingEvents(config.dates),
+    [config.dates],
+  )
+  const [index, setIndex] = useState(0)
+  const safeIndex =
+    upcomingEvents.length === 0
+      ? 0
+      : ((index % upcomingEvents.length) + upcomingEvents.length) %
+        upcomingEvents.length
+  const current = upcomingEvents[safeIndex] ?? null
+  const [now, setNow] = useState(() => diff(current?.date ?? new Date()))
 
   useEffect(() => {
-    if (!upcoming) return
-    setNow(diff(upcoming.date))
-    const id = setInterval(() => setNow(diff(upcoming.date)), 1000)
+    if (!current) return
+    setNow(diff(current.date))
+    const id = setInterval(() => setNow(diff(current.date)), 1000)
     return () => clearInterval(id)
-  }, [upcoming])
+  }, [current])
 
-  const label =
-    upcoming?.key === 'vuquy'
+  const label = current
+    ? current.key === 'vuquy'
       ? t('events.vuquy.name')
-      : upcoming?.key === 'thanhhon'
-      ? t('events.thanhhon.name')
-      : ''
+      : t('events.thanhhon.name')
+    : ''
 
-  const dateLabel = upcoming
+  const dateLabel = current
     ? new Intl.DateTimeFormat(lang === 'vi' ? 'vi-VN' : 'en-GB', {
         day: '2-digit',
         month: 'long',
         year: 'numeric',
-      }).format(upcoming.date)
+      }).format(current.date)
     : ''
+
+  const showNav = upcomingEvents.length > 1
+  const goPrev = () =>
+    setIndex((i) => (i - 1 + upcomingEvents.length) % upcomingEvents.length)
+  const goNext = () =>
+    setIndex((i) => (i + 1) % upcomingEvents.length)
 
   return (
     <section
@@ -66,19 +82,47 @@ export default function Countdown() {
         <ParallaxFade strength={30}>
           <p className="eyebrow">{t('countdown.eyebrow')}</p>
           <h2 className="font-display mt-3 text-3xl md:text-5xl">
-            {upcoming ? t('countdown.titleNext') : ''}
+            {current ? t('countdown.titleNext') : ''}
           </h2>
-          {upcoming && (
-            <p className="font-display text-2xl md:text-3xl text-accent mt-3">
-              {label}
-            </p>
+          {current && (
+            <div className="mt-3 flex items-center justify-center gap-3 md:gap-5">
+              {showNav && (
+                <button
+                  type="button"
+                  onClick={goPrev}
+                  aria-label={t('countdown.prevEvent')}
+                  className="p-1.5 rounded-full glass text-ink/80 hover:text-ink hover:bg-white/10 transition"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+              )}
+              <motion.p
+                key={current.key}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25 }}
+                className="font-display text-2xl md:text-3xl text-accent"
+              >
+                {label}
+              </motion.p>
+              {showNav && (
+                <button
+                  type="button"
+                  onClick={goNext}
+                  aria-label={t('countdown.nextEvent')}
+                  className="p-1.5 rounded-full glass text-ink/80 hover:text-ink hover:bg-white/10 transition"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              )}
+            </div>
           )}
           <p className="mt-1 text-sm md:text-base text-muted tracking-wide">
             {dateLabel}
           </p>
         </ParallaxFade>
 
-        {upcoming ? (
+        {current ? (
           <ParallaxFade strength={60} className="block">
             <div className="mt-12 grid grid-cols-4 gap-2 sm:gap-5">
               {[

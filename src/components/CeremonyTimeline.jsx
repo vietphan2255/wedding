@@ -4,16 +4,17 @@ import {
   Calendar,
   Clock,
   MapPin,
-  Shirt,
   CheckCircle2,
   ChevronDown,
   MapPinned,
   ArrowUpRight,
+  Map as MapIcon,
 } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
 import FadeIn from './FadeIn.jsx'
 import ParallaxImage from './ParallaxImage.jsx'
+import DressIcon from './icons/DressIcons.jsx'
 
 const ENGAGEMENT_IMG =
   'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1600&q=80'
@@ -21,10 +22,12 @@ const ENGAGEMENT_IMG =
 const CEREMONIES = [
   {
     key: 'vuquy',
+    dressKind: 'aodai',
     img: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1600&q=80',
   },
   {
     key: 'thanhhon',
+    dressKind: 'formal',
     img: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1600&q=80',
   },
 ]
@@ -60,8 +63,10 @@ export default function CeremonyTimeline() {
   const { t } = useLanguage()
   const { config } = useWeddingConfig()
   const [openKey, setOpenKey] = useState(null)
+  const [openMapKey, setOpenMapKey] = useState(null)
 
   const toggle = (key) => setOpenKey((k) => (k === key ? null : key))
+  const toggleMap = (key) => setOpenMapKey((k) => (k === key ? null : key))
 
   return (
     <section
@@ -88,10 +93,14 @@ export default function CeremonyTimeline() {
               t={t}
               eventKey={c.key}
               img={c.img}
+              dressKind={c.dressKind}
+              mapEmbed={config.venues?.[c.key]?.mapEmbed || ''}
               start={new Date(config.dates[`${c.key}Start`])}
               end={new Date(config.dates[`${c.key}End`])}
               isOpen={openKey === c.key}
+              isMapOpen={openMapKey === c.key}
               onToggle={() => toggle(c.key)}
+              onToggleMap={() => toggleMap(c.key)}
               delay={(i + 1) * 0.08}
             />
           ))}
@@ -153,10 +162,14 @@ function CeremonyCard({
   t,
   eventKey,
   img,
+  dressKind,
+  mapEmbed,
   start,
   end,
   isOpen,
+  isMapOpen,
   onToggle,
+  onToggleMap,
   delay,
 }) {
   const name = t(`events.${eventKey}.name`)
@@ -231,11 +244,49 @@ function CeremonyCard({
                     <span>{venue}</span>
                   </li>
                   <li className="flex items-start gap-2.5">
-                    <Shirt size={16} className="text-accent shrink-0 mt-0.5" />
+                    <span className="text-accent shrink-0 mt-0.5">
+                      <DressIcon kind={dressKind} size={16} />
+                    </span>
                     <span>{dress}</span>
                   </li>
                 </ul>
+
+                <AnimatePresence initial={false}>
+                  {isMapOpen && mapEmbed && (
+                    <motion.div
+                      key="mapEmbed"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                      className="overflow-hidden mt-5"
+                    >
+                      <div className="rounded-2xl overflow-hidden border border-line aspect-[16/10]">
+                        <iframe
+                          title={`${name} map`}
+                          src={mapEmbed}
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                          allowFullScreen
+                          className="w-full h-full border-0"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 <div className="mt-5 flex flex-wrap gap-2">
+                  {mapEmbed && (
+                    <button
+                      type="button"
+                      onClick={onToggleMap}
+                      aria-expanded={isMapOpen}
+                      className="btn-ghost"
+                    >
+                      <MapIcon size={15} />
+                      {isMapOpen ? t('timeline.hideMap') : t('timeline.showMap')}
+                    </button>
+                  )}
                   <a
                     href={mapUrl}
                     target="_blank"

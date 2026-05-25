@@ -9,21 +9,30 @@ import {
   ClipboardList,
   MessageCircle,
   Music,
+  MapPin,
+  Gift,
+  HelpCircle,
 } from 'lucide-react'
 import { isConfigured } from '../firebase/config.js'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
 import AdminAuth, { isAuthed, clearAuth } from './AdminAuth.jsx'
 import DatesSection from './sections/DatesSection.jsx'
+import VenuesSection from './sections/VenuesSection.jsx'
 import StorySection from './sections/StorySection.jsx'
 import GallerySection from './sections/GallerySection.jsx'
 import MusicSection from './sections/MusicSection.jsx'
+import GiftsSection from './sections/GiftsSection.jsx'
+import FaqsSection from './sections/FaqsSection.jsx'
 import RsvpsSection from './sections/RsvpsSection.jsx'
 import WishesSection from './sections/WishesSection.jsx'
 
 const TABS = [
   { id: 'dates', label: 'Dates', icon: Calendar },
+  { id: 'venues', label: 'Venues', icon: MapPin },
   { id: 'story', label: 'Story', icon: Heart },
   { id: 'gallery', label: 'Gallery', icon: Image },
+  { id: 'gifts', label: 'Gifts', icon: Gift },
+  { id: 'faqs', label: 'FAQ', icon: HelpCircle },
   { id: 'music', label: 'Music', icon: Music },
   { id: 'rsvps', label: 'RSVPs', icon: ClipboardList },
   { id: 'wishes', label: 'Wishes', icon: MessageCircle },
@@ -136,8 +145,11 @@ export default function Admin() {
         </nav>
 
         {tab === 'dates' && <DatesSection />}
+        {tab === 'venues' && <VenuesSection />}
         {tab === 'story' && <StorySection />}
         {tab === 'gallery' && <GallerySection />}
+        {tab === 'gifts' && <GiftsSection />}
+        {tab === 'faqs' && <FaqsSection />}
         {tab === 'music' && <MusicSection />}
         {tab === 'rsvps' && <RsvpsSection />}
         {tab === 'wishes' && <WishesSection />}

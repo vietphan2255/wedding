@@ -1,11 +1,20 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, CheckCircle2 } from 'lucide-react'
 import { ref, push, serverTimestamp } from 'firebase/database'
+import confetti from 'canvas-confetti'
 import { db, isConfigured } from '../firebase/config.js'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
 import FadeIn from './FadeIn.jsx'
+
+function readAccent() {
+  if (typeof window === 'undefined') return '#C97B5D'
+  const v = getComputedStyle(document.documentElement)
+    .getPropertyValue('--color-accent')
+    .trim()
+  return v || '#C97B5D'
+}
 
 export default function RSVP() {
   const { t } = useLanguage()
@@ -24,6 +33,34 @@ export default function RSVP() {
   })
   const [status, setStatus] = useState(null) // 'success' | 'error'
   const attending = watch('attending')
+  const firedRef = useRef(false)
+
+  useEffect(() => {
+    if (status !== 'success' || firedRef.current) return
+    if (typeof window === 'undefined') return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduce) return
+    firedRef.current = true
+    const accent = readAccent()
+    const colors = [accent, '#FFD8E3', '#F4E4E1', '#C9A961']
+    const fire = (origin) =>
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        startVelocity: 45,
+        origin,
+        colors,
+        scalar: 0.9,
+        ticks: 200,
+      })
+    fire({ x: 0.2, y: 0.7 })
+    window.setTimeout(() => fire({ x: 0.8, y: 0.7 }), 150)
+    window.setTimeout(() => fire({ x: 0.5, y: 0.5 }), 300)
+  }, [status])
+
+  useEffect(() => {
+    if (status !== 'success') firedRef.current = false
+  }, [status])
 
   const onSubmit = async (data) => {
     try {

@@ -8,8 +8,13 @@ import Gallery from './components/Gallery.jsx'
 import CeremonyTimeline from './components/CeremonyTimeline.jsx'
 import RSVP from './components/RSVP.jsx'
 import Wishes from './components/Wishes.jsx'
+import GiftCard from './components/GiftCard.jsx'
+import FAQ from './components/FAQ.jsx'
 import Footer from './components/Footer.jsx'
 import FloatingDock from './components/FloatingDock.jsx'
+import ScrollProgress from './components/ScrollProgress.jsx'
+import MobileRsvpBar from './components/MobileRsvpBar.jsx'
+import InvitationOverlay from './components/InvitationOverlay.jsx'
 import Admin from './admin/Admin.jsx'
 import EngagementPage from './pages/EngagementPage.jsx'
 
@@ -25,6 +30,8 @@ function WeddingSite() {
   useSmoothScroll()
   return (
     <>
+      <InvitationOverlay />
+      <ScrollProgress />
       <Navbar />
       <main>
         <Hero />
@@ -34,9 +41,12 @@ function WeddingSite() {
         <CeremonyTimeline />
         <RSVP />
         <Wishes />
+        <GiftCard />
+        <FAQ />
       </main>
       <Footer />
       <FloatingDock />
+      <MobileRsvpBar />
     </>
   )
 }

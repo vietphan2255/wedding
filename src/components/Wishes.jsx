@@ -148,11 +148,25 @@ export default function Wishes() {
         </FadeIn>
 
         <div className="mt-12 grid sm:grid-cols-2 gap-4 md:gap-5">
-          {loading && (
-            <p className="text-muted text-sm col-span-full text-center">
-              {t('wishes.loading')}
-            </p>
-          )}
+          {loading &&
+            Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={`skeleton-${i}`}
+                aria-hidden
+                className="rounded-2xl border border-line bg-surface p-5 animate-pulse"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="h-5 w-32 rounded-md bg-line/70" />
+                  <div className="h-3.5 w-3.5 rounded-full bg-line/70" />
+                </div>
+                <div className="mt-3 space-y-2">
+                  <div className="h-3.5 w-full rounded-md bg-line/60" />
+                  <div className="h-3.5 w-[88%] rounded-md bg-line/50" />
+                  <div className="h-3.5 w-2/3 rounded-md bg-line/40" />
+                </div>
+                <div className="h-2.5 w-20 mt-4 rounded-md bg-line/50" />
+              </div>
+            ))}
           {!loading && wishes.length === 0 && (
             <p className="text-muted text-sm col-span-full text-center">
               {t('wishes.empty')}

@@ -1,5 +1,6 @@
 import { Heart } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
+import ShareRow from './ShareRow.jsx'
 
 export default function Footer() {
   const { t } = useLanguage()
@@ -9,7 +10,11 @@ export default function Footer() {
         <p className="font-script text-5xl md:text-6xl text-accent">Viet &amp; Nguyen</p>
         <p className="eyebrow mt-4">26.07.2026 · 02.08.2026</p>
 
-        <div className="mt-8 flex items-center justify-center gap-2 text-sm text-muted">
+        <div className="mt-10">
+          <ShareRow />
+        </div>
+
+        <div className="mt-10 flex items-center justify-center gap-2 text-sm text-muted">
           <span>{t('footer.tagline')}</span>
           <Heart size={14} className="text-accent" />
         </div>

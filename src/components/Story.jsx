@@ -45,6 +45,7 @@ export default function Story() {
                   >
                     <ParallaxImage
                       src={item.img}
+                      placeholder={item.placeholder || ''}
                       alt=""
                       strength={50}
                       className="aspect-[4/5] rounded-2xl shadow-xl"

@@ -22,6 +22,8 @@ export default {
   'countdown.minutes': 'Minutes',
   'countdown.seconds': 'Seconds',
   'countdown.passed': "We're married! Thank you for celebrating with us.",
+  'countdown.prevEvent': 'Previous event',
+  'countdown.nextEvent': 'Next event',
 
   // Story
   'story.eyebrow': 'Our journey',
@@ -59,6 +61,9 @@ export default {
   'timeline.hideDetails': 'Hide details',
   'timeline.openMap': 'Open in Google Maps',
   'timeline.addCalendar': 'Add to calendar',
+  'timeline.showMap': 'Show map',
+  'timeline.hideMap': 'Hide map',
+  'timeline.dressCode': 'Dress code',
   'timeline.engagement.name': 'Lễ Đính Hôn',
   'timeline.engagement.subtitle': 'Engagement Ceremony',
   'timeline.engagement.date': 'October 2025',
@@ -126,4 +131,48 @@ export default {
   // Footer
   'footer.tagline': 'Made with love · 2026',
   'footer.contact': 'Questions? Reach us at',
+
+  // Share
+  'share.title': 'Share the joy',
+  'share.facebook': 'Share on Facebook',
+  'share.messenger': 'Share on Messenger',
+  'share.zalo': 'Share on Zalo',
+  'share.whatsapp': 'Share on WhatsApp',
+  'share.copy': 'Copy link',
+  'share.copied': 'Link copied!',
+  'share.caption':
+    "We're getting married! Join us for Viet & Nguyen's wedding · 26.07.2026 & 02.08.2026",
+
+  // Gift / Lì Xì
+  'gift.eyebrow': 'Mừng cưới',
+  'gift.title': 'Send a wedding gift',
+  'gift.subtitle':
+    'Your presence is the only gift we need — but if you wish to send mừng cưới, here are the details.',
+  'gift.bride': "Bride's account",
+  'gift.groom': "Groom's account",
+  'gift.bank': 'Bank',
+  'gift.holder': 'Account holder',
+  'gift.account': 'Account number',
+  'gift.copy': 'Copy',
+  'gift.copied': 'Copied!',
+  'gift.qrLabel': 'Scan QR to transfer',
+
+  // FAQ
+  'faq.eyebrow': 'Good to know',
+  'faq.title': 'Frequently asked',
+  'faq.subtitle': 'A few quick answers before the big day.',
+
+  // Dress code icons
+  'dress.aodai': 'Áo dài',
+  'dress.formal': 'Formal',
+  'dress.cocktail': 'Cocktail',
+
+  // Invitation overlay
+  'invitation.tap': 'Tap to open',
+  'invitation.eyebrow': 'You are invited',
+  'invitation.line': 'A celebration of love',
+
+  // Mobile RSVP bar
+  'mobileRsvp.cta': 'RSVP now',
+  'mobileRsvp.days': 'days to go',
 }

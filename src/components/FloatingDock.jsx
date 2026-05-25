@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext.jsx'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
 
 const MUSIC_STORAGE_KEY = 'vn-music-playing'
+const MUSIC_MUTED_KEY = 'vn-music-muted'
 
 export default function FloatingDock() {
   const { t } = useLanguage()
@@ -72,6 +73,42 @@ function MusicButton() {
     }
   }, [enabled, music.url])
 
+  // Auto-start on first user interaction by querying the dock button and
+  // synthesising a click. Routing through the real click handler keeps a
+  // single source of truth for play/pause + localStorage persistence, and
+  // ensures play() runs inside a user-gesture context (browsers block
+  // silent autoplay). Skipped if the user previously muted (localStorage)
+  // or the music is already known to be playing (sessionStorage).
+  useEffect(() => {
+    if (!enabled) return
+    if (typeof window === 'undefined') return
+    if (localStorage.getItem(MUSIC_MUTED_KEY) === '1') return
+    if (sessionStorage.getItem(MUSIC_STORAGE_KEY) === '1') return
+
+    let done = false
+    const autoStart = () => {
+      if (done) return
+      done = true
+      cleanup()
+      // Re-check inside the handler — the user's first interaction may
+      // already have been a click on the dock button itself, in which case
+      // its own onClick will have updated state by now and we skip.
+      if (localStorage.getItem(MUSIC_MUTED_KEY) === '1') return
+      if (sessionStorage.getItem(MUSIC_STORAGE_KEY) === '1') return
+      const btn = document.querySelector('[data-music-toggle]')
+      if (btn) btn.click()
+    }
+    const cleanup = () => {
+      window.removeEventListener('click', autoStart)
+      window.removeEventListener('touchstart', autoStart)
+      window.removeEventListener('keydown', autoStart)
+    }
+    window.addEventListener('click', autoStart)
+    window.addEventListener('touchstart', autoStart, { passive: true })
+    window.addEventListener('keydown', autoStart)
+    return cleanup
+  }, [enabled])
+
   if (!enabled) return null
 
   const toggle = async () => {
@@ -81,11 +118,13 @@ function MusicButton() {
       el.pause()
       setPlaying(false)
       sessionStorage.setItem(MUSIC_STORAGE_KEY, '0')
+      localStorage.setItem(MUSIC_MUTED_KEY, '1')
     } else {
       try {
         await el.play()
         setPlaying(true)
         sessionStorage.setItem(MUSIC_STORAGE_KEY, '1')
+        localStorage.setItem(MUSIC_MUTED_KEY, '0')
       } catch (err) {
         console.warn('[music] play() blocked', err)
         setPlaying(false)
@@ -109,6 +148,7 @@ function MusicButton() {
       <button
         type="button"
         onClick={toggle}
+        data-music-toggle="true"
         aria-label={playing ? 'Pause background music' : 'Play background music'}
         className="w-12 h-12 rounded-full bg-accent text-bg shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
       >

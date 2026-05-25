@@ -29,10 +29,20 @@ export default function Hero() {
         style={{ y: yImg, scale: scaleImg }}
         className="absolute inset-0 will-change-transform"
       >
-        <img
+        <motion.img
           src={HERO_IMAGE}
           alt="Couple silhouette"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover motion-reduce:!animate-none"
+          animate={{
+            scale: [1.05, 1.16, 1.05],
+            x: ['0%', '-2.5%', '0%'],
+            y: ['0%', '1.5%', '0%'],
+          }}
+          transition={{
+            duration: 22,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
         />
         <div
           className="absolute inset-0"
