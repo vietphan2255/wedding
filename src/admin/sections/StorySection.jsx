@@ -3,6 +3,7 @@ import { ref, set, push, update } from 'firebase/database'
 import { Plus, Trash2, ArrowUp, ArrowDown, Save } from 'lucide-react'
 import { db, isConfigured } from '../../firebase/config.js'
 import { useWeddingConfig } from '../../contexts/WeddingConfigContext.jsx'
+import ImageInput from '../../components/admin/ImageInput.jsx'
 
 function emptyItem(order) {
   return {
@@ -191,12 +192,10 @@ export default function StorySection() {
                 <label className="block text-[11px] tracking-[0.22em] uppercase text-muted mb-2">
                   Image URL
                 </label>
-                <input
-                  type="url"
-                  value={it.img || ''}
-                  onChange={(e) => update_(idx, 'img', e.target.value)}
-                  className="w-full rounded-xl border border-line bg-bg px-4 py-3"
-                  placeholder="https://…"
+                <ImageInput
+                  value={it.img}
+                  onChange={(url) => update_(idx, 'img', url)}
+                  inputClassName="w-full rounded-xl border border-line bg-bg px-4 py-3"
                 />
               </div>
               <div>

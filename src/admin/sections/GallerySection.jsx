@@ -3,6 +3,8 @@ import { ref, set, push, update } from 'firebase/database'
 import { Plus, Trash2, ArrowUp, ArrowDown, Save } from 'lucide-react'
 import { db, isConfigured } from '../../firebase/config.js'
 import { useWeddingConfig } from '../../contexts/WeddingConfigContext.jsx'
+import ImageInput from '../../components/admin/ImageInput.jsx'
+import UploadButton from '../../components/admin/UploadButton.jsx'
 
 function emptyItem(order) {
   return { src: '', tall: false, order }
@@ -107,11 +109,26 @@ export default function GallerySection() {
           CDN). Mark a photo as <em>tall</em> to make it span two rows in the
           grid for a more dynamic layout.
         </p>
-        <div className="mt-4 flex items-center gap-3">
+        <div className="mt-4 flex flex-wrap items-center gap-3">
           <button type="button" onClick={addItem} className="btn-ghost">
             <Plus size={16} />
             Add photo
           </button>
+          <UploadButton
+            multiple
+            label="Upload photos"
+            onUploaded={(urls) =>
+              setItems((prev) => [
+                ...prev,
+                ...urls.map((src, i) => ({
+                  id: `new-${Date.now()}-${i}`,
+                  src,
+                  tall: false,
+                  order: prev.length + i,
+                })),
+              ])
+            }
+          />
           <p className="text-xs text-muted">{items.length} photo(s)</p>
         </div>
       </header>
@@ -165,12 +182,10 @@ export default function GallerySection() {
                   </button>
                 </div>
               </div>
-              <input
-                type="url"
-                value={it.src || ''}
-                onChange={(e) => update_(idx, 'src', e.target.value)}
-                placeholder="https://…"
-                className="w-full rounded-xl border border-line bg-bg px-3 py-2 text-sm"
+              <ImageInput
+                value={it.src}
+                onChange={(url) => update_(idx, 'src', url)}
+                inputClassName="w-full rounded-xl border border-line bg-bg px-3 py-2 text-sm"
               />
               <label className="mt-2 flex items-center gap-2 text-xs text-muted cursor-pointer">
                 <input

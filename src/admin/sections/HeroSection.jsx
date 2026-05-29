@@ -4,6 +4,7 @@ import { Save, Sparkles } from 'lucide-react'
 import { db, isConfigured } from '../../firebase/config.js'
 import { useWeddingConfig } from '../../contexts/WeddingConfigContext.jsx'
 import { computeMosaic, useImageAspects, DEFAULT_AR } from '../../lib/heroMosaic.js'
+import UploadButton from '../../components/admin/UploadButton.jsx'
 
 const PREVIEW_W = 1200
 const PREVIEW_H = 1600
@@ -84,12 +85,21 @@ export default function HeroSection() {
       </header>
 
       <div className="glass rounded-3xl p-6 md:p-7">
-        <label className="block text-[11px] tracking-[0.22em] uppercase text-muted mb-2 flex items-center justify-between gap-3">
-          <span>Image URLs</span>
-          <span className="normal-case tracking-normal text-[10px] text-muted/80">
-            one per line
-          </span>
-        </label>
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <label className="text-[11px] tracking-[0.22em] uppercase text-muted flex items-center gap-2">
+            <span>Image URLs</span>
+            <span className="normal-case tracking-normal text-[10px] text-muted/80">
+              one per line
+            </span>
+          </label>
+          <UploadButton
+            multiple
+            label="Upload images"
+            onUploaded={(urls) =>
+              setText((t) => [t.trim(), ...urls].filter(Boolean).join('\n'))
+            }
+          />
+        </div>
         <textarea
           rows={10}
           value={text}

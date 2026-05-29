@@ -3,6 +3,7 @@ import { ref, set } from 'firebase/database'
 import { Save, Mail } from 'lucide-react'
 import { db, isConfigured } from '../../firebase/config.js'
 import { useWeddingConfig } from '../../contexts/WeddingConfigContext.jsx'
+import ImageInput from '../../components/admin/ImageInput.jsx'
 
 export default function InvitationSection() {
   const { config } = useWeddingConfig()
@@ -47,8 +48,8 @@ export default function InvitationSection() {
         </h2>
         <p className="text-sm text-muted mt-2 max-w-2xl">
           Paste an image URL for the letter that slides up out of the envelope
-          when a guest opens the site. Portrait images look best. Leave it empty
-          to fall back to the default text card.
+          when a guest opens the site. Landscape (~3:2) images look best. Leave
+          it empty to fall back to the default text card.
         </p>
       </header>
 
@@ -56,18 +57,17 @@ export default function InvitationSection() {
         <label className="block text-[11px] tracking-[0.22em] uppercase text-muted mb-2">
           Letter image URL
         </label>
-        <input
-          type="url"
+        <ImageInput
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={setText}
           placeholder="https://example.com/our-invitation.jpg"
-          className="w-full rounded-xl border border-line bg-bg px-4 py-3 font-mono text-xs"
+          inputClassName="w-full rounded-xl border border-line bg-bg px-4 py-3 font-mono text-xs"
         />
 
         {cleaned ? (
           <div className="mt-5">
             <p className="eyebrow mb-3">Preview</p>
-            <div className="relative w-[min(280px,100%)] mx-auto aspect-[4/5] rounded-2xl overflow-hidden border border-line bg-surface shadow-[0_30px_70px_-30px_rgba(0,0,0,0.45)]">
+            <div className="relative w-[min(360px,100%)] mx-auto aspect-[3/2] rounded-2xl overflow-hidden border border-line bg-surface shadow-[0_30px_70px_-30px_rgba(0,0,0,0.45)]">
               <img
                 src={cleaned}
                 alt="Invitation letter preview"

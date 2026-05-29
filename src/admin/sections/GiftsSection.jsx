@@ -3,6 +3,7 @@ import { ref, set } from 'firebase/database'
 import { Save, Gift } from 'lucide-react'
 import { db, isConfigured } from '../../firebase/config.js'
 import { useWeddingConfig } from '../../contexts/WeddingConfigContext.jsx'
+import ImageInput from '../../components/admin/ImageInput.jsx'
 
 const SIDES = [
   { key: 'bride', label: "Bride's account" },
@@ -97,12 +98,11 @@ export default function GiftsSection() {
                     {f.label}
                   </label>
                   {f.key === 'qrUrl' ? (
-                    <input
-                      type="url"
-                      value={form[key]?.[f.key] || ''}
-                      onChange={(e) => handle(key, f.key, e.target.value)}
+                    <ImageInput
+                      value={form[key]?.[f.key]}
+                      onChange={(url) => handle(key, f.key, url)}
                       placeholder="https://…/qr.png"
-                      className="w-full rounded-xl border border-line bg-bg px-4 py-3 text-ink focus:border-accent"
+                      inputClassName="w-full rounded-xl border border-line bg-bg px-4 py-3 text-ink focus:border-accent"
                     />
                   ) : (
                     <input
