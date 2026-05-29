@@ -1,0 +1,309 @@
+/* Faithful port of the cinelove "animated-envelope" component
+   (cinelove.me/template/thiep-cuoi-42). De-hashed and scoped under
+   .envelope-intro. Rendered at the reference's native 430x287 and uniformly
+   scaled by the component, so every px value below stays pixel-exact. */
+
+.envelope-intro {
+  position: relative;
+  width: 430px;
+  height: 287px;
+  transform-origin: center center;
+}
+
+/* ground shadow */
+.envelope-intro .envelope-shadow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.envelope-intro .envelope-shadow::after {
+  content: '';
+  position: absolute;
+  width: 490px;
+  height: 25px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.2);
+  top: 336px;
+  left: 50%;
+  transform: translateX(-50%);
+  filter: blur(4px);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  animation: env-shadowScale 3s ease-in-out infinite;
+}
+
+/* burgundy envelope body (the inside/back) */
+.envelope-intro .envelope-container {
+  position: absolute;
+  inset: 0;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  background-color: #812927;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: env-float 3s ease-in-out infinite;
+  z-index: 1;
+}
+
+/* CSS border-triangle parts: a 0x0 box whose thick borders draw the folds */
+.envelope-intro .front {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+}
+
+/* front pocket: lighter side flaps + bottom flap, top is the opening */
+.envelope-intro .pocket {
+  border-left: 215.05px solid #a33f3d;
+  border-right: 215.05px solid #a33f3d;
+  border-bottom: 143.367px solid #a84644;
+  border-top: 143.367px solid transparent;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  z-index: 3;
+}
+
+/* top flap: burgundy downward triangle that flips open on .open */
+.envelope-intro .flap {
+  border-left: 215.05px solid transparent;
+  border-right: 215.05px solid transparent;
+  border-bottom: 131.898px solid transparent;
+  border-top: 154.836px solid #812927;
+  transform-origin: top;
+  transform: rotateX(0deg);
+  z-index: 5;
+  transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    z-index 1.2s;
+}
+.envelope-intro .envelope-container.open .flap {
+  transform: rotateX(180deg);
+  z-index: 1;
+}
+
+/* the letter: white card, hidden behind the flap, slides up on .open */
+.envelope-intro .letter {
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  width: 90%;
+  height: 90%;
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 26px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  z-index: 1;
+  transform: translateY(0);
+  transition: transform 0.6s 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    z-index 0.2s, box-shadow 0.3s ease;
+}
+.envelope-intro .letter::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 25%,
+    rgba(255, 227, 239, 0.2) 75%,
+    rgba(215, 227, 239, 0.3) 100%
+  );
+}
+.envelope-intro .envelope-container.open .letter {
+  transform: translateY(-136.2px);
+  z-index: 2;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  transition: transform 1s 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    z-index 0.5s;
+}
+.envelope-intro .letter-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* fallback letter content when no image is configured */
+.envelope-intro .letter-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  color: #3f2e2a;
+  padding: 0 18px;
+}
+.envelope-intro .lf-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #9a6b62;
+}
+.envelope-intro .lf-names {
+  font-family: 'Great Vibes', cursive;
+  font-size: 46px;
+  line-height: 1;
+  color: #812927;
+}
+.envelope-intro .lf-date {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+}
+
+/* wax seal sits on the flap fold-line, always on top */
+.envelope-intro .wax-seal {
+  position: absolute;
+  top: 114.7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 55.9px;
+  height: 55.9px;
+  z-index: 10;
+}
+.envelope-intro .wax-seal svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
+}
+
+/* floating hearts */
+.envelope-intro .hearts {
+  position: absolute;
+  top: 157.7px;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.envelope-intro .heart {
+  position: absolute;
+  bottom: 0;
+  width: 92px;
+  height: 74px;
+  opacity: 0;
+  transform: scale(0);
+}
+.envelope-intro .heart::before,
+.envelope-intro .heart::after {
+  content: '';
+  position: absolute;
+  left: 46.02px;
+  top: 0;
+  width: 46.02px;
+  height: 73.55px;
+  background-color: #d00000;
+  border-radius: 46px 46px 0 0;
+  transform: rotate(-45deg);
+  transform-origin: 0 100%;
+}
+.envelope-intro .heart::after {
+  left: 0;
+  transform: rotate(45deg);
+  transform-origin: 100% 100%;
+}
+.envelope-intro .heart.a1 {
+  left: 20%;
+}
+.envelope-intro .heart.a2 {
+  left: 55%;
+}
+.envelope-intro .heart.a3 {
+  left: 10%;
+}
+.envelope-intro .envelope-container.open .heart.a1 {
+  --heart-scale: 0.6;
+  animation: env-heartFloat 4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1,
+    env-sideSway 2s ease-in-out 4 alternate,
+    env-heartScale 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 1;
+  animation-fill-mode: forwards;
+  animation-delay: 1.2s;
+}
+.envelope-intro .envelope-container.open .heart.a2 {
+  --heart-scale: 1;
+  animation: env-heartFloat 5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1,
+    env-sideSway 4s ease-in-out 2 alternate,
+    env-heartScale 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 1;
+  animation-fill-mode: forwards;
+  animation-delay: 1.4s;
+}
+.envelope-intro .envelope-container.open .heart.a3 {
+  --heart-scale: 0.8;
+  animation: env-heartFloat 7s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1,
+    env-sideSway 2s ease-in-out 6 alternate,
+    env-heartScale 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 1;
+  animation-fill-mode: forwards;
+  animation-delay: 1.6s;
+}
+
+@keyframes env-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+@keyframes env-shadowScale {
+  0%,
+  100% {
+    transform: translateX(-50%) scaleX(1);
+  }
+  50% {
+    transform: translateX(-50%) scaleX(0.85);
+  }
+}
+@keyframes env-heartFloat {
+  0% {
+    top: 0;
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  80% {
+    opacity: 0.3;
+  }
+  100% {
+    top: -600px;
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+@keyframes env-sideSway {
+  0% {
+    margin-left: 0;
+  }
+  50% {
+    margin-left: 25px;
+  }
+  100% {
+    margin-left: 50px;
+  }
+}
+@keyframes env-heartScale {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(var(--heart-scale, 1));
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .envelope-intro .envelope-container,
+  .envelope-intro .envelope-shadow::after {
+    animation: none;
+  }
+}
