@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
+import FloatingHearts from './fx/FloatingHearts.jsx'
 
 const STORAGE_KEY = 'vn-invitation-opened'
 
 export default function InvitationOverlay() {
   const { t } = useLanguage()
+  const { config } = useWeddingConfig()
+  const letter = (config.invitation?.letterImage || '').trim()
   const [visible, setVisible] = useState(false)
   const [open, setOpen] = useState(false)
 
@@ -26,7 +30,7 @@ export default function InvitationOverlay() {
       sessionStorage.setItem(STORAGE_KEY, '1')
       setVisible(false)
       document.body.style.overflow = ''
-    }, 1400)
+    }, 2400)
   }
 
   return (
@@ -43,6 +47,31 @@ export default function InvitationOverlay() {
           className="fixed inset-0 z-[100] flex items-center justify-center bg-bg text-ink film-grain cursor-pointer focus:outline-none"
         >
           <div className="w-[min(92vw,520px)] aspect-[3/2] relative">
+            {letter && (
+              <motion.div
+                initial={{ x: '-50%', y: 0, opacity: 0 }}
+                animate={
+                  open
+                    ? { x: '-50%', y: '-54%', opacity: 1 }
+                    : { x: '-50%', y: 0, opacity: 0 }
+                }
+                transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: open ? 0.45 : 0 }}
+                className="absolute left-1/2 bottom-0 w-[78%] aspect-[4/5] rounded-md overflow-hidden pointer-events-none"
+                style={{
+                  background: 'var(--color-surface)',
+                  boxShadow: '0 30px 70px -28px rgba(0,0,0,0.5)',
+                  zIndex: 0,
+                }}
+                aria-hidden
+              >
+                <img
+                  src={letter}
+                  alt=""
+                  draggable={false}
+                  className="w-full h-full object-cover select-none"
+                />
+              </motion.div>
+            )}
             <motion.div
               animate={open ? { scale: 1.15, opacity: 0 } : { scale: 1, opacity: 1 }}
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: open ? 0.5 : 0 }}
@@ -111,6 +140,8 @@ export default function InvitationOverlay() {
                 v&amp;n
               </motion.span>
             </motion.div>
+
+            <FloatingHearts active={open} className="z-[5]" />
           </div>
 
           <motion.span

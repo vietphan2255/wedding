@@ -12,6 +12,7 @@ export default {
   'hero.and': '&',
   'hero.saveTheDate': 'Lưu lại ngày vui',
   'hero.dates': '26 Tháng 07  ·  02 Tháng 08  ·  2026',
+  'hero.datesShort': '26.07  ·  02.08  ·  2026',
   'hero.scroll': 'Cuộn để khám phá',
 
   // Countdown

@@ -12,12 +12,16 @@ import {
   MapPin,
   Gift,
   HelpCircle,
+  Sparkles,
+  Mail,
 } from 'lucide-react'
 import { isConfigured } from '../firebase/config.js'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
 import AdminAuth, { isAuthed, clearAuth } from './AdminAuth.jsx'
 import DatesSection from './sections/DatesSection.jsx'
 import VenuesSection from './sections/VenuesSection.jsx'
+import HeroSection from './sections/HeroSection.jsx'
+import InvitationSection from './sections/InvitationSection.jsx'
 import StorySection from './sections/StorySection.jsx'
 import GallerySection from './sections/GallerySection.jsx'
 import MusicSection from './sections/MusicSection.jsx'
@@ -29,6 +33,8 @@ import WishesSection from './sections/WishesSection.jsx'
 const TABS = [
   { id: 'dates', label: 'Dates', icon: Calendar },
   { id: 'venues', label: 'Venues', icon: MapPin },
+  { id: 'hero', label: 'Hero', icon: Sparkles },
+  { id: 'invitation', label: 'Invitation', icon: Mail },
   { id: 'story', label: 'Story', icon: Heart },
   { id: 'gallery', label: 'Gallery', icon: Image },
   { id: 'gifts', label: 'Gifts', icon: Gift },
@@ -146,6 +152,8 @@ export default function Admin() {
 
         {tab === 'dates' && <DatesSection />}
         {tab === 'venues' && <VenuesSection />}
+        {tab === 'hero' && <HeroSection />}
+        {tab === 'invitation' && <InvitationSection />}
         {tab === 'story' && <StorySection />}
         {tab === 'gallery' && <GallerySection />}
         {tab === 'gifts' && <GiftsSection />}

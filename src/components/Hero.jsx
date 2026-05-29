@@ -67,8 +67,8 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="font-display mt-6 text-ink leading-[0.95]"
-          style={{ fontSize: 'clamp(3rem, 11vw, 9rem)' }}
+          className="font-display mt-6 text-ink leading-[1.0]"
+          style={{ fontSize: 'clamp(3rem, 12vw, 9.5rem)', fontFamily: "'Great Vibes', cursive", fontWeight: 900 }}
         >
           <span className="block">Viet</span>
           <span className="block font-script text-accent text-[0.65em] my-1">

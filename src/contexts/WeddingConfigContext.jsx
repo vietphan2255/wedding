@@ -171,6 +171,8 @@ export const DEFAULT_CONFIG = {
   })),
   gifts: DEFAULT_GIFTS,
   faqs: DEFAULT_FAQS,
+  heroImages: [],
+  invitation: { letterImage: '' },
 }
 
 function sortByOrder(list) {
@@ -245,6 +247,23 @@ export function WeddingConfigProvider({ children }) {
               data.gallery && Object.keys(data.gallery).length > 0
                 ? sortByOrder(toArray(data.gallery))
                 : DEFAULT_CONFIG.gallery,
+            heroImages: (() => {
+              const raw = data.heroImages
+              const list = Array.isArray(raw)
+                ? raw
+                : raw && typeof raw === 'object'
+                ? Object.values(raw)
+                : []
+              return list
+                .map((s) => (typeof s === 'string' ? s.trim() : s))
+                .filter(Boolean)
+            })(),
+            invitation: {
+              ...DEFAULT_CONFIG.invitation,
+              ...(data.invitation && typeof data.invitation === 'object'
+                ? data.invitation
+                : {}),
+            },
           })
           setSource('firebase')
         }

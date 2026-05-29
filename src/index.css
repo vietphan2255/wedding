@@ -184,6 +184,28 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+/* Custom cursor — hide the native cursor only on fine-pointer devices where
+   the follower is active (the JS sets data-cursor-on on <html>). */
+@media (pointer: fine) {
+  html[data-cursor-on],
+  html[data-cursor-on] a,
+  html[data-cursor-on] button,
+  html[data-cursor-on] [data-cursor] {
+    cursor: none;
+  }
+}
+
+/* Oversized ghost numeral used behind Story chapters / Event rows */
+.ghost-numeral {
+  font-family: var(--font-display);
+  line-height: 0.8;
+  color: var(--color-accent);
+  opacity: 0.1;
+  letter-spacing: -0.03em;
+  user-select: none;
+  pointer-events: none;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,

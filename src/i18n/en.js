@@ -12,6 +12,7 @@ export default {
   'hero.and': '&',
   'hero.saveTheDate': 'Save the Date',
   'hero.dates': '26 July  ·  02 August  ·  2026',
+  'hero.datesShort': '26.07  ·  02.08  ·  2026',
   'hero.scroll': 'Scroll to discover',
 
   // Countdown
