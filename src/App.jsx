@@ -21,6 +21,7 @@ import InvitationOverlayV2 from './components/InvitationOverlayV2.jsx'
 import CustomCursor from './components/fx/CustomCursor.jsx'
 import Admin from './admin/Admin.jsx'
 import EngagementPage from './pages/EngagementPage.jsx'
+import PaySlipPage from './pages/PaySlipPage.jsx'
 
 function getRoute() {
   if (typeof window === 'undefined') return 'site'
@@ -28,6 +29,7 @@ function getRoute() {
   if (path === '/admin') return 'admin'
   if (path === '/engagement') return 'engagement'
   if (path === '/v2') return 'v2'
+  if (path === '/pay-slip') return 'payslip'
   return 'site'
 }
 
@@ -96,6 +98,7 @@ export default function App() {
 
   if (route === 'admin') return <Admin />
   if (route === 'engagement') return <EngagementPage />
+  if (route === 'payslip') return <PaySlipPage />
   if (route === 'v2') return <WeddingSiteV2 />
   return <WeddingSite />
 }
