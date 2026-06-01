@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
+import useIsPhone from '../hooks/useIsPhone.js'
 import ParallaxFade from './ParallaxFade.jsx'
 
 function pickUpcomingEvents(dates) {
@@ -27,6 +28,9 @@ function diff(target) {
 export default function Countdown() {
   const { t, lang } = useLanguage()
   const { config } = useWeddingConfig()
+  const reduce = useReducedMotion()
+  const isPhone = useIsPhone()
+  const calm = reduce || isPhone
   const upcomingEvents = useMemo(
     () => pickUpcomingEvents(config.dates),
     [config.dates],
@@ -140,13 +144,21 @@ export default function Countdown() {
                 return (
                   <motion.div
                     key={i}
-                    animate={{ y: drift.y, x: drift.x, rotate: drift.rotate }}
-                    transition={{
-                      duration: drift.duration,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                      delay: i * 0.4,
-                    }}
+                    animate={
+                      calm
+                        ? undefined
+                        : { y: drift.y, x: drift.x, rotate: drift.rotate }
+                    }
+                    transition={
+                      calm
+                        ? undefined
+                        : {
+                            duration: drift.duration,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                            delay: i * 0.4,
+                          }
+                    }
                     className="glass rounded-2xl py-6 md:py-9 flex flex-col items-center will-change-transform"
                   >
                     <span className="font-display text-4xl md:text-6xl tabular-nums">

@@ -36,6 +36,7 @@ function Tile({ p, photosLength, onOpen, tilt }) {
         src={p.src}
         alt=""
         loading="lazy"
+        decoding="async"
         draggable={false}
         className="block h-full w-auto select-none"
       />
@@ -151,6 +152,9 @@ export default function Gallery() {
   const reduce = useReducedMotion()
   const photos = config.gallery
   const [open, setOpen] = useState(null)
+  const sectionRef = useRef(null)
+  const [inView, setInView] = useState(false)
+  const [tabHidden, setTabHidden] = useState(false)
 
   // Scroll-velocity chain, shared by both rows. Smoothed so the ribbon eases
   // in/out of speed-ups instead of snapping.
@@ -206,11 +210,30 @@ export default function Gallery() {
     }
   }, [open, close, next, prev])
 
-  // Freeze the ribbon while hovered or while the lightbox is open.
-  const frozen = open !== null
+  // Pause the marquee whenever the section is offscreen or the tab is hidden.
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const io = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { rootMargin: '100px 0px' },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    const onVis = () => setTabHidden(document.hidden)
+    document.addEventListener('visibilitychange', onVis)
+    return () => document.removeEventListener('visibilitychange', onVis)
+  }, [])
+
+  // Freeze the ribbon while the lightbox is open OR the section is offscreen/hidden.
+  const paused = open !== null || !inView || tabHidden
 
   return (
-    <section id="gallery" className="section-padding relative bg-bg overflow-hidden">
+    <section ref={sectionRef} id="gallery" className="section-padding relative bg-bg overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center max-w-2xl mx-auto">
           <p className="eyebrow">{t('gallery.eyebrow')}</p>
@@ -252,7 +275,7 @@ export default function Gallery() {
             baseVelocity={50}
             velocityFactor={velocityFactor}
             tilt={tiltA}
-            paused={frozen}
+            paused={paused}
             onOpen={openAt}
             photosLength={photos.length}
           />
@@ -261,7 +284,7 @@ export default function Gallery() {
             baseVelocity={-50}
             velocityFactor={velocityFactor}
             tilt={tiltB}
-            paused={frozen}
+            paused={paused}
             onOpen={openAt}
             photosLength={photos.length}
           />

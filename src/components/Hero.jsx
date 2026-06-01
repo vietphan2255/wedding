@@ -1,13 +1,17 @@
 import { useRef } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
+import useIsPhone from '../hooks/useIsPhone.js'
 
 const HERO_IMAGE =
   'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=2400&q=80'
 
 export default function Hero() {
   const { t } = useLanguage()
+  const reduce = useReducedMotion()
+  const isPhone = useIsPhone()
+  const calm = reduce || isPhone
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -32,17 +36,23 @@ export default function Hero() {
         <motion.img
           src={HERO_IMAGE}
           alt="Couple silhouette"
+          decoding="async"
+          fetchPriority="high"
           className="absolute inset-0 w-full h-full object-cover motion-reduce:!animate-none"
-          animate={{
-            scale: [1.05, 1.16, 1.05],
-            x: ['0%', '-2.5%', '0%'],
-            y: ['0%', '1.5%', '0%'],
-          }}
-          transition={{
-            duration: 22,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
+          animate={
+            calm
+              ? undefined
+              : {
+                  scale: [1.05, 1.16, 1.05],
+                  x: ['0%', '-2.5%', '0%'],
+                  y: ['0%', '1.5%', '0%'],
+                }
+          }
+          transition={
+            calm
+              ? undefined
+              : { duration: 22, repeat: Infinity, ease: 'easeInOut' }
+          }
         />
         <div
           className="absolute inset-0"

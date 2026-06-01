@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Send, Heart, Music, Pause } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
+import useIsPhone from '../hooks/useIsPhone.js'
 
 const MUSIC_STORAGE_KEY = 'vn-music-playing'
 const MUSIC_MUTED_KEY = 'vn-music-muted'
@@ -186,6 +187,13 @@ function MusicButton() {
 }
 
 function Bar({ delay }) {
+  const reduce = useReducedMotion()
+  const isPhone = useIsPhone()
+  if (reduce || isPhone) {
+    return (
+      <span className="w-[3px] bg-bg rounded-full block" style={{ height: '60%' }} />
+    )
+  }
   return (
     <motion.span
       className="w-[3px] bg-bg rounded-full"

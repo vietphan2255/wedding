@@ -66,6 +66,7 @@ export default function EnvelopeIntro({ open = false, letterImage = '' }) {
               src={src}
               alt="Invitation letter"
               draggable={false}
+              decoding="async"
             />
           ) : (
             <div className="letter-fallback">

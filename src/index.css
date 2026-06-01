@@ -86,6 +86,14 @@ html.lenis body {
   border: 1px solid color-mix(in srgb, var(--color-line) 60%, transparent);
 }
 
+/* Mobile GPUs pay heavily for backdrop blur; soften it on phones. */
+@media (max-width: 640px) {
+  .glass {
+    backdrop-filter: blur(8px) saturate(130%);
+    -webkit-backdrop-filter: blur(8px) saturate(130%);
+  }
+}
+
 .btn-primary {
   display: inline-flex;
   align-items: center;

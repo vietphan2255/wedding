@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import useSmoothScroll from './hooks/useSmoothScroll.js'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
-import HeroV2 from './components/HeroV2.jsx'
 import Countdown from './components/Countdown.jsx'
 import StoryV2 from './components/StoryV2.jsx'
 import GalleryV2 from './components/GalleryV2.jsx'
@@ -17,11 +16,13 @@ import ScrollProgress from './components/ScrollProgress.jsx'
 import ParallaxPetals from './components/ParallaxPetals.jsx'
 import MobileRsvpBar from './components/MobileRsvpBar.jsx'
 import InvitationOverlay from './components/InvitationOverlay.jsx'
-import InvitationOverlayV2 from './components/InvitationOverlayV2.jsx'
-import CustomCursor from './components/fx/CustomCursor.jsx'
-import Admin from './admin/Admin.jsx'
-import EngagementPage from './pages/EngagementPage.jsx'
-import PaySlipPage from './pages/PaySlipPage.jsx'
+
+// Off-/ routes load lazily so HeroV2, InvitationOverlayV2, CustomCursor, the
+// admin tree, and the engagement/pay-slip pages aren't shipped to / visitors.
+const WeddingSiteV2 = lazy(() => import('./routes/WeddingSiteV2.jsx'))
+const Admin = lazy(() => import('./admin/Admin.jsx'))
+const EngagementPage = lazy(() => import('./pages/EngagementPage.jsx'))
+const PaySlipPage = lazy(() => import('./pages/PaySlipPage.jsx'))
 
 function getRoute() {
   if (typeof window === 'undefined') return 'site'
@@ -60,33 +61,6 @@ function WeddingSite() {
   )
 }
 
-// Redesigned home page (editorial mosaic hero + reworked sections), served at "/v2".
-function WeddingSiteV2() {
-  useSmoothScroll()
-  return (
-    <>
-      <InvitationOverlayV2 />
-      <ScrollProgress />
-      <CustomCursor />
-      <Navbar />
-      <main>
-        <HeroV2 />
-        <Countdown />
-        <StoryV2 />
-        <GalleryV2 />
-        <CeremonyTimelineV2 />
-        <RSVP />
-        <Wishes />
-        <GiftCard />
-        <FAQ />
-      </main>
-      <Footer />
-      <FloatingDock />
-      <MobileRsvpBar />
-    </>
-  )
-}
-
 export default function App() {
   const [route, setRoute] = useState(getRoute)
 
@@ -96,9 +70,18 @@ export default function App() {
     return () => window.removeEventListener('popstate', onPop)
   }, [])
 
-  if (route === 'admin') return <Admin />
-  if (route === 'engagement') return <EngagementPage />
-  if (route === 'payslip') return <PaySlipPage />
-  if (route === 'v2') return <WeddingSiteV2 />
-  return <WeddingSite />
+  // / renders synchronously — no Suspense delay on the main route.
+  if (route === 'site') return <WeddingSite />
+
+  const lazyPage =
+    route === 'admin' ? <Admin /> :
+    route === 'engagement' ? <EngagementPage /> :
+    route === 'payslip' ? <PaySlipPage /> :
+    <WeddingSiteV2 />
+
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-bg" />}>
+      {lazyPage}
+    </Suspense>
+  )
 }
