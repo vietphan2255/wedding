@@ -3,7 +3,6 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
-import useIsPhone from '../hooks/useIsPhone.js'
 import ParallaxFade from './ParallaxFade.jsx'
 
 function pickUpcomingEvents(dates) {
@@ -29,8 +28,7 @@ export default function Countdown() {
   const { t, lang } = useLanguage()
   const { config } = useWeddingConfig()
   const reduce = useReducedMotion()
-  const isPhone = useIsPhone()
-  const calm = reduce || isPhone
+  const calm = reduce
   const upcomingEvents = useMemo(
     () => pickUpcomingEvents(config.dates),
     [config.dates],
@@ -128,7 +126,7 @@ export default function Countdown() {
 
         {current ? (
           <ParallaxFade strength={60} className="block">
-            <div className="mt-12 grid grid-cols-4 gap-2 sm:gap-5">
+            <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
               {[
                 [now.d, t('countdown.days')],
                 [now.h, t('countdown.hours')],
@@ -159,7 +157,7 @@ export default function Countdown() {
                             delay: i * 0.4,
                           }
                     }
-                    className="glass rounded-2xl py-6 md:py-9 flex flex-col items-center will-change-transform"
+                    className="glass rounded-2xl py-6 md:py-9 flex flex-col items-center will-change-transform shadow-[0_22px_50px_-18px_color-mix(in_srgb,var(--color-ink)_30%,transparent),0_6px_14px_-4px_color-mix(in_srgb,var(--color-ink)_18%,transparent)]"
                   >
                     <span className="font-display text-4xl md:text-6xl tabular-nums">
                       {String(n).padStart(2, '0')}

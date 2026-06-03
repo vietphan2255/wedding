@@ -150,7 +150,18 @@ export default function Gallery() {
   const { t } = useLanguage()
   const { config } = useWeddingConfig()
   const reduce = useReducedMotion()
-  const photos = config.gallery
+  // Admin can save a row without filling in `src`; those would otherwise reach
+  // the marquee as `<img src="">` (= broken image), so the section appeared to
+  // "go empty" the moment the firebase subscription replaced the default
+  // entries. Filter at the consumer so admin still sees the rows and can fix
+  // them.
+  const photos = useMemo(
+    () =>
+      (config.gallery || []).filter(
+        (p) => p && typeof p.src === 'string' && p.src.trim().length > 0,
+      ),
+    [config.gallery],
+  )
   const [open, setOpen] = useState(null)
   const sectionRef = useRef(null)
   const [inView, setInView] = useState(false)

@@ -8,6 +8,11 @@
   width: 430px;
   height: 287px;
   transform-origin: center center;
+  /* Children are all absolutely positioned, so the wrapper's intrinsic
+     min-width is 0 and a narrow flex parent would shrink it. The inner
+     border-triangles stay anchored at left:0 with 215.05px borders, so a
+     shrunk wrapper drifts the visual center off the transform origin. */
+  flex-shrink: 0;
 }
 
 /* ground shadow */
