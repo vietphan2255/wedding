@@ -32,7 +32,7 @@ export default function Story() {
             className="font-display mt-3 text-4xl md:text-6xl text-center"
           />
           <div className="divider-leaf my-6">
-            <span className="font-script text-2xl">v &amp; n</span>
+            <span className="font-script text-2xl">{t('story.divider')}</span>
           </div>
           <p className="text-muted leading-relaxed">{t('story.intro')}</p>
         </div>

@@ -57,7 +57,8 @@ export default function MobileRsvpBar() {
                 </>
               ) : (
                 <p className="font-display text-base leading-tight">
-                  Viet &amp; Nguyen
+                  {(config?.common?.coupleNameLeft || 'Viet')} &amp;{' '}
+                  {(config?.common?.coupleNameRight || 'Nguyen')}
                 </p>
               )}
             </div>

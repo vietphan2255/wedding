@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
-import { ref, set } from 'firebase/database'
+import { useState } from 'react'
 import { Save, ExternalLink } from 'lucide-react'
-import { db, isConfigured } from '../../firebase/config.js'
-import { useWeddingConfig } from '../../contexts/WeddingConfigContext.jsx'
+import { useDraftConfig } from '../DraftConfigContext.jsx'
+import LabelsPanel from './LabelsPanel.jsx'
+import LabelField from './LabelField.jsx'
 
 const CEREMONIES = [
   { key: 'vuquy', label: 'Lễ Vu Quy' },
@@ -10,35 +10,25 @@ const CEREMONIES = [
 ]
 
 export default function VenuesSection() {
-  const { config } = useWeddingConfig()
-  const [form, setForm] = useState(() => ({
-    vuquy: { ...(config.venues?.vuquy || {}) },
-    thanhhon: { ...(config.venues?.thanhhon || {}) },
-  }))
+  const { draft, setSlice, saveSlice, isSliceDirty } = useDraftConfig()
+  const form = draft.venues
+  const dirty = isSliceDirty('venues')
   const [saving, setSaving] = useState(false)
   const [status, setStatus] = useState(null)
 
-  useEffect(() => {
-    setForm({
-      vuquy: { ...(config.venues?.vuquy || {}) },
-      thanhhon: { ...(config.venues?.thanhhon || {}) },
-    })
-  }, [config.venues])
-
   const handle = (key, field, value) => {
-    setForm((f) => ({ ...f, [key]: { ...f[key], [field]: value } }))
+    setSlice('venues', (v) => ({
+      ...v,
+      [key]: { ...(v?.[key] || {}), [field]: value },
+    }))
   }
 
   const save = async (e) => {
     e.preventDefault()
-    if (!isConfigured || !db) {
-      setStatus({ type: 'error', message: 'Firebase is not configured.' })
-      return
-    }
     setSaving(true)
     setStatus(null)
     try {
-      await set(ref(db, 'config/venues'), form)
+      await saveSlice('venues')
       setStatus({ type: 'success', message: 'Venues saved.' })
     } catch (err) {
       console.error(err)
@@ -49,6 +39,65 @@ export default function VenuesSection() {
   }
 
   return (
+    <div>
+      <LabelsPanel title="Timeline labels">
+        <LabelField
+          fieldKey="timeline.eyebrow"
+          label="Eyebrow"
+          defaultEn="Save these dates"
+          defaultVi="Lưu lại các ngày"
+        />
+        <LabelField
+          fieldKey="timeline.title"
+          label="Title"
+          defaultEn="Ceremony Timeline"
+          defaultVi="Hành trình lễ cưới"
+        />
+        <LabelField
+          fieldKey="timeline.divider"
+          label="Divider text"
+          defaultEn="v & n"
+          defaultVi="v & n"
+        />
+        <LabelField
+          fieldKey="timeline.subtitle"
+          label="Subtitle"
+          defaultEn="The journey to our wedding day, one ceremony at a time"
+          defaultVi="Mỗi nghi lễ là một chương của hành trình đến ngày trọng đại"
+          multiline
+        />
+        <LabelField
+          fieldKey="timeline.dressCode"
+          label="Dress code label"
+          defaultEn="Dress code"
+          defaultVi="Trang phục"
+        />
+        <LabelField
+          fieldKey="timeline.showDetails"
+          label="Show details CTA"
+          defaultEn="Show details"
+          defaultVi="Xem chi tiết"
+        />
+        <LabelField
+          fieldKey="timeline.hideDetails"
+          label="Hide details CTA"
+          defaultEn="Hide details"
+          defaultVi="Ẩn chi tiết"
+        />
+        <LabelField
+          fieldKey="timeline.openMap"
+          label="Open map CTA"
+          defaultEn="Open in Google Maps"
+          defaultVi="Mở Google Maps"
+        />
+        <LabelField
+          fieldKey="timeline.addCalendar"
+          label="Add to calendar CTA"
+          defaultEn="Add to calendar"
+          defaultVi="Thêm vào lịch"
+        />
+      </LabelsPanel>
+
     <form onSubmit={save} className="space-y-5">
       <header className="glass rounded-3xl p-6 md:p-8">
         <p className="eyebrow">Venues</p>
@@ -81,12 +130,12 @@ export default function VenuesSection() {
             </label>
             <textarea
               rows={3}
-              value={form[key]?.mapEmbed || ''}
+              value={form?.[key]?.mapEmbed || ''}
               onChange={(e) => handle(key, 'mapEmbed', e.target.value)}
               placeholder="https://www.google.com/maps/embed?pb=…"
               className="w-full rounded-xl border border-line bg-bg px-4 py-3 text-ink focus:border-accent font-mono text-xs leading-relaxed"
             />
-            {form[key]?.mapEmbed && (
+            {form?.[key]?.mapEmbed && (
               <div className="mt-4 rounded-2xl overflow-hidden border border-line aspect-[16/8]">
                 <iframe
                   title={`${label} preview`}
@@ -111,11 +160,13 @@ export default function VenuesSection() {
             {status.message}
           </p>
         ) : (
-          <span />
+          <span className="text-xs text-muted">
+            {dirty ? 'Unsaved changes' : 'Saved'}
+          </span>
         )}
         <button
           type="submit"
-          disabled={saving}
+          disabled={saving || !dirty}
           className="btn-primary disabled:opacity-60"
         >
           <Save size={16} />
@@ -123,5 +174,6 @@ export default function VenuesSection() {
         </button>
       </div>
     </form>
+    </div>
   )
 }

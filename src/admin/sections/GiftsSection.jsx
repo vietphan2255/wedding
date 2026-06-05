@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
-import { ref, set } from 'firebase/database'
+import { useState } from 'react'
 import { Save, Gift } from 'lucide-react'
-import { db, isConfigured } from '../../firebase/config.js'
-import { useWeddingConfig } from '../../contexts/WeddingConfigContext.jsx'
+import { useDraftConfig } from '../DraftConfigContext.jsx'
 import ImageInput from '../../components/admin/ImageInput.jsx'
+import LabelsPanel from './LabelsPanel.jsx'
+import LabelField from './LabelField.jsx'
 
 const SIDES = [
   { key: 'bride', label: "Bride's account" },
@@ -18,36 +18,29 @@ const FIELDS = [
 ]
 
 export default function GiftsSection() {
-  const { config } = useWeddingConfig()
-  const [form, setForm] = useState(() => ({ ...(config.gifts || {}) }))
+  const { draft, setSlice, saveSlice, isSliceDirty } = useDraftConfig()
+  const form = draft.gifts || {}
+  const dirty = isSliceDirty('gifts')
   const [saving, setSaving] = useState(false)
   const [status, setStatus] = useState(null)
 
-  useEffect(() => {
-    setForm({ ...(config.gifts || {}) })
-  }, [config.gifts])
-
   const handle = (side, field, value) => {
-    setForm((f) => ({
-      ...f,
-      [side]: { ...(f[side] || {}), [field]: value },
+    setSlice('gifts', (f) => ({
+      ...(f || {}),
+      [side]: { ...((f && f[side]) || {}), [field]: value },
     }))
   }
 
   const toggleEnabled = (value) => {
-    setForm((f) => ({ ...f, enabled: value }))
+    setSlice('gifts', (f) => ({ ...(f || {}), enabled: value }))
   }
 
   const save = async (e) => {
     e.preventDefault()
-    if (!isConfigured || !db) {
-      setStatus({ type: 'error', message: 'Firebase is not configured.' })
-      return
-    }
     setSaving(true)
     setStatus(null)
     try {
-      await set(ref(db, 'config/gifts'), {
+      await saveSlice('gifts', {
         enabled: form.enabled !== false,
         bride: form.bride || {},
         groom: form.groom || {},
@@ -62,6 +55,29 @@ export default function GiftsSection() {
   }
 
   return (
+    <div>
+      <LabelsPanel title="Gifts labels">
+        <LabelField
+          fieldKey="gift.eyebrow"
+          label="Eyebrow"
+          defaultEn="Mừng cưới"
+          defaultVi="Mừng cưới"
+        />
+        <LabelField
+          fieldKey="gift.title"
+          label="Title"
+          defaultEn="Send a wedding gift"
+          defaultVi="Gửi mừng cưới"
+        />
+        <LabelField
+          fieldKey="gift.subtitle"
+          label="Subtitle"
+          defaultEn="Your presence is the only gift we need — but if you wish to send mừng cưới, here are the details."
+          defaultVi="Sự có mặt của bạn đã là món quà lớn nhất — nhưng nếu bạn muốn gửi mừng cưới, đây là thông tin tài khoản."
+          multiline
+        />
+      </LabelsPanel>
+
     <form onSubmit={save} className="space-y-5">
       <header className="glass rounded-3xl p-6 md:p-8">
         <p className="eyebrow flex items-center gap-2">
@@ -142,11 +158,13 @@ export default function GiftsSection() {
             {status.message}
           </p>
         ) : (
-          <span />
+          <span className="text-xs text-muted">
+            {dirty ? 'Unsaved changes' : 'Saved'}
+          </span>
         )}
         <button
           type="submit"
-          disabled={saving}
+          disabled={saving || !dirty}
           className="btn-primary disabled:opacity-60"
         >
           <Save size={16} />
@@ -154,5 +172,6 @@ export default function GiftsSection() {
         </button>
       </div>
     </form>
+    </div>
   )
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
 import ThemeSwitcher from './ThemeSwitcher.jsx'
 import LanguageToggle from './LanguageToggle.jsx'
 
@@ -15,6 +16,9 @@ const LINKS = [
 
 export default function Navbar() {
   const { t } = useLanguage()
+  const { config } = useWeddingConfig()
+  const initialLeft = config?.common?.coupleInitialLeft || 'V'
+  const initialRight = config?.common?.coupleInitialRight || 'N'
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
 
@@ -40,7 +44,7 @@ export default function Navbar() {
     >
       <nav className="max-w-7xl mx-auto px-5 md:px-8 h-16 flex items-center justify-between">
         <a href="/" className="font-display text-xl tracking-wider">
-          V <span className="text-accent">&</span> N
+          {initialLeft} <span className="text-accent">&</span> {initialRight}
         </a>
 
         <ul className="hidden md:flex items-center gap-7 text-[12px] tracking-[0.22em] uppercase">

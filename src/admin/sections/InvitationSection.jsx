@@ -1,32 +1,28 @@
-import { useEffect, useState } from 'react'
-import { ref, set } from 'firebase/database'
+import { useState } from 'react'
 import { Save, Mail } from 'lucide-react'
-import { db, isConfigured } from '../../firebase/config.js'
-import { useWeddingConfig } from '../../contexts/WeddingConfigContext.jsx'
+import { useDraftConfig } from '../DraftConfigContext.jsx'
 import ImageInput from '../../components/admin/ImageInput.jsx'
+import LabelsPanel from './LabelsPanel.jsx'
+import LabelField from './LabelField.jsx'
 
 export default function InvitationSection() {
-  const { config } = useWeddingConfig()
-  const [text, setText] = useState('')
+  const { draft, setSlice, saveSlice, isSliceDirty } = useDraftConfig()
+  const text = draft.invitation?.letterImage || ''
+  const dirty = isSliceDirty('invitation')
   const [saving, setSaving] = useState(false)
   const [status, setStatus] = useState(null)
 
-  useEffect(() => {
-    setText((config.invitation?.letterImage || '').trim())
-  }, [config.invitation])
-
-  const cleaned = text.trim()
+  const setText = (next) =>
+    setSlice('invitation', (i) => ({ ...(i || {}), letterImage: next }))
 
   const save = async (e) => {
     e.preventDefault()
-    if (!isConfigured || !db) {
-      setStatus({ type: 'error', message: 'Firebase is not configured.' })
-      return
-    }
     setSaving(true)
     setStatus(null)
     try {
-      await set(ref(db, 'config/invitation'), { letterImage: cleaned || null })
+      const cleaned = text.trim()
+      await saveSlice('invitation', { letterImage: cleaned || null })
+      setText(cleaned)
       setStatus({ type: 'success', message: 'Invitation letter saved.' })
     } catch (err) {
       console.error(err)
@@ -37,6 +33,28 @@ export default function InvitationSection() {
   }
 
   return (
+    <div>
+      <LabelsPanel title="Invitation labels">
+        <LabelField
+          fieldKey="invitation.tap"
+          label="Tap-to-open prompt"
+          defaultEn="Tap to open"
+          defaultVi="Chạm để mở"
+        />
+        <LabelField
+          fieldKey="invitation.eyebrow"
+          label="Eyebrow"
+          defaultEn="You are invited"
+          defaultVi="Trân trọng kính mời"
+        />
+        <LabelField
+          fieldKey="invitation.line"
+          label="Letter line"
+          defaultEn="A celebration of love"
+          defaultVi="Lễ cưới của chúng mình"
+        />
+      </LabelsPanel>
+
     <form onSubmit={save} className="space-y-5">
       <header className="glass rounded-3xl p-6 md:p-8">
         <p className="eyebrow flex items-center gap-2">
@@ -64,12 +82,12 @@ export default function InvitationSection() {
           inputClassName="w-full rounded-xl border border-line bg-bg px-4 py-3 font-mono text-xs"
         />
 
-        {cleaned ? (
+        {text.trim() ? (
           <div className="mt-5">
             <p className="eyebrow mb-3">Preview</p>
             <div className="relative w-[min(360px,100%)] mx-auto aspect-[3/2] rounded-2xl overflow-hidden border border-line bg-surface shadow-[0_30px_70px_-30px_rgba(0,0,0,0.45)]">
               <img
-                src={cleaned}
+                src={text.trim()}
                 alt="Invitation letter preview"
                 className="w-full h-full object-cover"
                 onError={(e) => {
@@ -95,11 +113,13 @@ export default function InvitationSection() {
             {status.message}
           </p>
         ) : (
-          <span />
+          <span className="text-xs text-muted">
+            {dirty ? 'Unsaved changes' : 'Saved'}
+          </span>
         )}
         <button
           type="submit"
-          disabled={saving}
+          disabled={saving || !dirty}
           className="btn-primary disabled:opacity-60"
         >
           <Save size={16} />
@@ -107,5 +127,6 @@ export default function InvitationSection() {
         </button>
       </div>
     </form>
+    </div>
   )
 }

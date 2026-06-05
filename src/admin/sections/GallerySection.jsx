@@ -1,28 +1,34 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ref, set, push, update } from 'firebase/database'
 import { Plus, Trash2, ArrowUp, ArrowDown, Save } from 'lucide-react'
 import { db, isConfigured } from '../../firebase/config.js'
 import { useWeddingConfig } from '../../contexts/WeddingConfigContext.jsx'
+import { useDraftConfig } from '../DraftConfigContext.jsx'
 import ImageInput from '../../components/admin/ImageInput.jsx'
 import UploadButton from '../../components/admin/UploadButton.jsx'
+import LabelsPanel from './LabelsPanel.jsx'
+import LabelField from './LabelField.jsx'
 
 function emptyItem(order) {
   return { src: '', tall: false, order }
 }
 
 function isFirebaseId(id) {
-  return id && !id.startsWith('default-')
+  return id && !id.startsWith('default-') && !id.startsWith('new-')
 }
 
 export default function GallerySection() {
-  const { config, source } = useWeddingConfig()
-  const [items, setItems] = useState([])
+  const { source } = useWeddingConfig()
+  const { draft, saved, setSlice, isSliceDirty } = useDraftConfig()
+  const items = draft.gallery || []
+  const dirty = isSliceDirty('gallery')
   const [saving, setSaving] = useState(false)
   const [status, setStatus] = useState(null)
 
-  useEffect(() => {
-    setItems(config.gallery.map((it) => ({ ...it })))
-  }, [config.gallery])
+  const setItems = (updater) =>
+    setSlice('gallery', (prev) =>
+      typeof updater === 'function' ? updater(prev || []) : updater,
+    )
 
   const update_ = (idx, key, value) => {
     setItems((prev) => {
@@ -47,7 +53,9 @@ export default function GallerySection() {
   }
 
   const removeItem = (idx) => {
-    setItems((prev) => prev.filter((_, i) => i !== idx).map((it, i) => ({ ...it, order: i })))
+    setItems((prev) =>
+      prev.filter((_, i) => i !== idx).map((it, i) => ({ ...it, order: i })),
+    )
   }
 
   const saveAll = async (e) => {
@@ -71,7 +79,7 @@ export default function GallerySection() {
         })
         await set(ref(db, 'config/gallery'), payload)
       } else {
-        const existingIds = config.gallery.map((s) => s.id).filter(isFirebaseId)
+        const existingIds = (saved.gallery || []).map((s) => s.id).filter(isFirebaseId)
         const keptIds = new Set(items.map((s) => s.id).filter(isFirebaseId))
         const updates = {}
         existingIds.forEach((id) => {
@@ -98,6 +106,35 @@ export default function GallerySection() {
   }
 
   return (
+    <div>
+      <LabelsPanel title="Gallery labels">
+        <LabelField
+          fieldKey="gallery.eyebrow"
+          label="Eyebrow"
+          defaultEn="Moments"
+          defaultVi="Khoảnh khắc"
+        />
+        <LabelField
+          fieldKey="gallery.title"
+          label="Title"
+          defaultEn="Through the lens"
+          defaultVi="Qua ống kính"
+        />
+        <LabelField
+          fieldKey="gallery.divider"
+          label="Divider symbol"
+          defaultEn="∞"
+          defaultVi="∞"
+        />
+        <LabelField
+          fieldKey="gallery.subtitle"
+          label="Subtitle"
+          defaultEn="A small look into the chapters that brought us here"
+          defaultVi="Một góc nhỏ của những chương đã đưa tụi mình đến hôm nay"
+          multiline
+        />
+      </LabelsPanel>
+
     <form onSubmit={saveAll} className="space-y-5">
       <header className="glass rounded-3xl p-6 md:p-8">
         <p className="eyebrow">Gallery</p>
@@ -210,11 +247,13 @@ export default function GallerySection() {
             {status.message}
           </p>
         ) : (
-          <span />
+          <span className="text-xs text-muted">
+            {dirty ? 'Unsaved changes' : 'Saved'}
+          </span>
         )}
         <button
           type="submit"
-          disabled={saving}
+          disabled={saving || !dirty}
           className="btn-primary disabled:opacity-60"
         >
           <Save size={16} />
@@ -222,5 +261,6 @@ export default function GallerySection() {
         </button>
       </div>
     </form>
+    </div>
   )
 }

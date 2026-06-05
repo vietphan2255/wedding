@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import useSmoothScroll from './hooks/useSmoothScroll.js'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
@@ -16,10 +16,11 @@ import ScrollProgress from './components/ScrollProgress.jsx'
 import ParallaxPetals from './components/ParallaxPetals.jsx'
 import MobileRsvpBar from './components/MobileRsvpBar.jsx'
 import InvitationOverlay from './components/InvitationOverlay.jsx'
+import FlyingDate from './components/fx/FlyingDate.jsx'
+import CustomCursor from './components/fx/CustomCursor.jsx'
 
-// Off-/ routes load lazily so HeroV2, InvitationOverlayV2, CustomCursor, the
-// admin tree, and the engagement/pay-slip pages aren't shipped to / visitors.
-const WeddingSiteV2 = lazy(() => import('./routes/WeddingSiteV2.jsx'))
+// Off-/ routes load lazily so the admin tree and the engagement / pay-slip
+// pages aren't shipped to / visitors.
 const Admin = lazy(() => import('./admin/Admin.jsx'))
 const EngagementPage = lazy(() => import('./pages/EngagementPage.jsx'))
 const PaySlipPage = lazy(() => import('./pages/PaySlipPage.jsx'))
@@ -29,7 +30,6 @@ function getRoute() {
   const path = window.location.pathname.replace(/\/+$/, '')
   if (path === '/admin') return 'admin'
   if (path === '/engagement') return 'engagement'
-  if (path === '/v2') return 'v2'
   if (path === '/pay-slip') return 'payslip'
   return 'site'
 }
@@ -37,15 +37,33 @@ function getRoute() {
 // Original home page (main branch version), served at "/".
 function WeddingSite() {
   useSmoothScroll()
+  // Shared anchors for the hero → countdown date flight. Hero exposes
+  // vqDate (A), middle, and year (B); FlyingDate lifts A+B and merges
+  // them into the countdown's date label.
+  const flightSourceARef = useRef(null)
+  const flightMiddleRef = useRef(null)
+  const flightSourceBRef = useRef(null)
+  const flightTargetRef = useRef(null)
+  const flightTargetARef = useRef(null)
+  const flightTargetBRef = useRef(null)
   return (
     <>
       <InvitationOverlay />
       <ScrollProgress />
+      <CustomCursor />
       <ParallaxPetals />
       <Navbar />
       <main>
-        <Hero />
-        <Countdown />
+        <Hero
+          flightSourceARef={flightSourceARef}
+          flightMiddleRef={flightMiddleRef}
+          flightSourceBRef={flightSourceBRef}
+        />
+        <Countdown
+          flightTargetRef={flightTargetRef}
+          flightTargetARef={flightTargetARef}
+          flightTargetBRef={flightTargetBRef}
+        />
         <StoryV2 />
         <GalleryV2 />
         <CeremonyTimelineV2 />
@@ -54,6 +72,14 @@ function WeddingSite() {
         <GiftCard />
         <FAQ />
       </main>
+      <FlyingDate
+        sourceARef={flightSourceARef}
+        sourceBRef={flightSourceBRef}
+        middleRef={flightMiddleRef}
+        targetRef={flightTargetRef}
+        targetARef={flightTargetARef}
+        targetBRef={flightTargetBRef}
+      />
       <Footer />
       <FloatingDock />
       <MobileRsvpBar />
@@ -76,8 +102,7 @@ export default function App() {
   const lazyPage =
     route === 'admin' ? <Admin /> :
     route === 'engagement' ? <EngagementPage /> :
-    route === 'payslip' ? <PaySlipPage /> :
-    <WeddingSiteV2 />
+    <PaySlipPage />
 
   return (
     <Suspense fallback={<div className="min-h-screen bg-bg" />}>

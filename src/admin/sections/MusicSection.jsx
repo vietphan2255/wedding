@@ -1,22 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
-import { ref, set } from 'firebase/database'
 import { Save, Play, Pause } from 'lucide-react'
-import { db, isConfigured } from '../../firebase/config.js'
-import { useWeddingConfig } from '../../contexts/WeddingConfigContext.jsx'
+import { useDraftConfig } from '../DraftConfigContext.jsx'
 
 const DEFAULTS = { enabled: false, url: '', title: '', volume: 0.4 }
 
 export default function MusicSection() {
-  const { config } = useWeddingConfig()
-  const [form, setForm] = useState(() => ({ ...DEFAULTS, ...(config.music || {}) }))
+  const { draft, setSlice, saveSlice, isSliceDirty } = useDraftConfig()
+  const form = { ...DEFAULTS, ...(draft.music || {}) }
+  const dirty = isSliceDirty('music')
   const [saving, setSaving] = useState(false)
   const [status, setStatus] = useState(null)
   const [previewing, setPreviewing] = useState(false)
   const audioRef = useRef(null)
-
-  useEffect(() => {
-    setForm({ ...DEFAULTS, ...(config.music || {}) })
-  }, [config.music])
 
   useEffect(() => {
     const el = audioRef.current
@@ -25,7 +20,7 @@ export default function MusicSection() {
   }, [form.volume])
 
   const update_ = (key, value) =>
-    setForm((prev) => ({ ...prev, [key]: value }))
+    setSlice('music', (prev) => ({ ...DEFAULTS, ...(prev || {}), [key]: value }))
 
   const togglePreview = async () => {
     const el = audioRef.current
@@ -49,10 +44,6 @@ export default function MusicSection() {
 
   const save = async (e) => {
     e.preventDefault()
-    if (!isConfigured || !db) {
-      setStatus({ type: 'error', message: 'Firebase is not configured.' })
-      return
-    }
     setSaving(true)
     setStatus(null)
     try {
@@ -62,7 +53,8 @@ export default function MusicSection() {
         title: (form.title || '').trim(),
         volume: Math.min(1, Math.max(0, Number(form.volume) || 0)),
       }
-      await set(ref(db, 'config/music'), payload)
+      await saveSlice('music', payload)
+      setSlice('music', payload)
       setStatus({ type: 'success', message: 'Music settings saved.' })
     } catch (err) {
       console.error(err)
@@ -176,11 +168,13 @@ export default function MusicSection() {
             {status.message}
           </p>
         ) : (
-          <span />
+          <span className="text-xs text-muted">
+            {dirty ? 'Unsaved changes' : 'Saved'}
+          </span>
         )}
         <button
           type="submit"
-          disabled={saving}
+          disabled={saving || !dirty}
           className="btn-primary disabled:opacity-60"
         >
           <Save size={16} />

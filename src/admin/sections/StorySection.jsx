@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ref, set, push, update } from 'firebase/database'
 import { Plus, Trash2, ArrowUp, ArrowDown, Save } from 'lucide-react'
 import { db, isConfigured } from '../../firebase/config.js'
 import { useWeddingConfig } from '../../contexts/WeddingConfigContext.jsx'
+import { useDraftConfig } from '../DraftConfigContext.jsx'
 import ImageInput from '../../components/admin/ImageInput.jsx'
+import LabelsPanel from './LabelsPanel.jsx'
+import LabelField from './LabelField.jsx'
 
 function emptyItem(order) {
   return {
@@ -18,18 +21,21 @@ function emptyItem(order) {
 }
 
 function isFirebaseId(id) {
-  return id && !id.startsWith('default-')
+  return id && !id.startsWith('default-') && !id.startsWith('new-')
 }
 
 export default function StorySection() {
-  const { config, source } = useWeddingConfig()
-  const [items, setItems] = useState([])
+  const { source } = useWeddingConfig()
+  const { draft, saved, setSlice, isSliceDirty } = useDraftConfig()
+  const items = draft.story || []
+  const dirty = isSliceDirty('story')
   const [saving, setSaving] = useState(false)
   const [status, setStatus] = useState(null)
 
-  useEffect(() => {
-    setItems(config.story.map((it) => ({ ...it })))
-  }, [config.story])
+  const setItems = (updater) =>
+    setSlice('story', (prev) =>
+      typeof updater === 'function' ? updater(prev || []) : updater,
+    )
 
   const update_ = (idx, key, value) => {
     setItems((prev) => {
@@ -54,7 +60,9 @@ export default function StorySection() {
   }
 
   const removeItem = (idx) => {
-    setItems((prev) => prev.filter((_, i) => i !== idx).map((it, i) => ({ ...it, order: i })))
+    setItems((prev) =>
+      prev.filter((_, i) => i !== idx).map((it, i) => ({ ...it, order: i })),
+    )
   }
 
   const saveAll = async (e) => {
@@ -66,8 +74,6 @@ export default function StorySection() {
     setSaving(true)
     setStatus(null)
     try {
-      // If we're still on defaults (firebase had no story yet), wipe and rewrite.
-      // Otherwise, do a targeted update so unchanged children keep their keys.
       if (source === 'default') {
         const payload = {}
         items.forEach((it, i) => {
@@ -84,8 +90,7 @@ export default function StorySection() {
         })
         await set(ref(db, 'config/story'), payload)
       } else {
-        // Remove items that existed in firebase but are no longer in the list
-        const existingIds = config.story.map((s) => s.id).filter(isFirebaseId)
+        const existingIds = (saved.story || []).map((s) => s.id).filter(isFirebaseId)
         const keptIds = new Set(items.map((s) => s.id).filter(isFirebaseId))
         const updates = {}
         existingIds.forEach((id) => {
@@ -120,6 +125,35 @@ export default function StorySection() {
   }
 
   return (
+    <div>
+      <LabelsPanel title="Story labels">
+        <LabelField
+          fieldKey="story.eyebrow"
+          label="Eyebrow"
+          defaultEn="Our journey"
+          defaultVi="Hành trình của chúng mình"
+        />
+        <LabelField
+          fieldKey="story.title"
+          label="Title"
+          defaultEn="How we fell in love"
+          defaultVi="Chuyện chúng mình yêu nhau"
+        />
+        <LabelField
+          fieldKey="story.divider"
+          label="Divider text"
+          defaultEn="v & n"
+          defaultVi="v & n"
+        />
+        <LabelField
+          fieldKey="story.intro"
+          label="Intro"
+          defaultEn="A story written across coffee shops, late-night phone calls, and a thousand small moments that felt anything but small."
+          defaultVi="Một câu chuyện được viết bằng những ly cà phê, những cuộc gọi đêm khuya, và hàng ngàn khoảnh khắc nhỏ mà chẳng hề nhỏ chút nào."
+          multiline
+        />
+      </LabelsPanel>
+
     <form onSubmit={saveAll} className="space-y-5">
       <header className="glass rounded-3xl p-6 md:p-8">
         <p className="eyebrow">Our Story</p>
@@ -257,11 +291,13 @@ export default function StorySection() {
             {status.message}
           </p>
         ) : (
-          <span />
+          <span className="text-xs text-muted">
+            {dirty ? 'Unsaved changes' : 'Saved'}
+          </span>
         )}
         <button
           type="submit"
-          disabled={saving}
+          disabled={saving || !dirty}
           className="btn-primary disabled:opacity-60"
         >
           <Save size={16} />
@@ -269,5 +305,6 @@ export default function StorySection() {
         </button>
       </div>
     </form>
+    </div>
   )
 }

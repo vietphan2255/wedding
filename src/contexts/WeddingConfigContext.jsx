@@ -81,7 +81,20 @@ const DEFAULT_FAQS = [
   },
 ]
 
+const DEFAULT_COMMON = {
+  coupleNameLeft: 'Viet',
+  coupleNameRight: 'Nguyen',
+  coupleInitialLeft: 'V',
+  coupleInitialRight: 'N',
+  contactEmail: 'hello@vietnguyen-wedding.com',
+  dateDisplay: '26.07.2026  ·  02.08.2026',
+}
+
+const DEFAULT_LABELS = { en: {}, vi: {} }
+
 export const DEFAULT_CONFIG = {
+  common: DEFAULT_COMMON,
+  labels: DEFAULT_LABELS,
   dates: {
     vuquyStart: '2026-07-26T09:00:00+07:00',
     vuquyEnd: '2026-07-26T12:00:00+07:00',
@@ -171,7 +184,6 @@ export const DEFAULT_CONFIG = {
   })),
   gifts: DEFAULT_GIFTS,
   faqs: DEFAULT_FAQS,
-  heroImages: [],
   invitation: { letterImage: '' },
 }
 
@@ -184,7 +196,26 @@ function toArray(node) {
   return Object.entries(node).map(([id, value]) => ({ id, ...value }))
 }
 
-const WeddingConfigContext = createContext({
+// Firebase Realtime Database rejects '.' / '#' / '$' / '[' / ']' / '/' in
+// keys, so label i18n keys like 'hero.eyebrow' get persisted with dots
+// replaced by '__'. We decode on read so the in-memory dict still uses the
+// canonical i18n key shape.
+export function encodeLabelKey(k) {
+  return k.replace(/\./g, '__')
+}
+export function decodeLabelKey(k) {
+  return k.replace(/__/g, '.')
+}
+function decodeLabelMap(node) {
+  if (!node || typeof node !== 'object') return {}
+  const out = {}
+  for (const [k, v] of Object.entries(node)) {
+    if (typeof v === 'string') out[decodeLabelKey(k)] = v
+  }
+  return out
+}
+
+export const WeddingConfigContext = createContext({
   config: DEFAULT_CONFIG,
   loading: true,
   source: 'default',
@@ -209,6 +240,11 @@ export function WeddingConfigProvider({ children }) {
           setSource('default')
         } else {
           setConfig({
+            common: { ...DEFAULT_COMMON, ...(data.common || {}) },
+            labels: {
+              en: { ...DEFAULT_LABELS.en, ...decodeLabelMap(data.labels?.en) },
+              vi: { ...DEFAULT_LABELS.vi, ...decodeLabelMap(data.labels?.vi) },
+            },
             dates: { ...DEFAULT_CONFIG.dates, ...(data.dates || {}) },
             music: { ...DEFAULT_CONFIG.music, ...(data.music || {}) },
             venues: {
@@ -247,17 +283,6 @@ export function WeddingConfigProvider({ children }) {
               data.gallery && Object.keys(data.gallery).length > 0
                 ? sortByOrder(toArray(data.gallery))
                 : DEFAULT_CONFIG.gallery,
-            heroImages: (() => {
-              const raw = data.heroImages
-              const list = Array.isArray(raw)
-                ? raw
-                : raw && typeof raw === 'object'
-                ? Object.values(raw)
-                : []
-              return list
-                .map((s) => (typeof s === 'string' ? s.trim() : s))
-                .filter(Boolean)
-            })(),
             invitation: {
               ...DEFAULT_CONFIG.invitation,
               ...(data.invitation && typeof data.invitation === 'object'

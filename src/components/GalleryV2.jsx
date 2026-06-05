@@ -254,7 +254,7 @@ export default function Gallery() {
             className="font-display mt-3 text-4xl md:text-6xl text-center"
           />
           <div className="divider-leaf my-6">
-            <span className="font-script text-2xl">∞</span>
+            <span className="font-script text-2xl">{t('gallery.divider')}</span>
           </div>
           <p className="text-muted">{t('gallery.subtitle')}</p>
         </div>

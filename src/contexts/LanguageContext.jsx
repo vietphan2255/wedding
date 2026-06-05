@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react'
 import en from '../i18n/en.js'
 import vi from '../i18n/vi.js'
+import { useWeddingConfig } from './WeddingConfigContext.jsx'
 
 const DICTS = { en, vi }
 const LANGS = ['en', 'vi']
@@ -14,6 +15,9 @@ const LanguageContext = createContext({
 })
 
 export function LanguageProvider({ children }) {
+  const { config } = useWeddingConfig()
+  const overrides = config?.labels || { en: {}, vi: {} }
+
   const [lang, setLangState] = useState(() => {
     if (typeof window === 'undefined') return 'en'
     const stored = window.localStorage.getItem(STORAGE_KEY)
@@ -31,12 +35,24 @@ export function LanguageProvider({ children }) {
     if (LANGS.includes(next)) setLangState(next)
   }, [])
 
+  const langOverrides = overrides[lang] || {}
+  const enOverrides = overrides.en || {}
+
   const t = useCallback(
     (key) => {
+      const override = langOverrides[key]
+      if (typeof override === 'string' && override.length > 0) return override
+      const enOverride = enOverrides[key]
       const dict = DICTS[lang] || DICTS.en
-      return dict[key] ?? DICTS.en[key] ?? key
+      const fallback = dict[key] ?? DICTS.en[key] ?? key
+      // EN override is used as the cross-language fallback when the target
+      // language has no override AND its dict has no entry.
+      if (dict[key] === undefined && typeof enOverride === 'string' && enOverride.length > 0) {
+        return enOverride
+      }
+      return fallback
     },
-    [lang],
+    [lang, langOverrides, enOverrides],
   )
 
   const value = useMemo(() => ({ lang, langs: LANGS, t, setLang }), [lang, t, setLang])

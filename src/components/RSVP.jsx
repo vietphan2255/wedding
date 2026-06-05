@@ -91,7 +91,7 @@ export default function RSVP() {
             {t('rsvp.title')}
           </h2>
           <div className="divider-leaf my-6">
-            <span className="font-script text-2xl">rsvp</span>
+            <span className="font-script text-2xl">{t('rsvp.divider')}</span>
           </div>
           <p className="text-muted">{t('rsvp.subtitle')}</p>
         </FadeIn>

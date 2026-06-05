@@ -18,6 +18,8 @@ export default {
   // Countdown
   'countdown.eyebrow': 'Ngày trọng đại',
   'countdown.titleNext': 'Đếm ngược đến',
+  'countdown.months': 'Tháng',
+  'countdown.weeks': 'Tuần',
   'countdown.days': 'Ngày',
   'countdown.hours': 'Giờ',
   'countdown.minutes': 'Phút',
@@ -29,6 +31,7 @@ export default {
   // Story
   'story.eyebrow': 'Hành trình của chúng mình',
   'story.title': 'Chuyện chúng mình yêu nhau',
+  'story.divider': 'v & n',
   'story.intro':
     'Một câu chuyện được viết bằng những ly cà phê, những cuộc gọi đêm khuya, và hàng ngàn khoảnh khắc nhỏ mà chẳng hề nhỏ chút nào.',
   'story.1.year': '2019',
@@ -51,11 +54,13 @@ export default {
   // Gallery
   'gallery.eyebrow': 'Khoảnh khắc',
   'gallery.title': 'Qua ống kính',
+  'gallery.divider': '∞',
   'gallery.subtitle': 'Một góc nhỏ của những chương đã đưa tụi mình đến hôm nay',
 
   // Ceremony Timeline
   'timeline.eyebrow': 'Lưu lại các ngày',
   'timeline.title': 'Hành trình lễ cưới',
+  'timeline.divider': 'v & n',
   'timeline.subtitle': 'Mỗi nghi lễ là một chương của hành trình đến ngày trọng đại',
   'timeline.alreadyCelebrated': 'Đã tổ chức',
   'timeline.showDetails': 'Xem chi tiết',
@@ -99,6 +104,7 @@ export default {
   // RSVP
   'rsvp.eyebrow': 'Xin vui lòng phản hồi',
   'rsvp.title': 'Bạn sẽ đến chứ?',
+  'rsvp.divider': 'rsvp',
   'rsvp.subtitle': 'Phản hồi của bạn là niềm vui lớn của tụi mình. Xin gửi trước ngày 30/06/2026.',
   'rsvp.name': 'Họ và tên',
   'rsvp.phone': 'Số điện thoại',

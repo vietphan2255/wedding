@@ -15,16 +15,35 @@ function pickUpcomingEvents(dates) {
 }
 
 function diff(target) {
-  const ms = Math.max(0, target.getTime() - Date.now())
-  return {
-    d: Math.floor(ms / 86400000),
-    h: Math.floor((ms / 3600000) % 24),
-    m: Math.floor((ms / 60000) % 60),
-    s: Math.floor((ms / 1000) % 60),
+  const targetMs = target.getTime()
+  const nowMs = Date.now()
+  if (nowMs >= targetMs) {
+    return { mo: 0, w: 0, d: 0, h: 0, m: 0, s: 0 }
   }
+  const now = new Date(nowMs)
+  let mo =
+    (target.getFullYear() - now.getFullYear()) * 12 +
+    (target.getMonth() - now.getMonth())
+  const probe = new Date(now)
+  probe.setMonth(probe.getMonth() + mo)
+  if (probe.getTime() > targetMs) {
+    mo -= 1
+    probe.setMonth(probe.getMonth() - 1)
+  }
+  let rem = targetMs - probe.getTime()
+  const w = Math.floor(rem / (7 * 86400000)); rem -= w * 7 * 86400000
+  const d = Math.floor(rem / 86400000);       rem -= d * 86400000
+  const h = Math.floor(rem / 3600000);        rem -= h * 3600000
+  const m = Math.floor(rem / 60000);          rem -= m * 60000
+  const s = Math.floor(rem / 1000)
+  return { mo, w, d, h, m, s }
 }
 
-export default function Countdown() {
+export default function Countdown({
+  flightTargetRef,
+  flightTargetARef,
+  flightTargetBRef,
+}) {
   const { t, lang } = useLanguage()
   const { config } = useWeddingConfig()
   const reduce = useReducedMotion()
@@ -55,12 +74,43 @@ export default function Countdown() {
       : t('events.thanhhon.name')
     : ''
 
-  const dateLabel = current
-    ? new Intl.DateTimeFormat(lang === 'vi' ? 'vi-VN' : 'en-GB', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-      }).format(current.date)
+  // Split the formatted date into the day+month chunk, the literal that
+  // precedes the year, and the year — so FlyingDate can land its two clones
+  // on each chunk's actual rendered position rather than approximating from
+  // the source widths (which use a different display serif font).
+  const dateParts = useMemo(() => {
+    if (!current) return null
+    const fmt = new Intl.DateTimeFormat(lang === 'vi' ? 'vi-VN' : 'en-GB', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    })
+    const parts = fmt.formatToParts(current.date)
+    let before = ''
+    let separator = ''
+    let yearText = ''
+    let yearReached = false
+    for (const p of parts) {
+      if (p.type === 'year') {
+        yearText = p.value
+        yearReached = true
+        continue
+      }
+      if (yearReached) continue
+      before += p.value
+    }
+    // Move trailing whitespace/literal off `before` into `separator` so the
+    // day+month span ends right after the month text.
+    const trailing = before.match(/[\s\p{P}]+$/u)
+    if (trailing) {
+      separator = trailing[0]
+      before = before.slice(0, -trailing[0].length)
+    }
+    return { before, separator, yearText }
+  }, [current, lang])
+
+  const dateLabel = dateParts
+    ? `${dateParts.before}${dateParts.separator}${dateParts.yearText}`
     : ''
 
   const showNav = upcomingEvents.length > 1
@@ -119,20 +169,46 @@ export default function Countdown() {
               )}
             </div>
           )}
-          <p className="mt-1 text-sm md:text-base text-muted tracking-wide">
-            {dateLabel}
+          <p
+            ref={flightTargetRef}
+            className="mt-1 text-sm md:text-base text-muted tracking-wide"
+          >
+            {dateParts ? (
+              <>
+                <span ref={flightTargetARef}>{dateParts.before}</span>
+                <span>{dateParts.separator}</span>
+                <span ref={flightTargetBRef}>{dateParts.yearText}</span>
+              </>
+            ) : (
+              dateLabel
+            )}
           </p>
         </ParallaxFade>
 
         {current ? (
           <ParallaxFade strength={60} className="block">
             <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
-              {[
-                [now.d, t('countdown.days')],
-                [now.h, t('countdown.hours')],
-                [now.m, t('countdown.minutes')],
-                [now.s, t('countdown.seconds')],
-              ].map(([n, lbl], i) => {
+              {(now.mo >= 1
+                ? [
+                    [now.mo, t('countdown.months')],
+                    [now.w,  t('countdown.weeks')],
+                    [now.d,  t('countdown.days')],
+                    [now.h,  t('countdown.hours')],
+                  ]
+                : now.w >= 1
+                ? [
+                    [now.w, t('countdown.weeks')],
+                    [now.d, t('countdown.days')],
+                    [now.h, t('countdown.hours')],
+                    [now.m, t('countdown.minutes')],
+                  ]
+                : [
+                    [now.d, t('countdown.days')],
+                    [now.h, t('countdown.hours')],
+                    [now.m, t('countdown.minutes')],
+                    [now.s, t('countdown.seconds')],
+                  ]
+              ).map(([n, lbl], i) => {
                 const drift = [
                   { y: [0, -6, 4, -3, 0], x: [0, 3, -2, 4, 0], rotate: [0, 1.2, -0.8, 1, 0], duration: 6.5 },
                   { y: [0, 5, -4, 3, 0], x: [0, -3, 2, -4, 0], rotate: [0, -1, 1.2, -0.6, 0], duration: 7.2 },

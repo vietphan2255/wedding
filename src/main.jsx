@@ -9,11 +9,11 @@ import './index.css'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ThemeProvider>
-      <LanguageProvider>
-        <WeddingConfigProvider>
+      <WeddingConfigProvider>
+        <LanguageProvider>
           <App />
-        </WeddingConfigProvider>
-      </LanguageProvider>
+        </LanguageProvider>
+      </WeddingConfigProvider>
     </ThemeProvider>
   </React.StrictMode>,
 )

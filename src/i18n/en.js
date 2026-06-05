@@ -18,6 +18,8 @@ export default {
   // Countdown
   'countdown.eyebrow': 'The big day',
   'countdown.titleNext': 'Counting down to',
+  'countdown.months': 'Months',
+  'countdown.weeks': 'Weeks',
   'countdown.days': 'Days',
   'countdown.hours': 'Hours',
   'countdown.minutes': 'Minutes',
@@ -29,6 +31,7 @@ export default {
   // Story
   'story.eyebrow': 'Our journey',
   'story.title': 'How we fell in love',
+  'story.divider': 'v & n',
   'story.intro':
     'A story written across coffee shops, late-night phone calls, and a thousand small moments that felt anything but small.',
   'story.1.year': '2019',
@@ -51,11 +54,13 @@ export default {
   // Gallery
   'gallery.eyebrow': 'Moments',
   'gallery.title': 'Through the lens',
+  'gallery.divider': '∞',
   'gallery.subtitle': 'A small look into the chapters that brought us here',
 
   // Ceremony Timeline
   'timeline.eyebrow': 'Save these dates',
   'timeline.title': 'Ceremony Timeline',
+  'timeline.divider': 'v & n',
   'timeline.subtitle': 'The journey to our wedding day, one ceremony at a time',
   'timeline.alreadyCelebrated': 'Already celebrated',
   'timeline.showDetails': 'Show details',
@@ -99,6 +104,7 @@ export default {
   // RSVP
   'rsvp.eyebrow': 'Kindly respond',
   'rsvp.title': 'Will you join us?',
+  'rsvp.divider': 'rsvp',
   'rsvp.subtitle': 'Your response means the world. Please reply by 30 June 2026.',
   'rsvp.name': 'Full name',
   'rsvp.phone': 'Phone',

@@ -2,17 +2,38 @@ import { useRef } from 'react'
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext.jsx'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
 import useIsPhone from '../hooks/useIsPhone.js'
 
 const HERO_IMAGE =
   'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=2400&q=80'
 
-export default function Hero() {
+export default function Hero({
+  flightSourceARef,
+  flightMiddleRef,
+  flightSourceBRef,
+}) {
   const { t } = useLanguage()
+  const { config } = useWeddingConfig()
   const reduce = useReducedMotion()
   const isPhone = useIsPhone()
   const calm = reduce || isPhone
   const ref = useRef(null)
+
+  const nameLeft = config?.common?.coupleNameLeft || 'Viet'
+  const nameRight = config?.common?.coupleNameRight || 'Nguyen'
+
+  // Split the date line into three pieces (vqDate, middle, year) so the
+  // hero → countdown flight can lift the vqDate and year, fade the middle,
+  // and merge them into the countdown's "26 July 2026" label. If the admin
+  // edits the date string and removes the `·` separators, the regex won't
+  // match — fall back to treating the whole string as vqDate so the flight
+  // degrades gracefully instead of rendering an empty line.
+  const datesText = t('hero.dates')
+  const splitMatch = datesText.match(/^(.+?)(\s+·.+·\s+)(.+)$/)
+  const vqDate = splitMatch ? splitMatch[1] : datesText
+  const middle = splitMatch ? splitMatch[2] : ''
+  const year = splitMatch ? splitMatch[3] : ''
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start start', 'end start'],
@@ -80,11 +101,11 @@ export default function Hero() {
           className="font-display mt-6 text-ink leading-[1.0]"
           style={{ fontSize: 'clamp(3rem, 12vw, 9.5rem)', fontFamily: "'Great Vibes', cursive", fontWeight: 900 }}
         >
-          <span className="block">Viet</span>
+          <span className="block">{nameLeft}</span>
           <span className="block font-script text-accent text-[0.65em] my-1">
             {t('hero.and')}
           </span>
-          <span className="block">Nguyen</span>
+          <span className="block">{nameRight}</span>
         </motion.h1>
 
         <motion.div
@@ -95,7 +116,25 @@ export default function Hero() {
         >
           <p className="eyebrow text-ink">{t('hero.saveTheDate')}</p>
           <p className="font-display text-lg md:text-xl tracking-wide text-ink">
-            {t('hero.dates')}
+            <motion.span
+              ref={flightSourceARef}
+              className="inline-block"
+              animate={reduce ? undefined : { y: [0, -3, 0] }}
+              transition={{ duration: 3.6, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ willChange: 'transform' }}
+            >
+              {vqDate}
+            </motion.span>
+            <span ref={flightMiddleRef}>{middle}</span>
+            <motion.span
+              ref={flightSourceBRef}
+              className="inline-block"
+              animate={reduce ? undefined : { y: [0, -3, 0] }}
+              transition={{ duration: 3.6, repeat: Infinity, ease: 'easeInOut', delay: 1.8 }}
+              style={{ willChange: 'transform' }}
+            >
+              {year}
+            </motion.span>
           </p>
         </motion.div>
       </motion.div>

@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react'
-import { ref, set } from 'firebase/database'
+import { useState } from 'react'
 import { Save } from 'lucide-react'
-import { db, isConfigured } from '../../firebase/config.js'
-import { useWeddingConfig } from '../../contexts/WeddingConfigContext.jsx'
+import { useDraftConfig } from '../DraftConfigContext.jsx'
 
 // Converts an ISO with timezone like "2026-07-26T09:00:00+07:00" to the
 // "yyyy-MM-ddTHH:mm" form that <input type="datetime-local"> expects, while
@@ -28,29 +26,22 @@ const FIELDS = [
 ]
 
 export default function DatesSection() {
-  const { config } = useWeddingConfig()
-  const [form, setForm] = useState(() => ({ ...config.dates }))
+  const { draft, setSlice, saveSlice, isSliceDirty } = useDraftConfig()
+  const form = draft.dates
+  const dirty = isSliceDirty('dates')
   const [saving, setSaving] = useState(false)
   const [status, setStatus] = useState(null)
 
-  useEffect(() => {
-    setForm({ ...config.dates })
-  }, [config.dates])
-
   const handleChange = (key, value) => {
-    setForm((f) => ({ ...f, [key]: value }))
+    setSlice('dates', (d) => ({ ...d, [key]: value }))
   }
 
   const save = async (e) => {
     e.preventDefault()
-    if (!isConfigured || !db) {
-      setStatus({ type: 'error', message: 'Firebase is not configured.' })
-      return
-    }
     setSaving(true)
     setStatus(null)
     try {
-      await set(ref(db, 'config/dates'), form)
+      await saveSlice('dates')
       setStatus({ type: 'success', message: 'Dates saved.' })
     } catch (err) {
       console.error(err)
@@ -115,11 +106,13 @@ export default function DatesSection() {
             {status.message}
           </p>
         ) : (
-          <span />
+          <span className="text-xs text-muted">
+            {dirty ? 'Unsaved changes' : 'Saved'}
+          </span>
         )}
         <button
           type="submit"
-          disabled={saving}
+          disabled={saving || !dirty}
           className="btn-primary disabled:opacity-60"
         >
           <Save size={16} />

@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ref, set, push, update } from 'firebase/database'
 import { Plus, Trash2, ArrowUp, ArrowDown, Save, HelpCircle } from 'lucide-react'
 import { db, isConfigured } from '../../firebase/config.js'
 import { useWeddingConfig } from '../../contexts/WeddingConfigContext.jsx'
+import { useDraftConfig } from '../DraftConfigContext.jsx'
+import LabelsPanel from './LabelsPanel.jsx'
+import LabelField from './LabelField.jsx'
 
 function emptyItem(order) {
   return {
@@ -19,14 +22,17 @@ function isFirebaseId(id) {
 }
 
 export default function FaqsSection() {
-  const { config, source } = useWeddingConfig()
-  const [items, setItems] = useState([])
+  const { source } = useWeddingConfig()
+  const { draft, saved, setSlice, isSliceDirty } = useDraftConfig()
+  const items = draft.faqs || []
+  const dirty = isSliceDirty('faqs')
   const [saving, setSaving] = useState(false)
   const [status, setStatus] = useState(null)
 
-  useEffect(() => {
-    setItems((config.faqs || []).map((it) => ({ ...it })))
-  }, [config.faqs])
+  const setItems = (updater) =>
+    setSlice('faqs', (prev) =>
+      typeof updater === 'function' ? updater(prev || []) : updater,
+    )
 
   const update_ = (idx, key, value) => {
     setItems((prev) => {
@@ -82,7 +88,7 @@ export default function FaqsSection() {
         })
         await set(ref(db, 'config/faqs'), payload)
       } else {
-        const existingIds = (config.faqs || []).map((s) => s.id).filter(isFirebaseId)
+        const existingIds = (saved.faqs || []).map((s) => s.id).filter(isFirebaseId)
         const keptIds = new Set(items.map((s) => s.id).filter(isFirebaseId))
         const updates = {}
         existingIds.forEach((id) => {
@@ -115,6 +121,29 @@ export default function FaqsSection() {
   }
 
   return (
+    <div>
+      <LabelsPanel title="FAQ labels">
+        <LabelField
+          fieldKey="faq.eyebrow"
+          label="Eyebrow"
+          defaultEn="Good to know"
+          defaultVi="Có thể bạn quan tâm"
+        />
+        <LabelField
+          fieldKey="faq.title"
+          label="Title"
+          defaultEn="Frequently asked"
+          defaultVi="Câu hỏi thường gặp"
+        />
+        <LabelField
+          fieldKey="faq.subtitle"
+          label="Subtitle"
+          defaultEn="A few quick answers before the big day."
+          defaultVi="Vài câu hỏi nhanh trước ngày trọng đại."
+          multiline
+        />
+      </LabelsPanel>
+
     <form onSubmit={saveAll} className="space-y-5">
       <header className="glass rounded-3xl p-6 md:p-8">
         <p className="eyebrow flex items-center gap-2">
@@ -232,11 +261,13 @@ export default function FaqsSection() {
             {status.message}
           </p>
         ) : (
-          <span />
+          <span className="text-xs text-muted">
+            {dirty ? 'Unsaved changes' : 'Saved'}
+          </span>
         )}
         <button
           type="submit"
-          disabled={saving}
+          disabled={saving || !dirty}
           className="btn-primary disabled:opacity-60"
         >
           <Save size={16} />
@@ -244,5 +275,6 @@ export default function FaqsSection() {
         </button>
       </div>
     </form>
+    </div>
   )
 }
