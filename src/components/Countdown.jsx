@@ -1,8 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useLanguage } from '../contexts/LanguageContext.jsx'
-import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
+import { useLanguage } from '../contexts/LanguageContext'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext'
+import {
+  MS_PER_SECOND,
+  MS_PER_MINUTE,
+  MS_PER_HOUR,
+  MS_PER_DAY,
+  MS_PER_WEEK,
+} from '../lib/constants'
 import ParallaxFade from './ParallaxFade.jsx'
 
 function pickUpcomingEvents(dates) {
@@ -31,11 +38,11 @@ function diff(target) {
     probe.setMonth(probe.getMonth() - 1)
   }
   let rem = targetMs - probe.getTime()
-  const w = Math.floor(rem / (7 * 86400000)); rem -= w * 7 * 86400000
-  const d = Math.floor(rem / 86400000);       rem -= d * 86400000
-  const h = Math.floor(rem / 3600000);        rem -= h * 3600000
-  const m = Math.floor(rem / 60000);          rem -= m * 60000
-  const s = Math.floor(rem / 1000)
+  const w = Math.floor(rem / MS_PER_WEEK);   rem -= w * MS_PER_WEEK
+  const d = Math.floor(rem / MS_PER_DAY);    rem -= d * MS_PER_DAY
+  const h = Math.floor(rem / MS_PER_HOUR);   rem -= h * MS_PER_HOUR
+  const m = Math.floor(rem / MS_PER_MINUTE); rem -= m * MS_PER_MINUTE
+  const s = Math.floor(rem / MS_PER_SECOND)
   return { mo, w, d, h, m, s }
 }
 

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ref, onValue, remove } from 'firebase/database'
 import { Trash2, Download, Search, AlertTriangle } from 'lucide-react'
-import { db, isConfigured } from '../../firebase/config.js'
+import { db, isConfigured } from '../../firebase/config'
 
 const ATTENDING_LABELS = { yes: 'Yes', no: 'No' }
 const EVENTS_LABELS = {

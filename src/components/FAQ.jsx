@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, HelpCircle } from 'lucide-react'
-import { useLanguage } from '../contexts/LanguageContext.jsx'
-import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
+import { useLanguage } from '../contexts/LanguageContext'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import FadeIn from './FadeIn.jsx'
 
 export default function FAQ() {

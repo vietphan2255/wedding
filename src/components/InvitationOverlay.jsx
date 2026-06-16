@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useLanguage } from '../contexts/LanguageContext.jsx'
-import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
+import { useLanguage } from '../contexts/LanguageContext'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import EnvelopeIntro from './EnvelopeIntro.jsx'
 
 const STORAGE_KEY = 'vn-invitation-opened'

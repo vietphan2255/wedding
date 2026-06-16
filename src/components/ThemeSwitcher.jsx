@@ -1,4 +1,4 @@
-import { useTheme } from '../contexts/ThemeContext.jsx'
+import { useTheme } from '../contexts/ThemeContext'
 
 const SWATCHES = {
   blush: ['#F4E4E1', '#B8C5A6'],

@@ -10,8 +10,8 @@ import {
   ArrowUpRight,
   Map as MapIcon,
 } from 'lucide-react'
-import { useLanguage } from '../contexts/LanguageContext.jsx'
-import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
+import { useLanguage } from '../contexts/LanguageContext'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import FadeIn from './FadeIn.jsx'
 import ParallaxImage from './ParallaxImage.jsx'
 import DressIcon from './icons/DressIcons.jsx'

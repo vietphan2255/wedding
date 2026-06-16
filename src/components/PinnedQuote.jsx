@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { useLanguage } from '../contexts/LanguageContext.jsx'
+import { useLanguage } from '../contexts/LanguageContext'
 
 // A single word with scroll-driven opacity. Has to be its own component so
 // `useTransform` is called at the top level of a component (rules of hooks).

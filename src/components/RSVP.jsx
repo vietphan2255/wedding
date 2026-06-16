@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Send, CheckCircle2 } from 'lucide-react'
 import { ref, push, serverTimestamp } from 'firebase/database'
 import confetti from 'canvas-confetti'
-import { db, isConfigured } from '../firebase/config.js'
-import { useLanguage } from '../contexts/LanguageContext.jsx'
+import { db, isConfigured } from '../firebase/config'
+import { useLanguage } from '../contexts/LanguageContext'
 import FadeIn from './FadeIn.jsx'
 
 function readAccent() {

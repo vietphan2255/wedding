@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Save, Mail } from 'lucide-react'
-import { useDraftConfig } from '../DraftConfigContext.jsx'
+import { useDraftConfig } from '../DraftConfigContext'
 import ImageInput from '../../components/admin/ImageInput.jsx'
-import LabelsPanel from './LabelsPanel.jsx'
-import LabelField from './LabelField.jsx'
+import LabelsPanel from './LabelsPanel'
+import LabelField from './LabelField'
 
 export default function InvitationSection() {
   const { draft, setSlice, saveSlice, isSliceDirty } = useDraftConfig()

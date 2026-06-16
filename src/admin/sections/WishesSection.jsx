@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ref, onValue, remove } from 'firebase/database'
 import { Trash2, Search, AlertTriangle, Heart } from 'lucide-react'
-import { db, isConfigured } from '../../firebase/config.js'
+import { db, isConfigured } from '../../firebase/config'
 
 function formatDate(ts) {
   if (!ts) return '—'

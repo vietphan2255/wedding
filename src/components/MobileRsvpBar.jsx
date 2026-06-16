@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send } from 'lucide-react'
-import { useLanguage } from '../contexts/LanguageContext.jsx'
-import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
+import { useLanguage } from '../contexts/LanguageContext'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 
 function pickEvent(config) {
   const now = Date.now()

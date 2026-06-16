@@ -1,5 +1,7 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
-import useSmoothScroll from './hooks/useSmoothScroll.js'
+import { lazy, Suspense, useRef } from 'react'
+import { Routes, Route, Link } from 'react-router-dom'
+import useSmoothScroll from './hooks/useSmoothScroll'
+import { useWeddingConfig } from './contexts/WeddingConfigContext'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
 import Countdown from './components/Countdown.jsx'
@@ -18,21 +20,13 @@ import MobileRsvpBar from './components/MobileRsvpBar.jsx'
 import InvitationOverlay from './components/InvitationOverlay.jsx'
 import FlyingDate from './components/fx/FlyingDate.jsx'
 import CustomCursor from './components/fx/CustomCursor.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 
 // Off-/ routes load lazily so the admin tree and the engagement / pay-slip
 // pages aren't shipped to / visitors.
-const Admin = lazy(() => import('./admin/Admin.jsx'))
-const EngagementPage = lazy(() => import('./pages/EngagementPage.jsx'))
-const PaySlipPage = lazy(() => import('./pages/PaySlipPage.jsx'))
-
-function getRoute() {
-  if (typeof window === 'undefined') return 'site'
-  const path = window.location.pathname.replace(/\/+$/, '')
-  if (path === '/admin') return 'admin'
-  if (path === '/engagement') return 'engagement'
-  if (path === '/pay-slip') return 'payslip'
-  return 'site'
-}
+const Admin = lazy(() => import('./admin/Admin'))
+const EngagementPage = lazy(() => import('./pages/EngagementPage'))
+const PaySlipPage = lazy(() => import('./pages/payslip'))
 
 // Original home page (main branch version), served at "/".
 function WeddingSite() {
@@ -46,6 +40,11 @@ function WeddingSite() {
   const flightTargetRef = useRef(null)
   const flightTargetARef = useRef(null)
   const flightTargetBRef = useRef(null)
+  // GIF-as-cursor: when set, <main> carries data-cursor=<url> so CustomCursor
+  // renders the GIF page-wide. Interactive children with `data-cursor="open"`
+  // etc. still win because the cursor handler reads the closest ancestor.
+  const { config } = useWeddingConfig()
+  const cursorGif = (config.effects?.cursorGif || '').trim()
   return (
     <>
       <InvitationOverlay />
@@ -53,7 +52,7 @@ function WeddingSite() {
       <CustomCursor />
       <ParallaxPetals />
       <Navbar />
-      <main>
+      <main {...(cursorGif ? { 'data-cursor': cursorGif } : {})}>
         <Hero
           flightSourceARef={flightSourceARef}
           flightMiddleRef={flightMiddleRef}
@@ -87,26 +86,37 @@ function WeddingSite() {
   )
 }
 
-export default function App() {
-  const [route, setRoute] = useState(getRoute)
-
-  useEffect(() => {
-    const onPop = () => setRoute(getRoute())
-    window.addEventListener('popstate', onPop)
-    return () => window.removeEventListener('popstate', onPop)
-  }, [])
-
-  // / renders synchronously — no Suspense delay on the main route.
-  if (route === 'site') return <WeddingSite />
-
-  const lazyPage =
-    route === 'admin' ? <Admin /> :
-    route === 'engagement' ? <EngagementPage /> :
-    <PaySlipPage />
-
+function NotFound() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-bg" />}>
-      {lazyPage}
-    </Suspense>
+    <div className="min-h-screen flex items-center justify-center bg-bg px-6">
+      <div className="glass rounded-3xl p-8 md:p-10 max-w-md text-center">
+        <p className="eyebrow">404</p>
+        <h1 className="font-display text-2xl md:text-3xl mt-3">Page not found</h1>
+        <p className="text-sm text-muted mt-3">
+          That page doesn&apos;t exist — try the home page.
+        </p>
+        <div className="mt-6">
+          <Link to="/" className="btn-primary">
+            Go home
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function App() {
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<div className="min-h-screen bg-bg" />}>
+        <Routes>
+          <Route path="/" element={<WeddingSite />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/engagement" element={<EngagementPage />} />
+          <Route path="/pay-slip" element={<PaySlipPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   )
 }

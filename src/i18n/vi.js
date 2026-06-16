@@ -56,6 +56,11 @@ export default {
   'gallery.title': 'Qua ống kính',
   'gallery.divider': '∞',
   'gallery.subtitle': 'Một góc nhỏ của những chương đã đưa tụi mình đến hôm nay',
+  'gallery.lightbox.label': 'Xem ảnh',
+  'gallery.lightbox.alt': 'Ảnh cưới',
+  'gallery.lightbox.close': 'Đóng',
+  'gallery.lightbox.prev': 'Ảnh trước',
+  'gallery.lightbox.next': 'Ảnh kế',
 
   // Ceremony Timeline
   'timeline.eyebrow': 'Lưu lại các ngày',

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
-import { useLanguage } from '../contexts/LanguageContext.jsx'
-import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
+import { Link } from 'react-router-dom'
+import { useLanguage } from '../contexts/LanguageContext'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import ThemeSwitcher from './ThemeSwitcher.jsx'
 import LanguageToggle from './LanguageToggle.jsx'
 
@@ -43,9 +44,9 @@ export default function Navbar() {
       }`}
     >
       <nav className="max-w-7xl mx-auto px-5 md:px-8 h-16 flex items-center justify-between">
-        <a href="/" className="font-display text-xl tracking-wider">
+        <Link to="/" className="font-display text-xl tracking-wider">
           {initialLeft} <span className="text-accent">&</span> {initialRight}
-        </a>
+        </Link>
 
         <ul className="hidden md:flex items-center gap-7 text-[12px] tracking-[0.22em] uppercase">
           {LINKS.map(([href, key]) => (

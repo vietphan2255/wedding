@@ -56,6 +56,11 @@ export default {
   'gallery.title': 'Through the lens',
   'gallery.divider': '∞',
   'gallery.subtitle': 'A small look into the chapters that brought us here',
+  'gallery.lightbox.label': 'Photo viewer',
+  'gallery.lightbox.alt': 'Wedding photo',
+  'gallery.lightbox.close': 'Close',
+  'gallery.lightbox.prev': 'Previous photo',
+  'gallery.lightbox.next': 'Next photo',
 
   // Ceremony Timeline
   'timeline.eyebrow': 'Save these dates',

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Save, Play, Pause } from 'lucide-react'
-import { useDraftConfig } from '../DraftConfigContext.jsx'
+import { useDraftConfig } from '../DraftConfigContext'
+import UploadButton from '../../components/admin/UploadButton.jsx'
+import { uploadAudio } from '../../lib/uploadImage'
 
 const DEFAULTS = { enabled: false, url: '', title: '', volume: 0.4 }
 
@@ -72,9 +74,9 @@ export default function MusicSection() {
           Background music
         </h2>
         <p className="text-sm text-muted mt-2">
-          The public site shows a small play button when music is enabled. Provide a
-          direct link to an audio file (mp3, ogg, m4a). Streaming-platform URLs
-          (YouTube, Spotify) won&apos;t work — use a hosted audio file.
+          The public site shows a small play button when music is enabled. Paste a
+          direct link to an audio file (mp3, ogg, m4a) or upload one. Streaming-platform
+          URLs (YouTube, Spotify) won&apos;t work — use a hosted audio file.
         </p>
       </header>
 
@@ -109,6 +111,13 @@ export default function MusicSection() {
               onChange={(e) => update_('url', e.target.value)}
               placeholder="https://…/song.mp3"
               className="flex-1 rounded-xl border border-line bg-bg px-4 py-3 text-ink focus:border-accent transition-colors"
+            />
+            <UploadButton
+              accept="audio/*"
+              upload={uploadAudio}
+              label="Upload"
+              className="btn-ghost shrink-0"
+              onUploaded={([url]) => url && update_('url', url)}
             />
             <button
               type="button"

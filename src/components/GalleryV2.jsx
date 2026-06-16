@@ -12,8 +12,10 @@ import {
   wrap,
 } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
-import { useLanguage } from '../contexts/LanguageContext.jsx'
-import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
+import { useLanguage } from '../contexts/LanguageContext'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext'
+import useFocusTrap from '../hooks/useFocusTrap'
+import { GALLERY_BASE_VELOCITY } from '../lib/constants'
 import SplitText from './fx/SplitText.jsx'
 
 // A single photo "plane". rotateY is driven by scroll velocity (passed as a
@@ -164,8 +166,11 @@ export default function Gallery() {
   )
   const [open, setOpen] = useState(null)
   const sectionRef = useRef(null)
+  const dialogRef = useRef(null)
+  const closeBtnRef = useRef(null)
   const [inView, setInView] = useState(false)
   const [tabHidden, setTabHidden] = useState(false)
+  useFocusTrap(dialogRef, open !== null, closeBtnRef)
 
   // Scroll-velocity chain, shared by both rows. Smoothed so the ribbon eases
   // in/out of speed-ups instead of snapping.
@@ -283,7 +288,7 @@ export default function Gallery() {
         <div className="mt-14 space-y-5 md:space-y-8">
           <VelocityRow
             items={rowA}
-            baseVelocity={50}
+            baseVelocity={GALLERY_BASE_VELOCITY}
             velocityFactor={velocityFactor}
             tilt={tiltA}
             paused={paused}
@@ -292,7 +297,7 @@ export default function Gallery() {
           />
           <VelocityRow
             items={rowB}
-            baseVelocity={-50}
+            baseVelocity={-GALLERY_BASE_VELOCITY}
             velocityFactor={velocityFactor}
             tilt={tiltB}
             paused={paused}
@@ -305,6 +310,10 @@ export default function Gallery() {
       <AnimatePresence>
         {open !== null && photos[open] && (
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={t('gallery.lightbox.label')}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -317,8 +326,9 @@ export default function Gallery() {
               <span className="opacity-50"> / {String(photos.length).padStart(2, '0')}</span>
             </div>
             <button
+              ref={closeBtnRef}
               onClick={close}
-              aria-label="Close"
+              aria-label={t('gallery.lightbox.close')}
               data-cursor="close"
               className="absolute top-5 right-5 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
             >
@@ -329,7 +339,7 @@ export default function Gallery() {
                 e.stopPropagation()
                 prev()
               }}
-              aria-label="Previous"
+              aria-label={t('gallery.lightbox.prev')}
               className="absolute left-3 md:left-8 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
             >
               <ChevronLeft size={26} />
@@ -350,14 +360,14 @@ export default function Gallery() {
               }}
               data-cursor="drag"
               className="max-w-[92vw] max-h-[88vh] rounded-lg object-contain shadow-2xl cursor-grab active:cursor-grabbing"
-              alt=""
+              alt={`${t('gallery.lightbox.alt')} ${open + 1} / ${photos.length}`}
             />
             <button
               onClick={(e) => {
                 e.stopPropagation()
                 next()
               }}
-              aria-label="Next"
+              aria-label={t('gallery.lightbox.next')}
               className="absolute right-3 md:right-8 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
             >
               <ChevronRight size={26} />

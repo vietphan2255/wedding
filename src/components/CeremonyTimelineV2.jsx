@@ -10,8 +10,9 @@ import {
   ArrowUpRight,
   Map as MapIcon,
 } from 'lucide-react'
-import { useLanguage } from '../contexts/LanguageContext.jsx'
-import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
+import { Link } from 'react-router-dom'
+import { useLanguage } from '../contexts/LanguageContext'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import ParallaxImage from './ParallaxImage.jsx'
 import DressIcon from './icons/DressIcons.jsx'
 import SplitText from './fx/SplitText.jsx'
@@ -160,7 +161,7 @@ function EventRow({ row, index, total, t, config, isOpen, isMapOpen, onToggle, o
       {/* Image side */}
       <div className={`relative z-10 ${isLeft ? 'md:order-1' : 'md:order-2'}`}>
         {isEngagement ? (
-          <a href="/engagement" data-cursor="open" aria-label={name} className="group block">
+          <Link to="/engagement" data-cursor="open" aria-label={name} className="group block">
             <Reveal className="rounded-3xl">
               <div className="relative">
                 <ParallaxImage src={row.img} strength={60} className="aspect-[5/4] rounded-3xl" overlay />
@@ -176,7 +177,7 @@ function EventRow({ row, index, total, t, config, isOpen, isMapOpen, onToggle, o
                 </span>
               </div>
             </Reveal>
-          </a>
+          </Link>
         ) : (
           <Reveal className="rounded-3xl">
             <div data-cursor="view">
@@ -210,10 +211,10 @@ function EventRow({ row, index, total, t, config, isOpen, isMapOpen, onToggle, o
               {t('timeline.engagement.body')}
             </p>
             <Magnetic className="inline-block mt-6">
-              <a href="/engagement" data-cursor="open" className="btn-ghost">
+              <Link to="/engagement" data-cursor="open" className="btn-ghost">
                 {t('timeline.engagement.explore')}
                 <ArrowUpRight size={15} />
-              </a>
+              </Link>
             </Magnetic>
           </>
         ) : (

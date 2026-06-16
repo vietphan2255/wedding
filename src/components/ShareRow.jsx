@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Facebook, MessageCircle, Link2, Check } from 'lucide-react'
-import { useLanguage } from '../contexts/LanguageContext.jsx'
+import { useLanguage } from '../contexts/LanguageContext'
 
 function ZaloIcon({ size = 16 }) {
   return (

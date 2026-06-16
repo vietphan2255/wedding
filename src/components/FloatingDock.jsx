@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Send, Heart, Music, Pause } from 'lucide-react'
-import { useLanguage } from '../contexts/LanguageContext.jsx'
-import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
-import useIsPhone from '../hooks/useIsPhone.js'
+import { useLanguage } from '../contexts/LanguageContext'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext'
+import useIsPhone from '../hooks/useIsPhone'
 
 const MUSIC_STORAGE_KEY = 'vn-music-playing'
 const MUSIC_MUTED_KEY = 'vn-music-muted'

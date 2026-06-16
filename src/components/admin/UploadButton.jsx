@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { Upload, Loader2 } from 'lucide-react'
-import { uploadImage, isUploadConfigured } from '../../lib/uploadImage.js'
+import { uploadImage, isUploadConfigured } from '../../lib/uploadImage'
 
 // File-picker button that uploads to Cloudinary and hands back the resulting
 // URL(s) via onUploaded(urls). Sits alongside the paste-a-link inputs.
@@ -9,6 +9,8 @@ export default function UploadButton({
   label = 'Upload',
   onUploaded,
   className = 'btn-ghost',
+  accept = 'image/*',
+  upload = uploadImage,
 }) {
   const inputRef = useRef(null)
   const [busy, setBusy] = useState(false)
@@ -36,7 +38,7 @@ export default function UploadButton({
     setError(null)
     try {
       const urls = []
-      for (const file of files) urls.push(await uploadImage(file))
+      for (const file of files) urls.push(await upload(file))
       onUploaded(urls)
     } catch (err) {
       console.error(err)
@@ -51,7 +53,7 @@ export default function UploadButton({
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept={accept}
         multiple={multiple}
         hidden
         onChange={onFiles}

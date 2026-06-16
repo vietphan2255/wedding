@@ -43,6 +43,44 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@300..700&family=Great+Vibes&display=swap"
       rel="stylesheet"
     />
+
+    <!--
+      JSON-LD Event schema — defaults pulled from WeddingConfigContext.DEFAULT_CONFIG.
+      Keep in sync with src/contexts/WeddingConfigContext.jsx dates when the
+      wedding date changes. Both ceremonies are listed as separate Event nodes.
+    -->
+    <script type="application/ld+json">
+      [
+        {
+          "@context": "https://schema.org",
+          "@type": "Event",
+          "name": "Lễ Vu Quy — Viet & Nguyen",
+          "description": "Lễ Vu Quy (traditional Vietnamese engagement) for Viet & Nguyen.",
+          "startDate": "2026-07-26T09:00:00+07:00",
+          "endDate": "2026-07-26T12:00:00+07:00",
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "organizer": {
+            "@type": "Person",
+            "name": "Viet & Nguyen"
+          }
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "Event",
+          "name": "Lễ Thành Hôn — Viet & Nguyen",
+          "description": "Lễ Thành Hôn (wedding reception) for Viet & Nguyen.",
+          "startDate": "2026-08-02T18:00:00+07:00",
+          "endDate": "2026-08-02T22:00:00+07:00",
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "organizer": {
+            "@type": "Person",
+            "name": "Viet & Nguyen"
+          }
+        }
+      ]
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,5 +1,5 @@
-import { useLanguage } from '../contexts/LanguageContext.jsx'
-import { useWeddingConfig } from '../contexts/WeddingConfigContext.jsx'
+import { useLanguage } from '../contexts/LanguageContext'
+import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import ParallaxFade from './ParallaxFade.jsx'
 import ParallaxImage from './ParallaxImage.jsx'
 

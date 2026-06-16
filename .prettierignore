@@ -1,0 +1,10 @@
+dist
+dev-dist
+node_modules
+coverage
+playwright-report
+test-results
+package-lock.json
+yarn.lock
+*.min.js
+*.min.css

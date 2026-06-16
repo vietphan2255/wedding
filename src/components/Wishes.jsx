@@ -10,8 +10,8 @@ import {
   limitToLast,
   serverTimestamp,
 } from 'firebase/database'
-import { db, isConfigured } from '../firebase/config.js'
-import { useLanguage } from '../contexts/LanguageContext.jsx'
+import { db, isConfigured } from '../firebase/config'
+import { useLanguage } from '../contexts/LanguageContext'
 import FadeIn from './FadeIn.jsx'
 
 const DEMO_WISHES = [
