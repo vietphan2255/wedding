@@ -1,257 +1,359 @@
-/* Faithful port of the cinelove "animated-envelope" component
-   (cinelove.me/template/thiep-cuoi-42). De-hashed and scoped under
-   .envelope-intro. Rendered at the reference's native 430x287 and uniformly
-   scaled by the component, so every px value below stays pixel-exact. */
+/* Replica of the couple's real printed envelope: a flat glossy-red landscape card.
+   Rendered at native 460x320 and uniformly scaled by the component, so every px
+   value below stays proportional. On `.open` the card flips (rotateY), the back
+   flap lifts (rotateX), and the inner card rises into view — staged with
+   transition-delays so it reads flip -> open -> reveal. */
 
 .envelope-intro {
   position: relative;
-  width: 430px;
-  height: 287px;
+  width: 500px;
+  height: 330px;
   transform-origin: center center;
-  /* Children are all absolutely positioned, so the wrapper's intrinsic
-     min-width is 0 and a narrow flex parent would shrink it. The inner
-     border-triangles stay anchored at left:0 with 215.05px borders, so a
-     shrunk wrapper drifts the visual center off the transform origin. */
   flex-shrink: 0;
 }
 
 /* ground shadow */
-.envelope-intro .envelope-shadow {
+.envelope-intro .env-shadow {
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 0;
 }
-.envelope-intro .envelope-shadow::after {
+.envelope-intro .env-shadow::after {
   content: '';
   position: absolute;
-  width: 490px;
-  height: 25px;
+  /* track the wrapper so it stays correct at any native size */
+  width: 100%;
+  height: 26px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.2);
-  top: 336px;
+  background: rgba(0, 0, 0, 0.22);
+  top: calc(100% + 12px);
   left: 50%;
   transform: translateX(-50%);
-  filter: blur(4px);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-  animation: env-shadowScale 3s ease-in-out infinite;
+  filter: blur(5px);
+  animation: env-shadowScale 3.4s ease-in-out infinite;
 }
 
-/* burgundy envelope body (the inside/back) */
-.envelope-intro .envelope-container {
+/* perspective + gentle floating bob (separate element so it never fights the flip).
+   The invitation + pocket-front are 2D children here (siblings of .env-3d), so they
+   bob with the envelope and paint in front of the whole flip card by z-index. */
+.envelope-intro .env-float {
   position: absolute;
   inset: 0;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
-  background-color: #812927;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  animation: env-float 3s ease-in-out infinite;
-  z-index: 1;
+  perspective: 1600px;
+  animation: env-float 3.4s ease-in-out infinite;
 }
 
-/* CSS border-triangle parts: a 0x0 box whose thick borders draw the folds */
-.envelope-intro .front {
+/* the flip card */
+.envelope-intro .env-3d {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
+  inset: 0;
+  z-index: 1; /* below .env-letter (5) and .env-pocket-front (6) */
+  transform-style: preserve-3d;
+  transform: rotateY(0deg);
+  /* keep this element free of opacity/filter — they would flatten preserve-3d
+     and leak the front through the back. */
+  will-change: transform;
+}
+.envelope-intro .env-3d.open {
+  animation: env-flip 0.9s cubic-bezier(0.4, 0.05, 0.2, 1) forwards;
 }
 
-/* front pocket: lighter side flaps + bottom flap, top is the opening */
-.envelope-intro .pocket {
-  border-left: 215.05px solid #a33f3d;
-  border-right: 215.05px solid #a33f3d;
-  border-bottom: 143.367px solid #a84644;
-  border-top: 143.367px solid transparent;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
-  z-index: 3;
-}
-
-/* top flap: burgundy downward triangle that flips open on .open */
-.envelope-intro .flap {
-  border-left: 215.05px solid transparent;
-  border-right: 215.05px solid transparent;
-  border-bottom: 131.898px solid transparent;
-  border-top: 154.836px solid #812927;
-  transform-origin: top;
-  transform: rotateX(0deg);
-  z-index: 5;
-  transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    z-index 1.2s;
-}
-.envelope-intro .envelope-container.open .flap {
-  transform: rotateX(180deg);
-  z-index: 1;
-}
-
-/* the letter: white card, hidden behind the flap, slides up on .open */
-.envelope-intro .letter {
+/* shared face styling */
+.envelope-intro .env-front,
+.envelope-intro .env-back {
   position: absolute;
-  top: 5%;
-  left: 5%;
-  width: 90%;
-  height: 90%;
-  background-color: #fff;
-  border-radius: 6px;
-  box-shadow: 0 2px 26px rgba(0, 0, 0, 0.12);
-  overflow: hidden;
-  z-index: 1;
-  transform: translateY(0);
-  transition: transform 0.6s 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    z-index 0.2s, box-shadow 0.3s ease;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.32);
 }
-.envelope-intro .letter::after {
+
+/* ---------- printed FRONT (the real envelope) ---------- */
+.envelope-intro .env-front {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 46px;
+  /* NB: no `overflow: hidden` here — it forces a composited layer that defeats
+     `backface-visibility: hidden`, leaking the mirrored front through the back
+     during the flip. The sheen/vignette pseudos are rounded instead (below). */
+  background: radial-gradient(
+    125% 115% at 50% 0%,
+    #b6262b 0%,
+    #9d1c20 46%,
+    #7c1318 100%
+  );
+}
+/* soft sheen */
+.envelope-intro .env-front::before {
   content: '';
   position: absolute;
   inset: 0;
-  pointer-events: none;
-  background-image: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0) 25%,
-    rgba(255, 227, 239, 0.2) 75%,
-    rgba(215, 227, 239, 0.3) 100%
+  border-radius: inherit;
+  background: linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0) 34%
   );
+  pointer-events: none;
 }
-.envelope-intro .envelope-container.open .letter {
-  transform: translateY(-136.2px);
-  z-index: 2;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-  transition: transform 1s 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    z-index 0.5s;
-}
-.envelope-intro .letter-image {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 6px;
-}
-
-/* fallback letter content when no image is configured */
-.envelope-intro .letter-fallback {
+/* corner vignette */
+.envelope-intro .env-front::after {
+  content: '';
   position: absolute;
   inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    115% 120% at 50% 42%,
+    rgba(0, 0, 0, 0) 58%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  pointer-events: none;
+}
+
+/* printed text — a centered flex column so elements never overlap, whatever the
+   name length. save-the-date / date / eyebrow lean right; names stay centered. */
+.envelope-intro .env-front-text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: 18px; /* leaves room for the name box at the bottom-left */
+}
+.envelope-intro .env-savedate {
+  align-self: flex-end;
+  font-family: 'Great Vibes', cursive;
+  font-size: 33px;
+  line-height: 1;
+  color: #fdeee9;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+  font-style: italic;
+}
+.envelope-intro .env-names {
+  text-align: right;
+  font-family: var(--font-display, 'Playfair Display', serif), serif;
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1.08;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
+}
+/* keep each person's name intact so wraps fall around the ampersand */
+.envelope-intro .env-name-part {
+  white-space: nowrap;
+}
+.envelope-intro .env-amp {
+  font-family: 'Great Vibes', cursive;
+  text-transform: none;
+  font-weight: 400;
+  font-size: 0.82em;
+  margin: 0 0.06em;
+  color: #fdeee9;
+}
+.envelope-intro .env-date {
+  align-self: flex-end;
+  max-width: 60%;
+  text-align: right;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  color: #fff;
+}
+.envelope-intro .env-eyebrow {
+  align-self: flex-end;
+  max-width: 60%;
+  text-align: right;
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+}
+/* blank white name box, bottom-left */
+.envelope-intro .env-namebox {
+  left: 42px;
+  bottom: 34px;
+  z-index: 1;
+  width: 156px;
+  height: 26px;
+  background: #fbf7f2;
+  border-radius: 3px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+
+/* ---------- BACK of the envelope (revealed after the flip) ---------- */
+.envelope-intro .env-back {
+  transform: rotateY(180deg);
+  /* real 3D so the flap folds with perspective; no overflow clip so nothing
+     gets cropped (the invitation now lives outside this face entirely) */
+  transform-style: preserve-3d;
+  background: linear-gradient(180deg, #8f181c 0%, #7c1318 100%);
+}
+
+/* lower pocket wall (back seam). translateZ lifts it just in front of the back
+   body plane since preserve-3d ignores z-index */
+.envelope-intro .env-pocket {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 58%;
+  background: linear-gradient(180deg, #971a1f 0%, #821419 100%);
+  clip-path: polygon(0 28%, 50% 0, 100% 28%, 100% 100%, 0 100%);
+  transform: translateZ(1px);
+}
+
+/* the invitation — a 2D layer (sibling of .env-3d, so the flap never covers it)
+   that slides up out of the envelope's opening on open. bottom-anchored at the
+   opening line so the whole image clears the pocket-front (no crop) at any aspect. */
+.envelope-intro .env-letter {
+  position: absolute;
+  left: 50%;
+  bottom: 57%; /* bottom edge rests at the envelope opening once out */
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+  transform-origin: center bottom;
+  transform: translateX(-50%) translateY(78px); /* tucked low, behind the pocket */
+  opacity: 0;
+  pointer-events: none; /* taps fall through to the overlay button to dismiss */
+  transition: transform 0.95s cubic-bezier(0.16, 0.84, 0.3, 1) 1.15s,
+    opacity 0.5s ease 1.15s, box-shadow 0.5s ease 1.15s;
+}
+.envelope-intro .env-letter.open {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  box-shadow: 0 20px 46px rgba(0, 0, 0, 0.3);
+}
+
+/* envelope front wall — a 2D copy of the pocket painted in front of the letter so
+   the invitation reads as sliding up from inside. Fades in once the flip settles
+   (kept hidden during the turn so it doesn't float in 2D). */
+.envelope-intro .env-pocket-front {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 58%;
+  z-index: 6;
+  background: linear-gradient(180deg, #971a1f 0%, #821419 100%);
+  clip-path: polygon(0 28%, 50% 0, 100% 28%, 100% 100%, 0 100%);
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease 0.9s;
+}
+.envelope-intro .env-pocket-front.open {
+  opacity: 1;
+}
+/* the image keeps its natural aspect — no crop, no letterbox bars */
+.envelope-intro .env-letter-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 430px;
+  max-height: 290px;
+  border-radius: 4px;
+}
+.envelope-intro .env-letter-fallback {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   gap: 8px;
+  width: 340px;
+  padding: 32px 26px;
   color: #3f2e2a;
-  padding: 0 18px;
 }
-.envelope-intro .lf-eyebrow {
-  font-size: 11px;
-  letter-spacing: 0.28em;
+.envelope-intro .ec-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
   color: #9a6b62;
 }
-.envelope-intro .lf-names {
+.envelope-intro .ec-names {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #9d1c20;
+}
+.envelope-intro .ec-amp {
   font-family: 'Great Vibes', cursive;
-  font-size: 46px;
-  line-height: 1;
-  color: #812927;
+  text-transform: none;
+  font-weight: 400;
+  font-size: 0.82em;
 }
-.envelope-intro .lf-date {
+.envelope-intro .ec-date {
   font-size: 12px;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
+  color: #3f2e2a;
+}
+.envelope-intro .ec-line {
+  font-family: 'Great Vibes', cursive;
+  font-size: 22px;
+  line-height: 1;
+  color: #b06a62;
 }
 
-/* wax seal sits on the flap fold-line, always on top */
-.envelope-intro .wax-seal {
+/* top flap — a downward triangle that folds open in true 3D after the flip.
+   translateZ keeps it just in front of the pocket/back plane. */
+.envelope-intro .env-flap {
   position: absolute;
-  top: 114.7px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 55.9px;
-  height: 55.9px;
-  z-index: 10;
-}
-.envelope-intro .wax-seal svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
-}
-
-/* floating hearts */
-.envelope-intro .hearts {
-  position: absolute;
-  top: 157.7px;
+  top: 0;
   left: 0;
   right: 0;
-  z-index: 2;
-  pointer-events: none;
+  height: 60%;
+  background: linear-gradient(180deg, #a8222a 0%, #931a20 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top center;
+  transform: translateZ(2px) rotateX(0deg);
+  transition: transform 0.65s cubic-bezier(0.4, 0.1, 0.3, 1) 0.8s;
 }
-.envelope-intro .heart {
-  position: absolute;
-  bottom: 0;
-  width: 92px;
-  height: 74px;
-  opacity: 0;
-  transform: scale(0);
-}
-.envelope-intro .heart::before,
-.envelope-intro .heart::after {
+.envelope-intro .env-flap::after {
   content: '';
   position: absolute;
-  left: 46.02px;
-  top: 0;
-  width: 46.02px;
-  height: 73.55px;
-  background-color: #d00000;
-  border-radius: 46px 46px 0 0;
-  transform: rotate(-45deg);
-  transform-origin: 0 100%;
+  inset: 0;
+  clip-path: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.08));
+  pointer-events: none;
 }
-.envelope-intro .heart::after {
-  left: 0;
-  transform: rotate(45deg);
-  transform-origin: 100% 100%;
-}
-.envelope-intro .heart.a1 {
-  left: 20%;
-}
-.envelope-intro .heart.a2 {
-  left: 55%;
-}
-.envelope-intro .heart.a3 {
-  left: 10%;
-}
-.envelope-intro .envelope-container.open .heart.a1 {
-  --heart-scale: 0.6;
-  animation: env-heartFloat 4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1,
-    env-sideSway 2s ease-in-out 4 alternate,
-    env-heartScale 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 1;
-  animation-fill-mode: forwards;
-  animation-delay: 1.2s;
-}
-.envelope-intro .envelope-container.open .heart.a2 {
-  --heart-scale: 1;
-  animation: env-heartFloat 5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1,
-    env-sideSway 4s ease-in-out 2 alternate,
-    env-heartScale 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 1;
-  animation-fill-mode: forwards;
-  animation-delay: 1.4s;
-}
-.envelope-intro .envelope-container.open .heart.a3 {
-  --heart-scale: 0.8;
-  animation: env-heartFloat 7s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1,
-    env-sideSway 2s ease-in-out 6 alternate,
-    env-heartScale 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 1;
-  animation-fill-mode: forwards;
-  animation-delay: 1.6s;
+.envelope-intro .env-3d.open .env-flap {
+  transform: translateZ(2px) rotateX(178deg);
 }
 
+/* flip with depth — lifts toward the viewer at the midpoint, then settles
+   showing the back (rotateY 180), held via animation-fill-mode: forwards */
+@keyframes env-flip {
+  0% {
+    transform: translateZ(0) rotateY(0deg);
+  }
+  50% {
+    transform: translateZ(90px) rotateY(90deg);
+  }
+  100% {
+    transform: translateZ(0) rotateY(180deg);
+  }
+}
 @keyframes env-float {
   0%,
   100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-20px);
+    transform: translateY(-16px);
   }
 }
 @keyframes env-shadowScale {
@@ -260,55 +362,77 @@
     transform: translateX(-50%) scaleX(1);
   }
   50% {
-    transform: translateX(-50%) scaleX(0.85);
-  }
-}
-@keyframes env-heartFloat {
-  0% {
-    top: 0;
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
-  80% {
-    opacity: 0.3;
-  }
-  100% {
-    top: -600px;
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-@keyframes env-sideSway {
-  0% {
-    margin-left: 0;
-  }
-  50% {
-    margin-left: 25px;
-  }
-  100% {
-    margin-left: 50px;
-  }
-}
-@keyframes env-heartScale {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(var(--heart-scale, 1));
-    opacity: 1;
+    transform: translateX(-50%) scaleX(0.86);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .envelope-intro .envelope-container,
-  .envelope-intro .envelope-shadow::after {
+  .envelope-intro .env-float,
+  .envelope-intro .env-shadow::after {
     animation: none;
+  }
+  /* skip the 3D flip + flap fold; snap the back into view */
+  .envelope-intro .env-3d.open {
+    animation: none;
+    transform: rotateY(180deg);
+  }
+  .envelope-intro .env-3d,
+  .envelope-intro .env-flap {
+    transition-duration: 0.001s;
+    transition-delay: 0s;
+  }
+  /* just fade the invitation in at its out position, no slide */
+  .envelope-intro .env-letter {
+    transition: opacity 0.4s ease 0.2s;
+    transform: translateX(-50%) translateY(0);
+  }
+  .envelope-intro .env-pocket-front {
+    transition: opacity 0.001s;
+  }
+}
+
+/* Mobile: the whole card is already uniformly scaled down, but on phones we
+   also dial the printed type + spacing so long names stay balanced and the
+   composition keeps breathing room. */
+@media (max-width: 480px) {
+  .envelope-intro .env-front {
+    padding: 0 32px;
+  }
+  .envelope-intro .env-front-text {
+    gap: 7px;
+    margin-bottom: 14px;
+  }
+  .envelope-intro .env-savedate {
+    font-size: 26px;
+  }
+  .envelope-intro .env-names {
+    font-size: 27px;
+    letter-spacing: 0.03em;
+  }
+  .envelope-intro .env-date {
+    font-size: 13px;
+    letter-spacing: 0.12em;
+  }
+  .envelope-intro .env-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+  }
+  .envelope-intro .env-namebox {
+    left: 32px;
+    bottom: 28px;
+    width: 132px;
+    height: 22px;
+  }
+  .envelope-intro .ec-names {
+    font-size: 26px;
+  }
+  /* keep the enlarged invitation comfortably within small screens */
+  .envelope-intro .env-letter-image {
+    max-width: 400px;
+    max-height: 270px;
+  }
+  .envelope-intro .env-letter-fallback {
+    width: 300px;
+    padding: 26px 20px;
   }
 }

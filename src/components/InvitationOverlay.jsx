@@ -9,6 +9,7 @@ const STORAGE_KEY = 'vn-invitation-opened'
 export default function InvitationOverlay() {
   const { t } = useLanguage()
   const { config } = useWeddingConfig()
+  const common = config.common || {}
   const letter = (config.invitation?.letterImage || '').trim()
   const [visible, setVisible] = useState(false)
   const [open, setOpen] = useState(false)
@@ -23,6 +24,8 @@ export default function InvitationOverlay() {
     }
   }, [])
 
+  // Any user action — tap, scroll/wheel, or touch-drag — starts the sequence:
+  // the envelope flips, the flap opens, the invitation rises, then we dismiss.
   const handleOpen = () => {
     if (open) return
     setOpen(true)
@@ -30,7 +33,7 @@ export default function InvitationOverlay() {
       sessionStorage.setItem(STORAGE_KEY, '1')
       setVisible(false)
       document.body.style.overflow = ''
-    }, 3000)
+    }, 5000)
   }
 
   return (
@@ -39,6 +42,8 @@ export default function InvitationOverlay() {
         <motion.button
           type="button"
           onClick={handleOpen}
+          onWheel={handleOpen}
+          onTouchMove={handleOpen}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -46,7 +51,15 @@ export default function InvitationOverlay() {
           aria-label={t('invitation.tap')}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-bg text-ink film-grain cursor-pointer focus:outline-none"
         >
-          <EnvelopeIntro open={open} letterImage={letter} />
+          <EnvelopeIntro
+            open={open}
+            coupleLeft={common.coupleNameLeft}
+            coupleRight={common.coupleNameRight}
+            dateDisplay={common.dateDisplay}
+            eyebrow={t('invitation.eyebrow')}
+            line={t('invitation.line')}
+            letterImage={letter}
+          />
 
           <motion.span
             initial={{ opacity: 0 }}

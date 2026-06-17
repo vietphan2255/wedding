@@ -1,48 +1,29 @@
 import { useEffect, useState } from 'react'
 import './EnvelopeIntro.css'
 
-// Faithful replica of the cinelove animated envelope. The reference is built
-// from fixed-px CSS border-triangles, so we render it at its native size and
-// scale the whole thing to fit the viewport — keeping every proportion exact.
-const NATIVE_W = 430
-const NATIVE_H = 287
+// Replica of the couple's real printed envelope: a flat glossy-red landscape card
+// with everything printed on the front. On `open` it flips over (rotateY), the back
+// flap lifts (rotateX), and the inner card (invitation image + info) rises into view.
+// Rendered at a fixed native size and uniformly scaled to fit the viewport so the
+// printed layout keeps its proportions on every screen.
+const NATIVE_W = 500
+const NATIVE_H = 330
 
-function WaxSeal() {
-  return (
-    <svg viewBox="0 0 100 100" aria-hidden>
-      <defs>
-        <radialGradient id="env-wax" cx="38%" cy="32%" r="75%">
-          <stop offset="0%" stopColor="#c8434b" />
-          <stop offset="55%" stopColor="#a4161a" />
-          <stop offset="100%" stopColor="#6e0f12" />
-        </radialGradient>
-      </defs>
-      <circle cx="50" cy="50" r="46" fill="url(#env-wax)" />
-      <circle
-        cx="50"
-        cy="50"
-        r="38"
-        fill="none"
-        stroke="#5e0d10"
-        strokeWidth="1.5"
-        opacity="0.55"
-      />
-      <path
-        d="M50 65 C 39 55, 31 48, 31 40.5 C 31 35.5, 35 32, 40 32 C 44.5 32, 48 35, 50 38 C 52 35, 55.5 32, 60 32 C 65 32, 69 35.5, 69 40.5 C 69 48, 61 55, 50 65 Z"
-        fill="#f0cfc6"
-        opacity="0.85"
-      />
-    </svg>
-  )
-}
-
-export default function EnvelopeIntro({ open = false, letterImage = '' }) {
+export default function EnvelopeIntro({
+  open = false,
+  coupleLeft = 'Viet',
+  coupleRight = 'Nguyen',
+  dateDisplay = '',
+  eyebrow = '',
+  line = '',
+  letterImage = '',
+}) {
   const [scale, setScale] = useState(1)
 
   useEffect(() => {
     const calc = () => {
-      const avail = Math.min(window.innerWidth * 0.92, 520)
-      setScale(Math.min(1.2, avail / NATIVE_W))
+      const avail = Math.min(window.innerWidth * 0.94, 660)
+      setScale(Math.min(1.4, avail / NATIVE_W))
     }
     calc()
     window.addEventListener('resize', calc)
@@ -56,35 +37,57 @@ export default function EnvelopeIntro({ open = false, letterImage = '' }) {
       className="envelope-intro"
       style={{ width: NATIVE_W, height: NATIVE_H, transform: `scale(${scale})` }}
     >
-      <div className="envelope-shadow" />
-      <div className={`envelope-container${open ? ' open' : ''}`}>
-        <div className="front pocket" />
-        <div className="letter">
+      <div className="env-shadow" />
+      <div className="env-float">
+        <div className={`env-3d${open ? ' open' : ''}`}>
+          {/* printed front face — the real envelope */}
+          <div className="env-front">
+            <div className="env-front-text">
+              <span className="env-savedate">save the date</span>
+              <h2 className="env-names">
+                <span className="env-name-part">{coupleLeft}</span>{' '}
+                <span className="env-amp">&amp;</span>{' '}
+                <span className="env-name-part">{coupleRight}</span>
+              </h2>
+              {dateDisplay ? <p className="env-date">{dateDisplay}</p> : null}
+              {eyebrow ? <p className="env-eyebrow">{eyebrow}</p> : null}
+            </div>
+            <span className="env-namebox" aria-hidden />
+          </div>
+
+          {/* back of the envelope — revealed after the flip */}
+          <div className="env-back">
+            <div className="env-pocket" />
+            <div className="env-flap" />
+          </div>
+        </div>
+
+        {/* invitation — a 2D layer in front of the flip card; slides up out of
+            the pocket on open (never clipped, so it shows in full) */}
+        <div className={`env-letter${open ? ' open' : ''}`}>
           {src ? (
             <img
-              className="letter-image"
+              className="env-letter-image"
               src={src}
-              alt="Invitation letter"
+              alt="Invitation"
               draggable={false}
               decoding="async"
             />
           ) : (
-            <div className="letter-fallback">
-              <p className="lf-eyebrow">You&apos;re invited</p>
-              <p className="lf-names">Viet &amp; Nguyen</p>
-              <p className="lf-date">26.07 · 02.08 · 2026</p>
+            <div className="env-letter-fallback">
+              {eyebrow ? <p className="ec-eyebrow">{eyebrow}</p> : null}
+              <p className="ec-names">
+                {coupleLeft} <span className="ec-amp">&amp;</span> {coupleRight}
+              </p>
+              {dateDisplay ? <p className="ec-date">{dateDisplay}</p> : null}
+              {line ? <p className="ec-line">{line}</p> : null}
             </div>
           )}
         </div>
-        <div className="front flap" />
-        <div className="wax-seal">
-          <WaxSeal />
-        </div>
-        <div className="hearts">
-          <div className="heart a1" />
-          <div className="heart a2" />
-          <div className="heart a3" />
-        </div>
+
+        {/* envelope front wall — occludes the letter's lower part so it reads as
+            emerging from inside; fades in once the flip settles */}
+        <div className={`env-pocket-front${open ? ' open' : ''}`} aria-hidden />
       </div>
     </div>
   )

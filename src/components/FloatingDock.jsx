@@ -4,12 +4,16 @@ import { Send, Heart, Music, Pause } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import useIsPhone from '../hooks/useIsPhone'
+import useInterval from '../hooks/useInterval'
 
 const MUSIC_STORAGE_KEY = 'vn-music-playing'
 const MUSIC_MUTED_KEY = 'vn-music-muted'
+// Safety cap so the autostart poller can't run forever if play() never succeeds.
+const MAX_AUTOSTART_TRIES = 20
 
 export default function FloatingDock() {
   const { t } = useLanguage()
+  const hasInteracted = useHasInteracted()
   const onHome =
     typeof window !== 'undefined' &&
     (window.location.pathname === '/' || window.location.pathname === '')
@@ -18,7 +22,7 @@ export default function FloatingDock() {
 
   return (
     <div className="fixed bottom-5 right-5 z-50 flex flex-col-reverse gap-3 items-end">
-      <MusicButton />
+      <MusicButton hasInteracted={hasInteracted} />
       <DockButton href={wishesHref} label={t('nav.wishes')}>
         <Heart size={18} />
       </DockButton>
@@ -27,6 +31,28 @@ export default function FloatingDock() {
       </DockButton>
     </div>
   )
+}
+
+// True once the visitor has interacted with the page (pointer/touch/key) — the
+// gesture browsers require before audio can play. Tracked in the always-mounted
+// dock so it captures the envelope tap even before the config (and the music
+// button) finish loading from Firebase.
+function useHasInteracted() {
+  const [interacted, setInteracted] = useState(false)
+  useEffect(() => {
+    if (typeof window === 'undefined' || interacted) return
+    const onFirst = () => setInteracted(true)
+    const opts = { passive: true }
+    window.addEventListener('pointerdown', onFirst, opts)
+    window.addEventListener('touchstart', onFirst, opts)
+    window.addEventListener('keydown', onFirst, opts)
+    return () => {
+      window.removeEventListener('pointerdown', onFirst)
+      window.removeEventListener('touchstart', onFirst)
+      window.removeEventListener('keydown', onFirst)
+    }
+  }, [interacted])
+  return interacted
 }
 
 function DockButton({ href, label, children }) {
@@ -47,68 +73,60 @@ function DockButton({ href, label, children }) {
   )
 }
 
-function MusicButton() {
+function MusicButton({ hasInteracted }) {
   const { config } = useWeddingConfig()
   const music = config.music || {}
   const audioRef = useRef(null)
   const [playing, setPlaying] = useState(false)
+  const [attempts, setAttempts] = useState(0)
 
   const enabled = Boolean(music.enabled && music.url)
+  const muted =
+    typeof window !== 'undefined' && localStorage.getItem(MUSIC_MUTED_KEY) === '1'
 
-  useEffect(() => {
+  // Start playback (play-only — never pauses). Resolves quietly when the browser
+  // blocks it; the poller below retries until it's allowed.
+  const start = () => {
     const el = audioRef.current
     if (!el) return
     el.volume = clampVolume(music.volume)
+    el.play()
+      .then(() => {
+        setPlaying(true)
+        sessionStorage.setItem(MUSIC_STORAGE_KEY, '1')
+      })
+      .catch(() => {})
+  }
+
+  // Keep the live volume in sync with the admin setting.
+  useEffect(() => {
+    const el = audioRef.current
+    if (el) el.volume = clampVolume(music.volume)
   }, [music.volume])
 
+  // Immediate attempt on mount — succeeds for visitors the browser already
+  // trusts (returning guests / a prior session). Blocked attempts fall through
+  // to the gesture-gated poller below. Honours a previous mute.
   useEffect(() => {
-    if (!enabled) return
-    const el = audioRef.current
-    if (!el) return
-    el.volume = clampVolume(music.volume)
-    const wasPlaying = sessionStorage.getItem(MUSIC_STORAGE_KEY) === '1'
-    if (wasPlaying) {
-      el.play()
-        .then(() => setPlaying(true))
-        .catch(() => setPlaying(false))
-    }
+    if (!enabled || muted) return
+    start()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, music.url])
 
-  // Auto-start on first user interaction by querying the dock button and
-  // synthesising a click. Routing through the real click handler keeps a
-  // single source of truth for play/pause + localStorage persistence, and
-  // ensures play() runs inside a user-gesture context (browsers block
-  // silent autoplay). Skipped if the user previously muted (localStorage)
-  // or the music is already known to be playing (sessionStorage).
-  useEffect(() => {
-    if (!enabled) return
-    if (typeof window === 'undefined') return
-    if (localStorage.getItem(MUSIC_MUTED_KEY) === '1') return
-    if (sessionStorage.getItem(MUSIC_STORAGE_KEY) === '1') return
-
-    let done = false
-    const autoStart = () => {
-      if (done) return
-      done = true
-      cleanup()
-      // Re-check inside the handler — the user's first interaction may
-      // already have been a click on the dock button itself, in which case
-      // its own onClick will have updated state by now and we skip.
-      if (localStorage.getItem(MUSIC_MUTED_KEY) === '1') return
-      if (sessionStorage.getItem(MUSIC_STORAGE_KEY) === '1') return
-      const btn = document.querySelector('[data-music-toggle]')
-      if (btn) btn.click()
-    }
-    const cleanup = () => {
-      window.removeEventListener('click', autoStart)
-      window.removeEventListener('touchstart', autoStart)
-      window.removeEventListener('keydown', autoStart)
-    }
-    window.addEventListener('click', autoStart)
-    window.addEventListener('touchstart', autoStart, { passive: true })
-    window.addEventListener('keydown', autoStart)
-    return cleanup
-  }, [enabled])
+  // Resilient autostart: once the guest has interacted (the gesture browsers
+  // require to allow audio — e.g. the envelope tap), retry play() until it
+  // sticks, then stop. This survives the async config load — the music button
+  // often mounts only after Firebase responds, i.e. after the tap, so a
+  // one-shot handler would miss it; the poller doesn't.
+  useInterval(
+    () => {
+      setAttempts((n) => n + 1)
+      start()
+    },
+    enabled && hasInteracted && !playing && !muted && attempts < MAX_AUTOSTART_TRIES
+      ? 500
+      : null,
+  )
 
   if (!enabled) return null
 

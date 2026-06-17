@@ -62,12 +62,13 @@ export default function InvitationSection() {
           Invitation
         </p>
         <h2 className="font-display text-2xl md:text-3xl mt-1">
-          Invitation letter
+          Invitation image
         </h2>
         <p className="text-sm text-muted mt-2 max-w-2xl">
-          Paste an image URL for the letter that slides up out of the envelope
-          when a guest opens the site. Landscape (~3:2) images look best. Leave
-          it empty to fall back to the default text card.
+          The intro envelope shows a red printed front with your configured names
+          and date. When a guest opens it, the envelope flips and this image rises
+          out on the inner card. Paste an image URL — landscape (~3:2) looks best.
+          Leave it empty to fall back to the default text card.
         </p>
       </header>
 
