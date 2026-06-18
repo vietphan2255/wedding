@@ -1,6 +1,7 @@
 export default {
   // Navbar
   'nav.home': 'Home',
+  'nav.invitation': 'Invitation',
   'nav.story': 'Our Story',
   'nav.gallery': 'Gallery',
   'nav.timeline': 'Ceremonies',
@@ -183,6 +184,13 @@ export default {
   'invitation.tap': 'Tap to open',
   'invitation.eyebrow': 'You are invited',
   'invitation.line': 'A celebration of love',
+
+  // Wedding invitation section (after hero)
+  'invite.familyGroom': "The Groom's Family",
+  'invite.familyBride': "The Bride's Family",
+  'invite.banquet': 'Wedding banquet',
+  'invite.atTime': 'At',
+  'invite.venueLabel': 'Venue',
 
   // Mobile RSVP bar
   'mobileRsvp.cta': 'RSVP now',

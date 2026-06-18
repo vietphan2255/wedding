@@ -182,7 +182,23 @@ export const DEFAULT_CONFIG: WeddingConfig = {
   })),
   gifts: DEFAULT_GIFTS,
   faqs: DEFAULT_FAQS,
-  invitation: { letterImage: '' },
+  invitation: {
+    letterImage: '',
+    groomFather: 'Ông Phan Văn Hùng',
+    groomMother: 'Bà Trần Thị Lan',
+    groomHometown: 'TP. Hà Nội',
+    brideFather: 'Ông Nguyễn Văn Minh',
+    brideMother: 'Bà Lê Thị Hồng',
+    brideHometown: 'TP. Điện Biên',
+    message_vi:
+      'Trân trọng kính mời quý khách đến chung vui cùng gia đình chúng tôi trong ngày lễ thành hôn của hai con.',
+    message_en:
+      'Together with our families, we joyfully invite you to share in the celebration of our wedding.',
+    vuquyLunar: 'Nhằm ngày 12 tháng 6 năm Bính Ngọ (Âm lịch)',
+    vuquyAddress: '123 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh',
+    thanhhonLunar: 'Nhằm ngày 19 tháng 6 năm Bính Ngọ (Âm lịch)',
+    thanhhonAddress: '456 Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh',
+  },
   effects: { cursorGif: '' },
   qr: {
     link: '',

@@ -1,6 +1,7 @@
 export default {
   // Navbar
   'nav.home': 'Trang chủ',
+  'nav.invitation': 'Thiệp mời',
   'nav.story': 'Chuyện chúng mình',
   'nav.gallery': 'Hình ảnh',
   'nav.timeline': 'Sự kiện',
@@ -183,6 +184,13 @@ export default {
   'invitation.tap': 'Chạm để mở',
   'invitation.eyebrow': 'Trân trọng kính mời',
   'invitation.line': 'Lễ cưới của chúng mình',
+
+  // Wedding invitation section (after hero)
+  'invite.familyGroom': 'Nhà Trai',
+  'invite.familyBride': 'Nhà Gái',
+  'invite.banquet': 'Tiệc mừng',
+  'invite.atTime': 'Vào lúc',
+  'invite.venueLabel': 'Địa điểm tổ chức',
 
   // Mobile RSVP bar
   'mobileRsvp.cta': 'Xác nhận tham dự',

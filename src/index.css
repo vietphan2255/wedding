@@ -63,6 +63,12 @@ body {
   font-family: 'Great Vibes', cursive;
 }
 
+/* Vietnamese-capable cursive (Great Vibes lacks diacritics). Used by the
+   WeddingInvite "thiệp cưới" section for names/title/lunar in flowing script. */
+.font-script-vn {
+  font-family: 'Dancing Script', 'Great Vibes', cursive;
+}
+
 /* Lenis */
 html.lenis,
 html.lenis body {

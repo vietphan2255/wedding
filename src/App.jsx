@@ -4,6 +4,7 @@ import useSmoothScroll from './hooks/useSmoothScroll'
 import { useWeddingConfig } from './contexts/WeddingConfigContext'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
+import WeddingInvite from './components/WeddingInvite.jsx'
 import Countdown from './components/Countdown.jsx'
 import StoryV2 from './components/StoryV2.jsx'
 import GalleryV2 from './components/GalleryV2.jsx'
@@ -18,7 +19,8 @@ import ScrollProgress from './components/ScrollProgress.jsx'
 import ParallaxPetals from './components/ParallaxPetals.jsx'
 import MobileRsvpBar from './components/MobileRsvpBar.jsx'
 import InvitationOverlay from './components/InvitationOverlay.jsx'
-import FlyingDate from './components/fx/FlyingDate.jsx'
+// Temporarily disabled: flying date overlay (Hero → Countdown).
+// import FlyingDate from './components/fx/FlyingDate.jsx'
 import CustomCursor from './components/fx/CustomCursor.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 
@@ -58,6 +60,7 @@ function WeddingSite() {
           flightMiddleRef={flightMiddleRef}
           flightSourceBRef={flightSourceBRef}
         />
+        <WeddingInvite />
         <Countdown
           flightTargetRef={flightTargetRef}
           flightTargetARef={flightTargetARef}
@@ -71,14 +74,17 @@ function WeddingSite() {
         <GiftCard />
         <FAQ />
       </main>
-      <FlyingDate
+      {/* Temporarily disabled: flying date overlay (Hero → Countdown). The hero
+          and countdown show their date labels statically while this is off.
+          Re-enable by uncommenting the import above and this block. */}
+      {/* <FlyingDate
         sourceARef={flightSourceARef}
         sourceBRef={flightSourceBRef}
         middleRef={flightMiddleRef}
         targetRef={flightTargetRef}
         targetARef={flightTargetARef}
         targetBRef={flightTargetBRef}
-      />
+      /> */}
       <Footer />
       <FloatingDock />
       <MobileRsvpBar />

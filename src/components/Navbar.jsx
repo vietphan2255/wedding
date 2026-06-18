@@ -8,6 +8,7 @@ import ThemeSwitcher from './ThemeSwitcher.jsx'
 import LanguageToggle from './LanguageToggle.jsx'
 
 const LINKS = [
+  ['/#invitation', 'nav.invitation'],
   ['/#story', 'nav.story'],
   ['/#gallery', 'nav.gallery'],
   ['/#ceremonies', 'nav.timeline'],

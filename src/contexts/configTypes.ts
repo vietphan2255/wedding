@@ -83,6 +83,22 @@ export interface Faq extends OrderedItem {
 
 export interface Invitation {
   letterImage: string
+  // Families (Nhà Trai / Nhà Gái) — parents announced on the formal invite.
+  groomFather: string
+  groomMother: string
+  groomHometown: string
+  brideFather: string
+  brideMother: string
+  brideHometown: string
+  // Formal invite sentence (bilingual prose).
+  message_vi: string
+  message_en: string
+  // Per-ceremony lunar date + full street address. Venue *name* is reused from
+  // the existing bilingual `events.{vuquy,thanhhon}.venue` labels.
+  vuquyLunar: string
+  vuquyAddress: string
+  thanhhonLunar: string
+  thanhhonAddress: string
 }
 
 export interface Effects {
