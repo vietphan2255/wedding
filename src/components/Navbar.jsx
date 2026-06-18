@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import ThemeSwitcher from './ThemeSwitcher.jsx'
-import LanguageToggle from './LanguageToggle.jsx'
 
 const LINKS = [
   ['/#invitation', 'nav.invitation'],
@@ -63,7 +62,6 @@ export default function Navbar() {
         </ul>
 
         <div className="hidden md:flex items-center gap-2">
-          <LanguageToggle />
           <ThemeSwitcher />
         </div>
 
@@ -98,8 +96,7 @@ export default function Navbar() {
                 </li>
               ))}
             </ul>
-            <div className="mt-6 flex items-center justify-between gap-3">
-              <LanguageToggle />
+            <div className="mt-6 flex items-center justify-end gap-3">
               <ThemeSwitcher />
             </div>
           </motion.div>

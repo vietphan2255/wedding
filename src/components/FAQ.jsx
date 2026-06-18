@@ -6,7 +6,7 @@ import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import FadeIn from './FadeIn.jsx'
 
 export default function FAQ() {
-  const { t, lang } = useLanguage()
+  const { t } = useLanguage()
   const { config } = useWeddingConfig()
   const items = config.faqs || []
   const [openId, setOpenId] = useState(null)
@@ -30,14 +30,8 @@ export default function FAQ() {
         <ul className="mt-12 space-y-3">
           {items.map((item, i) => {
             const isOpen = openId === item.id
-            const question =
-              lang === 'vi'
-                ? item.question_vi || item.question_en
-                : item.question_en || item.question_vi
-            const answer =
-              lang === 'vi'
-                ? item.answer_vi || item.answer_en
-                : item.answer_en || item.answer_vi
+            const question = item.question_vi
+            const answer = item.answer_vi
             return (
               <FadeIn key={item.id} delay={Math.min(i, 5) * 0.04} y={20}>
                 <li className="rounded-2xl border border-line bg-bg overflow-hidden">

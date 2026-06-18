@@ -51,7 +51,7 @@ export default function Countdown({
   flightTargetARef,
   flightTargetBRef,
 }) {
-  const { t, lang } = useLanguage()
+  const { t } = useLanguage()
   const { config } = useWeddingConfig()
   const reduce = useReducedMotion()
   const calm = reduce
@@ -87,7 +87,7 @@ export default function Countdown({
   // the source widths (which use a different display serif font).
   const dateParts = useMemo(() => {
     if (!current) return null
-    const fmt = new Intl.DateTimeFormat(lang === 'vi' ? 'vi-VN' : 'en-GB', {
+    const fmt = new Intl.DateTimeFormat('vi-VN', {
       day: '2-digit',
       month: 'long',
       year: 'numeric',
@@ -114,7 +114,7 @@ export default function Countdown({
       before = before.slice(0, -trailing[0].length)
     }
     return { before, separator, yearText }
-  }, [current, lang])
+  }, [current])
 
   const dateLabel = dateParts
     ? `${dateParts.before}${dateParts.separator}${dateParts.yearText}`

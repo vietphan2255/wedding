@@ -60,19 +60,16 @@ export default function GiftsSection() {
         <LabelField
           fieldKey="gift.eyebrow"
           label="Eyebrow"
-          defaultEn="Mừng cưới"
           defaultVi="Mừng cưới"
         />
         <LabelField
           fieldKey="gift.title"
           label="Title"
-          defaultEn="Send a wedding gift"
           defaultVi="Gửi mừng cưới"
         />
         <LabelField
           fieldKey="gift.subtitle"
           label="Subtitle"
-          defaultEn="Your presence is the only gift we need — but if you wish to send mừng cưới, here are the details."
           defaultVi="Sự có mặt của bạn đã là món quà lớn nhất — nhưng nếu bạn muốn gửi mừng cưới, đây là thông tin tài khoản."
           multiline
         />

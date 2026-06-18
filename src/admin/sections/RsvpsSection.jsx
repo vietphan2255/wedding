@@ -13,7 +13,7 @@ const EVENTS_LABELS = {
 function formatDate(ts) {
   if (!ts) return '—'
   try {
-    return new Intl.DateTimeFormat('en-GB', {
+    return new Intl.DateTimeFormat('vi-VN', {
       dateStyle: 'medium',
       timeStyle: 'short',
     }).format(new Date(ts))

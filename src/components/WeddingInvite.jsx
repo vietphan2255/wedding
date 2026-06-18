@@ -14,19 +14,17 @@ const CEREMONIES = ['vuquy', 'thanhhon']
 // day / weekday never shift for visitors in other timezones.
 const TZ = 'Asia/Ho_Chi_Minh'
 
-function dateBits(iso, lang) {
+function dateBits(iso) {
   if (!iso) return null
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return null
-  const loc = lang === 'vi' ? 'vi-VN' : 'en-GB'
-  const f = (opts) => new Intl.DateTimeFormat(loc, { ...opts, timeZone: TZ }).format(d)
+  const f = (opts) => new Intl.DateTimeFormat('vi-VN', { ...opts, timeZone: TZ }).format(d)
   const monthNum = Number(
-    new Intl.DateTimeFormat('en-US', { month: 'numeric', timeZone: TZ }).format(d),
+    new Intl.DateTimeFormat('vi-VN', { month: 'numeric', timeZone: TZ }).format(d),
   )
   return {
     day: f({ day: '2-digit' }),
     monthNum,
-    monthLong: f({ month: 'long' }),
     year: f({ year: 'numeric' }),
     weekday: f({ weekday: 'long' }),
   }
@@ -78,15 +76,15 @@ function BigDate({ monthLabel, day, yearLabel }) {
   )
 }
 
-function InvitationCard({ ceremonyKey, t, lang, coupleLeft, coupleRight, inv, dateISO }) {
+function InvitationCard({ ceremonyKey, t, coupleLeft, coupleRight, inv, dateISO }) {
   const name = t(`events.${ceremonyKey}.name`)
   const venue = t(`events.${ceremonyKey}.venue`)
   const time = t(`events.${ceremonyKey}.time`)
   const lunar = inv[`${ceremonyKey}Lunar`] || ''
   const address = inv[`${ceremonyKey}Address`] || ''
-  const bits = dateBits(dateISO, lang)
-  const monthLabel = bits ? (lang === 'vi' ? `Tháng ${bits.monthNum}` : bits.monthLong) : ''
-  const yearLabel = bits ? (lang === 'vi' ? `Năm ${bits.year}` : bits.year) : ''
+  const bits = dateBits(dateISO)
+  const monthLabel = bits ? `Tháng ${bits.monthNum}` : ''
+  const yearLabel = bits ? `Năm ${bits.year}` : ''
 
   return (
     <div className="relative h-full rounded-3xl border border-line bg-bg/60 backdrop-blur px-6 py-10 md:px-12 md:py-14">
@@ -153,7 +151,7 @@ function InvitationCard({ ceremonyKey, t, lang, coupleLeft, coupleRight, inv, da
 }
 
 export default function WeddingInvite() {
-  const { t, lang } = useLanguage()
+  const { t } = useLanguage()
   const { config } = useWeddingConfig()
   const common = config.common || {}
   const inv = config.invitation || {}
@@ -161,7 +159,7 @@ export default function WeddingInvite() {
 
   const coupleLeft = common.coupleNameLeft || 'Viet'
   const coupleRight = common.coupleNameRight || 'Nguyen'
-  const message = (lang === 'vi' ? inv.message_vi : inv.message_en) || ''
+  const message = inv.message_vi || ''
 
   return (
     <section
@@ -182,7 +180,6 @@ export default function WeddingInvite() {
               <InvitationCard
                 ceremonyKey={key}
                 t={t}
-                lang={lang}
                 coupleLeft={coupleLeft}
                 coupleRight={coupleRight}
                 inv={inv}

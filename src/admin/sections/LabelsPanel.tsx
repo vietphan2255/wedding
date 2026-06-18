@@ -1,6 +1,5 @@
 import { useState, type ReactNode } from 'react'
 import { useDraftConfig } from '../DraftConfigContext'
-import { useAdminUI } from '../AdminUIContext'
 import { encodeLabelKey, decodeLabelKey } from '../../contexts/WeddingConfigContext'
 import type { Labels } from '../../contexts/configTypes'
 
@@ -19,7 +18,6 @@ export default function LabelsPanel({
   children,
 }: LabelsPanelProps) {
   const { draft, setSlice, saveSlice, isSliceDirty } = useDraftConfig()
-  const { adminLang } = useAdminUI()
   const dirty = isSliceDirty('labels')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -46,9 +44,6 @@ export default function LabelsPanel({
     <div className="border border-line rounded-2xl p-5 mb-6 bg-surface/20">
       <div className="flex items-center justify-between mb-1">
         <h3 className="font-display text-lg">{title}</h3>
-        <span className="text-[10px] uppercase tracking-[0.22em] text-muted">
-          Editing {adminLang.toUpperCase()}
-        </span>
       </div>
       {help && <p className="text-xs text-muted mb-4">{help}</p>}
       <div className="space-y-4 mt-3">{children}</div>
@@ -72,12 +67,10 @@ export default function LabelsPanel({
 // Strips empty-string overrides (revert to default) and encodes i18n keys
 // so RTDB accepts them (it rejects keys with `.`).
 function normalizeLabels(labels: Labels | undefined): Labels {
-  const out: Labels = { en: {}, vi: {} }
-  for (const lang of ['en', 'vi'] as const) {
-    for (const [k, v] of Object.entries((labels || {})[lang] || {})) {
-      if (typeof v === 'string' && v.length > 0) {
-        out[lang][encodeLabelKey(k)] = v
-      }
+  const out: Labels = { vi: {} }
+  for (const [k, v] of Object.entries((labels || {}).vi || {})) {
+    if (typeof v === 'string' && v.length > 0) {
+      out.vi[encodeLabelKey(k)] = v
     }
   }
   return out
@@ -86,11 +79,9 @@ function normalizeLabels(labels: Labels | undefined): Labels {
 // Decodes the RTDB-shape (encoded keys) back to the in-memory shape
 // (canonical i18n keys with `.`).
 function decodeForDraft(encoded: Labels): Labels {
-  const out: Labels = { en: {}, vi: {} }
-  for (const lang of ['en', 'vi'] as const) {
-    for (const [k, v] of Object.entries((encoded || {})[lang] || {})) {
-      out[lang][decodeLabelKey(k)] = v as string
-    }
+  const out: Labels = { vi: {} }
+  for (const [k, v] of Object.entries((encoded || {}).vi || {})) {
+    out.vi[decodeLabelKey(k)] = v as string
   }
   return out
 }

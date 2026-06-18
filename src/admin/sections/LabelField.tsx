@@ -1,41 +1,36 @@
 import { useDraftConfig } from '../DraftConfigContext'
-import { useAdminUI } from '../AdminUIContext'
 import type { Labels } from '../../contexts/configTypes'
 
 interface LabelFieldProps {
   fieldKey: string
   label: string
-  defaultEn?: string
   defaultVi?: string
   multiline?: boolean
   help?: string
 }
 
 // One row of the Labels panel. Reads/writes the override at
-// draft.labels[adminLang][fieldKey]. Empty string means "no override" —
+// draft.labels.vi[fieldKey]. Empty string means "no override" —
 // the site falls back to the static i18n dict.
 export default function LabelField({
   fieldKey,
   label,
-  defaultEn = '',
   defaultVi = '',
   multiline = false,
   help,
 }: LabelFieldProps) {
   const { draft, setSlice } = useDraftConfig()
-  const { adminLang } = useAdminUI()
 
-  const labels: Labels = draft.labels || { en: {}, vi: {} }
-  const value = labels[adminLang]?.[fieldKey] ?? ''
-  const placeholder = adminLang === 'vi' ? defaultVi : defaultEn
+  const labels: Labels = draft.labels || { vi: {} }
+  const value = labels.vi?.[fieldKey] ?? ''
 
   const onChange = (next: string) => {
     setSlice('labels', (prev) => {
-      const safePrev = (prev as Labels) || { en: {}, vi: {} }
+      const safePrev = (prev as Labels) || { vi: {} }
       return {
         ...safePrev,
-        [adminLang]: {
-          ...(safePrev[adminLang] || {}),
+        vi: {
+          ...(safePrev.vi || {}),
           [fieldKey]: next,
         },
       }
@@ -49,19 +44,14 @@ export default function LabelField({
 
   return (
     <label className="block">
-      <div className="flex items-baseline justify-between gap-2">
-        <span className="text-xs uppercase tracking-[0.18em] text-muted">
-          {label}
-        </span>
-        <span className="text-[10px] uppercase tracking-[0.2em] text-muted/60">
-          {adminLang}
-        </span>
-      </div>
+      <span className="text-xs uppercase tracking-[0.18em] text-muted">
+        {label}
+      </span>
       <InputTag
         {...inputProps}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder || `(default)`}
+        placeholder={defaultVi || `(default)`}
         className="mt-1 w-full bg-surface/40 border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent"
       />
       {help && <p className="mt-1 text-[11px] text-muted">{help}</p>}

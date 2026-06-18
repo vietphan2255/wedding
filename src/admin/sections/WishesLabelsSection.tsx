@@ -17,32 +17,27 @@ export default function WishesLabelsSection() {
         <LabelField
           fieldKey="wishes.eyebrow"
           label="Eyebrow"
-          defaultEn="Guestbook"
           defaultVi="Sổ lưu bút"
         />
         <LabelField
           fieldKey="wishes.title"
           label="Title"
-          defaultEn="Leave a wish"
           defaultVi="Để lại lời chúc"
         />
         <LabelField
           fieldKey="wishes.subtitle"
           label="Subtitle"
-          defaultEn="Your words become a keepsake we will read for years."
           defaultVi="Những dòng chữ của bạn sẽ là kỷ niệm tụi mình giữ mãi."
           multiline
         />
         <LabelField
           fieldKey="wishes.submit"
           label="Submit button"
-          defaultEn="Send wish"
           defaultVi="Gửi lời chúc"
         />
         <LabelField
           fieldKey="wishes.empty"
           label="Empty state"
-          defaultEn="Be the first to leave a wish."
           defaultVi="Hãy là người đầu tiên gửi lời chúc nhé."
         />
       </LabelsPanel>

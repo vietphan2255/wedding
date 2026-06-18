@@ -32,7 +32,7 @@ const DEMO_WISHES = [
 ]
 
 export default function Wishes() {
-  const { t, lang } = useLanguage()
+  const { t } = useLanguage()
   const [wishes, setWishes] = useState([])
   const [loading, setLoading] = useState(true)
   const {
@@ -192,10 +192,9 @@ export default function Wishes() {
                 </p>
                 {w.createdAt && (
                   <p className="eyebrow text-[10px] mt-3">
-                    {new Intl.DateTimeFormat(
-                      lang === 'vi' ? 'vi-VN' : 'en-GB',
-                      { dateStyle: 'medium' },
-                    ).format(new Date(w.createdAt))}
+                    {new Intl.DateTimeFormat('vi-VN', {
+                      dateStyle: 'medium',
+                    }).format(new Date(w.createdAt))}
                   </p>
                 )}
               </motion.article>

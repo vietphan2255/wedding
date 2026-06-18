@@ -8,7 +8,7 @@ import SplitText from './fx/SplitText.jsx'
 import Reveal from './fx/Reveal.jsx'
 
 export default function Story() {
-  const { t, lang } = useLanguage()
+  const { t } = useLanguage()
   const { config } = useWeddingConfig()
   const reduce = useReducedMotion()
   const items = config.story
@@ -54,8 +54,6 @@ export default function Story() {
                 key={item.id}
                 item={item}
                 idx={idx}
-                t={t}
-                lang={lang}
               />
             ))}
           </ul>
@@ -65,10 +63,10 @@ export default function Story() {
   )
 }
 
-function StoryChapter({ item, idx, lang }) {
+function StoryChapter({ item, idx }) {
   const isLeft = idx % 2 === 0
-  const title = lang === 'vi' ? item.title_vi : item.title_en
-  const body = lang === 'vi' ? item.body_vi : item.body_en
+  const title = item.title_vi
+  const body = item.body_vi
 
   const ref = useRef(null)
   const reduce = useReducedMotion()

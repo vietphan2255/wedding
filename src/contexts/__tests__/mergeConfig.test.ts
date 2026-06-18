@@ -29,9 +29,9 @@ describe('mergeConfig', () => {
     const encoded = encodeLabelKey('hero.eyebrow')
     expect(encoded).toBe('hero__eyebrow')
     const result = mergeConfig({
-      labels: { en: { [encoded]: 'A new label' } },
+      labels: { vi: { [encoded]: 'A new label' } },
     })
-    expect(result.labels.en['hero.eyebrow']).toBe('A new label')
+    expect(result.labels.vi['hero.eyebrow']).toBe('A new label')
   })
 
   it('preserves gifts.enabled === false', () => {
@@ -49,12 +49,12 @@ describe('mergeConfig', () => {
   it('sorts list slices by order and adds Firebase-style ids', () => {
     const result = mergeConfig({
       faqs: {
-        '-N100': { order: 2, question_en: 'B', question_vi: 'B', answer_en: 'b', answer_vi: 'b' },
-        '-N101': { order: 0, question_en: 'A', question_vi: 'A', answer_en: 'a', answer_vi: 'a' },
-        '-N102': { order: 1, question_en: 'C', question_vi: 'C', answer_en: 'c', answer_vi: 'c' },
+        '-N100': { order: 2, question_vi: 'B', answer_vi: 'b' },
+        '-N101': { order: 0, question_vi: 'A', answer_vi: 'a' },
+        '-N102': { order: 1, question_vi: 'C', answer_vi: 'c' },
       },
     })
-    expect(result.faqs.map((f) => f.question_en)).toEqual(['A', 'C', 'B'])
+    expect(result.faqs.map((f) => f.question_vi)).toEqual(['A', 'C', 'B'])
     expect(result.faqs[0].id).toBe('-N101')
   })
 

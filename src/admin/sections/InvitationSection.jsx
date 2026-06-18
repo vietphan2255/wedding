@@ -64,31 +64,26 @@ export default function InvitationSection() {
         <LabelField
           fieldKey="invitation.tap"
           label="Tap-to-open prompt"
-          defaultEn="Tap to open"
           defaultVi="Chạm để mở"
         />
         <LabelField
           fieldKey="invitation.eyebrow"
           label="Eyebrow"
-          defaultEn="You are invited"
           defaultVi="Trân trọng kính mời"
         />
         <LabelField
           fieldKey="invitation.line"
           label="Letter line"
-          defaultEn="A celebration of love"
           defaultVi="Lễ cưới của chúng mình"
         />
         <LabelField
           fieldKey="invite.familyGroom"
           label="Family heading (groom)"
-          defaultEn="The Groom's Family"
           defaultVi="Nhà Trai"
         />
         <LabelField
           fieldKey="invite.familyBride"
           label="Family heading (bride)"
-          defaultEn="The Bride's Family"
           defaultVi="Nhà Gái"
         />
       </LabelsPanel>
@@ -135,29 +130,17 @@ export default function InvitationSection() {
         <div className="glass rounded-3xl p-6 md:p-7">
           <p className="eyebrow">Formal invitation message</p>
           <p className="text-sm text-muted mt-2 mb-4 max-w-2xl">
-            The invite sentence under the couple names. Shown per language.
+            The invite sentence under the couple names.
           </p>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className={labelClass}>Tiếng Việt</label>
-              <textarea
-                rows={3}
-                value={inv.message_vi ?? ''}
-                onChange={(e) => setField('message_vi', e.target.value)}
-                placeholder="Trân trọng kính mời quý khách…"
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>English</label>
-              <textarea
-                rows={3}
-                value={inv.message_en ?? ''}
-                onChange={(e) => setField('message_en', e.target.value)}
-                placeholder="Together with our families…"
-                className={inputClass}
-              />
-            </div>
+          <div>
+            <label className={labelClass}>Lời mời</label>
+            <textarea
+              rows={3}
+              value={inv.message_vi ?? ''}
+              onChange={(e) => setField('message_vi', e.target.value)}
+              placeholder="Trân trọng kính mời quý khách…"
+              className={inputClass}
+            />
           </div>
         </div>
 

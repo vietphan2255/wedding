@@ -4,16 +4,12 @@ import LabelsPanel from './LabelsPanel.jsx'
 import LabelField from './LabelField.jsx'
 
 const emptyItem = {
-  question_en: '',
   question_vi: '',
-  answer_en: '',
   answer_vi: '',
 }
 
 const encodeItem = (it, i) => ({
-  question_en: it.question_en,
   question_vi: it.question_vi,
-  answer_en: it.answer_en,
   answer_vi: it.answer_vi,
   order: i,
 })
@@ -42,19 +38,16 @@ export default function FaqsSection() {
         <LabelField
           fieldKey="faq.eyebrow"
           label="Eyebrow"
-          defaultEn="Good to know"
           defaultVi="Có thể bạn quan tâm"
         />
         <LabelField
           fieldKey="faq.title"
           label="Title"
-          defaultEn="Frequently asked"
           defaultVi="Câu hỏi thường gặp"
         />
         <LabelField
           fieldKey="faq.subtitle"
           label="Subtitle"
-          defaultEn="A few quick answers before the big day."
           defaultVi="Vài câu hỏi nhanh trước ngày trọng đại."
           multiline
         />
@@ -71,7 +64,7 @@ export default function FaqsSection() {
         </h2>
         <p className="text-sm text-muted mt-2">
           Add, edit, reorder, or remove FAQ entries. Each question shows on the
-          public site with its answer — in English and Vietnamese.
+          public site with its answer.
         </p>
         <div className="mt-4 flex items-center gap-3">
           <button type="button" onClick={() => addItem(emptyItem)} className="btn-ghost">
@@ -117,21 +110,10 @@ export default function FaqsSection() {
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div>
                 <label className="block text-[11px] tracking-[0.22em] uppercase text-muted mb-2">
-                  Question (EN)
-                </label>
-                <input
-                  type="text"
-                  value={it.question_en || ''}
-                  onChange={(e) => updateItem(idx, 'question_en', e.target.value)}
-                  className="w-full rounded-xl border border-line bg-bg px-4 py-3"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] tracking-[0.22em] uppercase text-muted mb-2">
-                  Question (VI)
+                  Question
                 </label>
                 <input
                   type="text"
@@ -142,18 +124,7 @@ export default function FaqsSection() {
               </div>
               <div>
                 <label className="block text-[11px] tracking-[0.22em] uppercase text-muted mb-2">
-                  Answer (EN)
-                </label>
-                <textarea
-                  rows={3}
-                  value={it.answer_en || ''}
-                  onChange={(e) => updateItem(idx, 'answer_en', e.target.value)}
-                  className="w-full rounded-xl border border-line bg-bg px-4 py-3"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] tracking-[0.22em] uppercase text-muted mb-2">
-                  Answer (VI)
+                  Answer
                 </label>
                 <textarea
                   rows={3}

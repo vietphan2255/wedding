@@ -1,7 +1,7 @@
 // Declarative merger for Firebase Realtime DB config snapshots → in-memory
 // WeddingConfig. Each top-level slice has a kind that decides how it merges:
 // - shallow: spread default + data
-// - labels: decode `foo__bar` keys back to `foo.bar` for both en + vi
+// - labels: decode `foo__bar` keys back to `foo.bar` for the vi overrides
 // - nested: spread default + data on each named child (e.g. venues.vuquy)
 // - list: keyed Firebase node → array sorted by `order`, falling back to
 //   default when the node is empty/missing
@@ -50,9 +50,8 @@ function mergeShallow(def: unknown, data: unknown) {
 }
 
 function mergeLabels(def: Labels, data: unknown): Labels {
-  const d = (data || {}) as { en?: unknown; vi?: unknown }
+  const d = (data || {}) as { vi?: unknown }
   return {
-    en: { ...def.en, ...decodeLabelMap(d.en) },
     vi: { ...def.vi, ...decodeLabelMap(d.vi) },
   }
 }

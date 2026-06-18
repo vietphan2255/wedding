@@ -21,32 +21,27 @@ export default function HeroSection() {
         <LabelField
           fieldKey="hero.eyebrow"
           label="Eyebrow"
-          defaultEn="We are getting married"
           defaultVi="Chúng mình sắp về chung một nhà"
         />
         <LabelField
           fieldKey="hero.and"
           label="Conjunction"
-          defaultEn="&"
           defaultVi="&"
         />
         <LabelField
           fieldKey="hero.saveTheDate"
           label="Save the date"
-          defaultEn="Save the Date"
           defaultVi="Lưu lại ngày vui"
         />
         <LabelField
           fieldKey="hero.dates"
           label="Date line"
-          defaultEn="26 July  ·  02 August  ·  2026"
           defaultVi="26 Tháng 07  ·  02 Tháng 08  ·  2026"
           help="Use the `·` separator (Option+8 on Mac) so the hero → countdown flight animation can split it."
         />
         <LabelField
           fieldKey="hero.scroll"
           label="Scroll prompt"
-          defaultEn="Scroll to discover"
           defaultVi="Cuộn để khám phá"
         />
       </LabelsPanel>

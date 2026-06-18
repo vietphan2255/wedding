@@ -6,18 +6,14 @@ import LabelField from './LabelField.jsx'
 
 const emptyItem = {
   year: '',
-  title_en: '',
   title_vi: '',
-  body_en: '',
   body_vi: '',
   img: '',
 }
 
 const encodeItem = (it, i) => ({
   year: it.year,
-  title_en: it.title_en,
   title_vi: it.title_vi,
-  body_en: it.body_en,
   body_vi: it.body_vi,
   img: it.img,
   order: i,
@@ -47,25 +43,21 @@ export default function StorySection() {
         <LabelField
           fieldKey="story.eyebrow"
           label="Eyebrow"
-          defaultEn="Our journey"
           defaultVi="Hành trình của chúng mình"
         />
         <LabelField
           fieldKey="story.title"
           label="Title"
-          defaultEn="How we fell in love"
           defaultVi="Chuyện chúng mình yêu nhau"
         />
         <LabelField
           fieldKey="story.divider"
           label="Divider text"
-          defaultEn="v & n"
           defaultVi="v & n"
         />
         <LabelField
           fieldKey="story.intro"
           label="Intro"
-          defaultEn="A story written across coffee shops, late-night phone calls, and a thousand small moments that felt anything but small."
           defaultVi="Một câu chuyện được viết bằng những ly cà phê, những cuộc gọi đêm khuya, và hàng ngàn khoảnh khắc nhỏ mà chẳng hề nhỏ chút nào."
           multiline
         />
@@ -79,8 +71,7 @@ export default function StorySection() {
         </h2>
         <p className="text-sm text-muted mt-2">
           Add, edit, reorder, or remove story chapters. Each chapter shows on
-          the public site with its image, year, title, and body — in English
-          and Vietnamese.
+          the public site with its image, year, title, and body.
         </p>
         <div className="mt-4 flex items-center gap-3">
           <button type="button" onClick={() => addItem(emptyItem)} className="btn-ghost">
@@ -149,20 +140,9 @@ export default function StorySection() {
                   inputClassName="w-full rounded-xl border border-line bg-bg px-4 py-3"
                 />
               </div>
-              <div>
+              <div className="md:col-span-3">
                 <label className="block text-[11px] tracking-[0.22em] uppercase text-muted mb-2">
-                  Title (EN)
-                </label>
-                <input
-                  type="text"
-                  value={it.title_en || ''}
-                  onChange={(e) => updateItem(idx, 'title_en', e.target.value)}
-                  className="w-full rounded-xl border border-line bg-bg px-4 py-3"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-[11px] tracking-[0.22em] uppercase text-muted mb-2">
-                  Title (VI)
+                  Title
                 </label>
                 <input
                   type="text"
@@ -173,18 +153,7 @@ export default function StorySection() {
               </div>
               <div className="md:col-span-3">
                 <label className="block text-[11px] tracking-[0.22em] uppercase text-muted mb-2">
-                  Body (EN)
-                </label>
-                <textarea
-                  rows={3}
-                  value={it.body_en || ''}
-                  onChange={(e) => updateItem(idx, 'body_en', e.target.value)}
-                  className="w-full rounded-xl border border-line bg-bg px-4 py-3"
-                />
-              </div>
-              <div className="md:col-span-3">
-                <label className="block text-[11px] tracking-[0.22em] uppercase text-muted mb-2">
-                  Body (VI)
+                  Body
                 </label>
                 <textarea
                   rows={3}

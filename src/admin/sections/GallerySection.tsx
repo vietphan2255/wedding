@@ -36,25 +36,21 @@ export default function GallerySection() {
         <LabelField
           fieldKey="gallery.eyebrow"
           label="Eyebrow"
-          defaultEn="Moments"
           defaultVi="Khoảnh khắc"
         />
         <LabelField
           fieldKey="gallery.title"
           label="Title"
-          defaultEn="Through the lens"
           defaultVi="Qua ống kính"
         />
         <LabelField
           fieldKey="gallery.divider"
           label="Divider symbol"
-          defaultEn="∞"
           defaultVi="∞"
         />
         <LabelField
           fieldKey="gallery.subtitle"
           label="Subtitle"
-          defaultEn="A small look into the chapters that brought us here"
           defaultVi="Một góc nhỏ của những chương đã đưa tụi mình đến hôm nay"
           multiline
         />

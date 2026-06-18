@@ -16,7 +16,6 @@ import {
   Mail,
   Users,
   Timer,
-  Languages,
   ChevronDown,
   ChevronRight,
   Send,
@@ -47,7 +46,6 @@ import WishesLabelsSection from './sections/WishesLabelsSection'
 import EffectsSection from './sections/EffectsSection'
 import QrCodeSection from './sections/QrCodeSection'
 import { DraftConfigProvider } from './DraftConfigContext'
-import { AdminUIProvider, useAdminUI } from './AdminUIContext'
 
 // Sidebar registry: groups -> entries -> component.
 const GROUPS = [
@@ -116,11 +114,9 @@ export default function Admin() {
   if (!authed) return <AdminAuth onSuccess={() => setAuthed(true)} />
 
   return (
-    <AdminUIProvider>
-      <DraftConfigProvider>
-        <AdminShell onLogout={() => setAuthed(false)} />
-      </DraftConfigProvider>
-    </AdminUIProvider>
+    <DraftConfigProvider>
+      <AdminShell onLogout={() => setAuthed(false)} />
+    </DraftConfigProvider>
   )
 }
 
@@ -133,7 +129,6 @@ function AdminShell({ onLogout }) {
     settings: true,
   })
   const { source, loading } = useWeddingConfig()
-  const { adminLang, setAdminLang } = useAdminUI()
 
   const active = useMemo(() => ALL_ITEMS.find((i) => i.id === tab) || ALL_ITEMS[0], [tab])
   const ActiveComponent = active.Component
@@ -158,7 +153,6 @@ function AdminShell({ onLogout }) {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <LangToggle adminLang={adminLang} setAdminLang={setAdminLang} />
             <Link
               to="/"
               className="hidden sm:inline-flex items-center gap-1.5 text-[12px] tracking-[0.18em] uppercase text-ink/70 hover:text-ink ml-2"
@@ -262,26 +256,6 @@ function AdminShell({ onLogout }) {
           </div>
         </aside>
       </div>
-    </div>
-  )
-}
-
-function LangToggle({ adminLang, setAdminLang }) {
-  return (
-    <div className="inline-flex items-center gap-0 rounded-full border border-line bg-surface/40 p-0.5">
-      <Languages size={12} className="mx-2 text-muted" />
-      {['en', 'vi'].map((l) => (
-        <button
-          key={l}
-          onClick={() => setAdminLang(l)}
-          className={`px-2.5 py-1 text-[11px] tracking-[0.2em] uppercase rounded-full transition ${
-            adminLang === l ? 'bg-ink text-bg' : 'text-ink/70 hover:text-ink'
-          }`}
-          aria-pressed={adminLang === l}
-        >
-          {l}
-        </button>
-      ))}
     </div>
   )
 }

@@ -12,7 +12,6 @@ export interface Common {
 }
 
 export interface Labels {
-  en: Record<string, string>
   vi: Record<string, string>
 }
 
@@ -60,9 +59,7 @@ export interface OrderedItem {
 
 export interface StoryItem extends OrderedItem {
   year: string
-  title_en: string
   title_vi: string
-  body_en: string
   body_vi: string
   img: string
   placeholder?: string
@@ -75,9 +72,7 @@ export interface Photo extends OrderedItem {
 }
 
 export interface Faq extends OrderedItem {
-  question_en: string
   question_vi: string
-  answer_en: string
   answer_vi: string
 }
 
@@ -90,9 +85,8 @@ export interface Invitation {
   brideFather: string
   brideMother: string
   brideHometown: string
-  // Formal invite sentence (bilingual prose).
+  // Formal invite sentence.
   message_vi: string
-  message_en: string
   // Per-ceremony lunar date + full street address. Venue *name* is reused from
   // the existing bilingual `events.{vuquy,thanhhon}.venue` labels.
   vuquyLunar: string

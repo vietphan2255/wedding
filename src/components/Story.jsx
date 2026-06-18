@@ -4,7 +4,7 @@ import ParallaxFade from './ParallaxFade.jsx'
 import ParallaxImage from './ParallaxImage.jsx'
 
 export default function Story() {
-  const { t, lang } = useLanguage()
+  const { t } = useLanguage()
   const { config } = useWeddingConfig()
   const items = config.story
 
@@ -30,8 +30,8 @@ export default function Story() {
           <ul className="space-y-20 md:space-y-28">
             {items.map((item, idx) => {
               const isLeft = idx % 2 === 0
-              const title = lang === 'vi' ? item.title_vi : item.title_en
-              const body = lang === 'vi' ? item.body_vi : item.body_en
+              const title = item.title_vi
+              const body = item.body_vi
               return (
                 <li
                   key={item.id}

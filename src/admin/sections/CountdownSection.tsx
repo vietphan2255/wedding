@@ -19,68 +19,57 @@ export default function CountdownSection() {
         <LabelField
           fieldKey="countdown.eyebrow"
           label="Eyebrow"
-          defaultEn="The big day"
           defaultVi="Ngày trọng đại"
         />
         <LabelField
           fieldKey="countdown.titleNext"
           label="Title (next event)"
-          defaultEn="Counting down to"
           defaultVi="Đếm ngược đến"
         />
         <LabelField
           fieldKey="countdown.months"
           label="Unit: months"
-          defaultEn="Months"
           defaultVi="Tháng"
         />
         <LabelField
           fieldKey="countdown.weeks"
           label="Unit: weeks"
-          defaultEn="Weeks"
           defaultVi="Tuần"
         />
         <LabelField
           fieldKey="countdown.days"
           label="Unit: days"
-          defaultEn="Days"
           defaultVi="Ngày"
         />
         <LabelField
           fieldKey="countdown.hours"
           label="Unit: hours"
-          defaultEn="Hours"
           defaultVi="Giờ"
         />
         <LabelField
           fieldKey="countdown.minutes"
           label="Unit: minutes"
-          defaultEn="Minutes"
           defaultVi="Phút"
         />
         <LabelField
           fieldKey="countdown.seconds"
           label="Unit: seconds"
-          defaultEn="Seconds"
           defaultVi="Giây"
         />
         <LabelField
           fieldKey="countdown.passed"
           label="Post-wedding message"
-          defaultEn="We're married! Thank you for celebrating with us."
           defaultVi="Chúng mình đã thành đôi! Cảm ơn bạn đã ở đây cùng tụi mình."
           multiline
         />
         <LabelField
           fieldKey="countdown.prevEvent"
           label="Prev-event button"
-          defaultEn="Previous event"
           defaultVi="Sự kiện trước"
         />
         <LabelField
           fieldKey="countdown.nextEvent"
           label="Next-event button"
-          defaultEn="Next event"
           defaultVi="Sự kiện kế tiếp"
         />
       </LabelsPanel>

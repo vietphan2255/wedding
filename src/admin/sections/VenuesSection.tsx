@@ -44,56 +44,47 @@ export default function VenuesSection() {
         <LabelField
           fieldKey="timeline.eyebrow"
           label="Eyebrow"
-          defaultEn="Save these dates"
           defaultVi="Lưu lại các ngày"
         />
         <LabelField
           fieldKey="timeline.title"
           label="Title"
-          defaultEn="Ceremony Timeline"
           defaultVi="Hành trình lễ cưới"
         />
         <LabelField
           fieldKey="timeline.divider"
           label="Divider text"
-          defaultEn="v & n"
           defaultVi="v & n"
         />
         <LabelField
           fieldKey="timeline.subtitle"
           label="Subtitle"
-          defaultEn="The journey to our wedding day, one ceremony at a time"
           defaultVi="Mỗi nghi lễ là một chương của hành trình đến ngày trọng đại"
           multiline
         />
         <LabelField
           fieldKey="timeline.dressCode"
           label="Dress code label"
-          defaultEn="Dress code"
           defaultVi="Trang phục"
         />
         <LabelField
           fieldKey="timeline.showDetails"
           label="Show details CTA"
-          defaultEn="Show details"
           defaultVi="Xem chi tiết"
         />
         <LabelField
           fieldKey="timeline.hideDetails"
           label="Hide details CTA"
-          defaultEn="Hide details"
           defaultVi="Ẩn chi tiết"
         />
         <LabelField
           fieldKey="timeline.openMap"
           label="Open map CTA"
-          defaultEn="Open in Google Maps"
           defaultVi="Mở Google Maps"
         />
         <LabelField
           fieldKey="timeline.addCalendar"
           label="Add to calendar CTA"
-          defaultEn="Add to calendar"
           defaultVi="Thêm vào lịch"
         />
       </LabelsPanel>

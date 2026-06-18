@@ -17,13 +17,11 @@ export default function FooterSection() {
         <LabelField
           fieldKey="footer.tagline"
           label="Tagline"
-          defaultEn="Made with love · 2026"
           defaultVi="Thực hiện bằng cả trái tim · 2026"
         />
         <LabelField
           fieldKey="footer.contact"
           label="Contact intro"
-          defaultEn="Questions? Reach us at"
           defaultVi="Mọi thắc mắc xin liên hệ"
         />
       </LabelsPanel>

@@ -24,60 +24,42 @@ export const DEFAULT_FAQS: Faq[] = [
   {
     id: 'default-faq-1',
     order: 0,
-    question_en: 'What is the dress code?',
     question_vi: 'Quy định trang phục như thế nào?',
-    answer_en:
-      'Lễ Vu Quy welcomes traditional Áo dài. Lễ Thành Hôn is formal — suits and cocktail dresses are perfect.',
     answer_vi:
       'Lễ Vu Quy đón khách trong trang phục áo dài truyền thống. Lễ Thành Hôn là tiệc trang trọng — vest hoặc đầm cocktail là phù hợp.',
   },
   {
     id: 'default-faq-2',
     order: 1,
-    question_en: 'Can I bring children?',
     question_vi: 'Có thể đưa các bé theo không?',
-    answer_en:
-      'Of course! Children are welcome at both ceremonies. Please include them in your RSVP guest count.',
     answer_vi:
       'Tất nhiên! Các bé được chào đón ở cả hai buổi lễ. Vui lòng tính các bé trong số khách khi xác nhận.',
   },
   {
     id: 'default-faq-3',
     order: 2,
-    question_en: 'Is there parking at the venues?',
     question_vi: 'Địa điểm có chỗ đỗ xe không?',
-    answer_en:
-      'Yes — free parking is available at both venues. Valet service will be available for the reception.',
     answer_vi:
       'Có — chỗ đỗ xe miễn phí tại cả hai địa điểm. Tiệc cưới có dịch vụ đưa đón xe.',
   },
   {
     id: 'default-faq-4',
     order: 3,
-    question_en: 'Will there be a livestream?',
     question_vi: 'Có phát trực tiếp không?',
-    answer_en:
-      'Yes — a livestream link will be shared here closer to the date for guests who cannot join us in person.',
     answer_vi:
       'Có — link phát trực tiếp sẽ được chia sẻ tại đây gần ngày cưới cho khách không thể đến tham dự.',
   },
   {
     id: 'default-faq-5',
     order: 4,
-    question_en: 'Can I take photos?',
     question_vi: 'Mình có thể chụp ảnh không?',
-    answer_en:
-      'Yes, please do! We only ask that you stay seated during the ceremonies and let our photographers have the front rows.',
     answer_vi:
       'Bạn cứ tự nhiên chụp ảnh! Chỉ xin bạn ngồi yên trong lúc làm lễ để nhiếp ảnh gia có thể ghi lại trọn vẹn khoảnh khắc.',
   },
   {
     id: 'default-faq-6',
     order: 5,
-    question_en: 'Where should I stay if I am from out of town?',
     question_vi: 'Mình từ xa đến — nên ở khách sạn nào?',
-    answer_en:
-      'There are several lovely hotels within 10 minutes of the reception venue. Reach out and we will share a list.',
     answer_vi:
       'Có nhiều khách sạn xinh xắn trong bán kính 10 phút từ tiệc cưới. Liên hệ tụi mình để nhận danh sách gợi ý.',
   },
@@ -92,7 +74,7 @@ export const DEFAULT_COMMON: Common = {
   dateDisplay: '26.07.2026  ·  02.08.2026',
 }
 
-export const DEFAULT_LABELS: Labels = { en: {}, vi: {} }
+export const DEFAULT_LABELS: Labels = { vi: {} }
 
 export const DEFAULT_CONFIG: WeddingConfig = {
   common: DEFAULT_COMMON,
@@ -112,10 +94,7 @@ export const DEFAULT_CONFIG: WeddingConfig = {
     {
       id: 'default-1',
       year: '2019',
-      title_en: 'First met',
       title_vi: 'Lần đầu gặp gỡ',
-      body_en:
-        'A mutual friend introduced us at a tiny café in District 1. Two iced coffees and four hours of conversation later, we both knew.',
       body_vi:
         'Một người bạn chung giới thiệu tụi mình trong một quán cà phê nhỏ ở Quận 1. Hai ly cà phê đá và bốn tiếng đồng hồ trò chuyện, cả hai đều đã biết.',
       img: 'https://picsum.photos/seed/vn-story-1/900/1100',
@@ -125,10 +104,7 @@ export const DEFAULT_CONFIG: WeddingConfig = {
     {
       id: 'default-2',
       year: '2021',
-      title_en: 'First trip together',
       title_vi: 'Chuyến đi đầu tiên',
-      body_en:
-        'Đà Lạt in the rain — borrowed umbrellas, a shared raincoat, and the kind of laughter that turns strangers into family.',
       body_vi:
         'Đà Lạt trong cơn mưa — một chiếc dù mượn, một chiếc áo mưa chung, và tiếng cười biến người lạ thành gia đình.',
       img: 'https://picsum.photos/seed/vn-story-2/900/1100',
@@ -138,10 +114,7 @@ export const DEFAULT_CONFIG: WeddingConfig = {
     {
       id: 'default-3',
       year: '2024',
-      title_en: 'The proposal',
       title_vi: 'Lời cầu hôn',
-      body_en:
-        'On a quiet rooftop with the city humming below, the answer was yes before the question was finished.',
       body_vi:
         'Trên một sân thượng yên tĩnh giữa lòng thành phố, câu trả lời đã có trước khi câu hỏi kịp kết thúc.',
       img: 'https://picsum.photos/seed/vn-story-3/900/1100',
@@ -151,10 +124,7 @@ export const DEFAULT_CONFIG: WeddingConfig = {
     {
       id: 'default-4',
       year: '2025',
-      title_en: 'Lễ Đính Hôn',
       title_vi: 'Lễ Đính Hôn',
-      body_en:
-        'Surrounded by family, tea, and red envelopes — a promise made official under the eyes of our ancestors.',
       body_vi:
         'Bên gia đình, trà sen và những phong bao đỏ — một lời hứa chính thức dưới sự chứng giám của tổ tiên.',
       img: 'https://picsum.photos/seed/vn-story-4/900/1100',
@@ -192,8 +162,6 @@ export const DEFAULT_CONFIG: WeddingConfig = {
     brideHometown: 'TP. Điện Biên',
     message_vi:
       'Trân trọng kính mời quý khách đến chung vui cùng gia đình chúng tôi trong ngày lễ thành hôn của hai con.',
-    message_en:
-      'Together with our families, we joyfully invite you to share in the celebration of our wedding.',
     vuquyLunar: 'Nhằm ngày 12 tháng 6 năm Bính Ngọ (Âm lịch)',
     vuquyAddress: '123 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh',
     thanhhonLunar: 'Nhằm ngày 19 tháng 6 năm Bính Ngọ (Âm lịch)',
