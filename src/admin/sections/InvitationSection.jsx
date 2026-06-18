@@ -86,6 +86,16 @@ export default function InvitationSection() {
           label="Family heading (bride)"
           defaultVi="Nhà Gái"
         />
+        <LabelField
+          fieldKey="events.vuquy.venue"
+          label="Lễ Vu Quy · Venue name"
+          defaultVi="Tư gia nhà gái  ·  TP. Hồ Chí Minh"
+        />
+        <LabelField
+          fieldKey="events.thanhhon.venue"
+          label="Lễ Thành Hôn · Venue name"
+          defaultVi="Trung tâm tiệc cưới  ·  TP. Hồ Chí Minh"
+        />
       </LabelsPanel>
 
       <form onSubmit={save} className="space-y-5">
