@@ -18,6 +18,7 @@ import DressIcon from './icons/DressIcons.jsx'
 import SplitText from './fx/SplitText.jsx'
 import Reveal from './fx/Reveal.jsx'
 import Magnetic from './fx/Magnetic.jsx'
+import SectionSubtitle from './SectionSubtitle.jsx'
 
 const ENGAGEMENT_IMG =
   'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1600&q=80'
@@ -95,6 +96,7 @@ export default function CeremonyTimeline() {
             text={t('timeline.title')}
             className="font-display mt-3 text-4xl md:text-6xl text-center"
           />
+          <SectionSubtitle text={t('timeline.subhead')} />
           <div className="divider-leaf my-6">
             <span className="font-script text-2xl">{t('timeline.divider')}</span>
           </div>

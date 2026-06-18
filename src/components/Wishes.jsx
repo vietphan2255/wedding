@@ -13,6 +13,7 @@ import {
 import { db, isConfigured } from '../firebase/config'
 import { useLanguage } from '../contexts/LanguageContext'
 import FadeIn from './FadeIn.jsx'
+import SectionSubtitle from './SectionSubtitle.jsx'
 
 const DEMO_WISHES = [
   {
@@ -97,6 +98,7 @@ export default function Wishes() {
           <h2 className="font-display mt-3 text-4xl md:text-6xl">
             {t('wishes.title')}
           </h2>
+          <SectionSubtitle text={t('wishes.subhead')} />
           <div className="divider-leaf my-6">
             <Heart size={16} className="text-accent" />
           </div>

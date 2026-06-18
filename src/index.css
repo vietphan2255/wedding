@@ -144,6 +144,21 @@ html.lenis body {
   color: var(--color-muted);
 }
 
+/* Optional line directly under a section title — smaller and lighter than
+   the display title. Hidden by default (empty subhead override). */
+.section-subtitle {
+  margin-top: 0.5rem;
+  font-size: 1.125rem;
+  line-height: 1.5;
+  font-weight: 300;
+  color: var(--color-muted);
+}
+@media (min-width: 768px) {
+  .section-subtitle {
+    font-size: 1.25rem;
+  }
+}
+
 .section-padding {
   padding-top: clamp(4rem, 9vw, 8rem);
   padding-bottom: clamp(4rem, 9vw, 8rem);

@@ -46,8 +46,13 @@ export default function FaqsSection() {
           defaultVi="Câu hỏi thường gặp"
         />
         <LabelField
-          fieldKey="faq.subtitle"
+          fieldKey="faq.subhead"
           label="Subtitle"
+          help="Để trống = không hiển thị"
+        />
+        <LabelField
+          fieldKey="faq.subtitle"
+          label="Description"
           defaultVi="Vài câu hỏi nhanh trước ngày trọng đại."
           multiline
         />

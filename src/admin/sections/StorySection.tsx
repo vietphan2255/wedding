@@ -51,6 +51,11 @@ export default function StorySection() {
           defaultVi="Chuyện chúng mình yêu nhau"
         />
         <LabelField
+          fieldKey="story.subhead"
+          label="Subtitle"
+          help="Để trống = không hiển thị"
+        />
+        <LabelField
           fieldKey="story.divider"
           label="Divider text"
           defaultVi="v & n"

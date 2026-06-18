@@ -7,6 +7,7 @@ import confetti from 'canvas-confetti'
 import { db, isConfigured } from '../firebase/config'
 import { useLanguage } from '../contexts/LanguageContext'
 import FadeIn from './FadeIn.jsx'
+import SectionSubtitle from './SectionSubtitle.jsx'
 
 function readAccent() {
   if (typeof window === 'undefined') return '#C97B5D'
@@ -90,6 +91,7 @@ export default function RSVP() {
           <h2 className="font-display mt-3 text-4xl md:text-6xl">
             {t('rsvp.title')}
           </h2>
+          <SectionSubtitle text={t('rsvp.subhead')} />
           <div className="divider-leaf my-6">
             <span className="font-script text-2xl">{t('rsvp.divider')}</span>
           </div>

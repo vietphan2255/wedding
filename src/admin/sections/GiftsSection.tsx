@@ -68,8 +68,13 @@ export default function GiftsSection() {
           defaultVi="Gửi mừng cưới"
         />
         <LabelField
-          fieldKey="gift.subtitle"
+          fieldKey="gift.subhead"
           label="Subtitle"
+          help="Để trống = không hiển thị"
+        />
+        <LabelField
+          fieldKey="gift.subtitle"
+          label="Description"
           defaultVi="Sự có mặt của bạn đã là món quà lớn nhất — nhưng nếu bạn muốn gửi mừng cưới, đây là thông tin tài khoản."
           multiline
         />

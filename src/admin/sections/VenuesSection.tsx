@@ -52,13 +52,18 @@ export default function VenuesSection() {
           defaultVi="Hành trình lễ cưới"
         />
         <LabelField
+          fieldKey="timeline.subhead"
+          label="Subtitle"
+          help="Để trống = không hiển thị"
+        />
+        <LabelField
           fieldKey="timeline.divider"
           label="Divider text"
           defaultVi="v & n"
         />
         <LabelField
           fieldKey="timeline.subtitle"
-          label="Subtitle"
+          label="Description"
           defaultVi="Mỗi nghi lễ là một chương của hành trình đến ngày trọng đại"
           multiline
         />

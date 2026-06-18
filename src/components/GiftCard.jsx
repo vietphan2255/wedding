@@ -4,6 +4,7 @@ import { Copy, Check, Gift, QrCode } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import FadeIn from './FadeIn.jsx'
+import SectionSubtitle from './SectionSubtitle.jsx'
 
 function CopyButton({ value, label, labelCopied }) {
   const [copied, setCopied] = useState(false)
@@ -138,6 +139,7 @@ export default function GiftCard() {
           <h2 className="font-display mt-3 text-4xl md:text-6xl">
             {t('gift.title')}
           </h2>
+          <SectionSubtitle text={t('gift.subhead')} />
           <div className="divider-leaf my-6">
             <Gift size={16} className="text-accent" />
           </div>

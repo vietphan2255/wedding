@@ -32,6 +32,7 @@ export default {
   // Story
   'story.eyebrow': 'Hành trình của chúng mình',
   'story.title': 'Chuyện chúng mình yêu nhau',
+  'story.subhead': '',
   'story.divider': 'v & n',
   'story.intro':
     'Một câu chuyện được viết bằng những ly cà phê, những cuộc gọi đêm khuya, và hàng ngàn khoảnh khắc nhỏ mà chẳng hề nhỏ chút nào.',
@@ -55,6 +56,7 @@ export default {
   // Gallery
   'gallery.eyebrow': 'Khoảnh khắc',
   'gallery.title': 'Qua ống kính',
+  'gallery.subhead': '',
   'gallery.divider': '∞',
   'gallery.subtitle': 'Một góc nhỏ của những chương đã đưa tụi mình đến hôm nay',
   'gallery.lightbox.label': 'Xem ảnh',
@@ -66,6 +68,7 @@ export default {
   // Ceremony Timeline
   'timeline.eyebrow': 'Lưu lại các ngày',
   'timeline.title': 'Hành trình lễ cưới',
+  'timeline.subhead': '',
   'timeline.divider': 'v & n',
   'timeline.subtitle': 'Mỗi nghi lễ là một chương của hành trình đến ngày trọng đại',
   'timeline.alreadyCelebrated': 'Đã tổ chức',
@@ -110,6 +113,7 @@ export default {
   // RSVP
   'rsvp.eyebrow': 'Xin vui lòng phản hồi',
   'rsvp.title': 'Bạn sẽ đến chứ?',
+  'rsvp.subhead': '',
   'rsvp.divider': 'rsvp',
   'rsvp.subtitle': 'Phản hồi của bạn là niềm vui lớn của tụi mình. Xin gửi trước ngày 30/06/2026.',
   'rsvp.name': 'Họ và tên',
@@ -133,6 +137,7 @@ export default {
   // Wishes
   'wishes.eyebrow': 'Sổ lưu bút',
   'wishes.title': 'Để lại lời chúc',
+  'wishes.subhead': '',
   'wishes.subtitle': 'Những dòng chữ của bạn sẽ là kỷ niệm tụi mình giữ mãi.',
   'wishes.name': 'Tên của bạn',
   'wishes.message': 'Lời chúc',
@@ -159,6 +164,7 @@ export default {
   // Gift / Lì Xì
   'gift.eyebrow': 'Mừng cưới',
   'gift.title': 'Gửi mừng cưới',
+  'gift.subhead': '',
   'gift.subtitle':
     'Sự có mặt của bạn đã là món quà lớn nhất — nhưng nếu bạn muốn gửi mừng cưới, đây là thông tin tài khoản.',
   'gift.bride': 'Tài khoản cô dâu',
@@ -173,6 +179,7 @@ export default {
   // FAQ
   'faq.eyebrow': 'Có thể bạn quan tâm',
   'faq.title': 'Câu hỏi thường gặp',
+  'faq.subhead': '',
   'faq.subtitle': 'Vài câu hỏi nhanh trước ngày trọng đại.',
 
   // Dress code icons

@@ -17,6 +17,7 @@ import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import useFocusTrap from '../hooks/useFocusTrap'
 import { GALLERY_BASE_VELOCITY } from '../lib/constants'
 import SplitText from './fx/SplitText.jsx'
+import SectionSubtitle from './SectionSubtitle.jsx'
 
 // A single photo "plane". rotateY is driven by scroll velocity (passed as a
 // motion value) so tiles tilt as the page scrolls and flatten when still.
@@ -258,6 +259,7 @@ export default function Gallery() {
             text={t('gallery.title')}
             className="font-display mt-3 text-4xl md:text-6xl text-center"
           />
+          <SectionSubtitle text={t('gallery.subhead')} />
           <div className="divider-leaf my-6">
             <span className="font-script text-2xl">{t('gallery.divider')}</span>
           </div>

@@ -25,8 +25,13 @@ export default function WishesLabelsSection() {
           defaultVi="Để lại lời chúc"
         />
         <LabelField
-          fieldKey="wishes.subtitle"
+          fieldKey="wishes.subhead"
           label="Subtitle"
+          help="Để trống = không hiển thị"
+        />
+        <LabelField
+          fieldKey="wishes.subtitle"
+          label="Description"
           defaultVi="Những dòng chữ của bạn sẽ là kỷ niệm tụi mình giữ mãi."
           multiline
         />

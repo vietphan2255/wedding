@@ -6,6 +6,7 @@ import ParallaxFade from './ParallaxFade.jsx'
 import ParallaxImage from './ParallaxImage.jsx'
 import SplitText from './fx/SplitText.jsx'
 import Reveal from './fx/Reveal.jsx'
+import SectionSubtitle from './SectionSubtitle.jsx'
 
 export default function Story() {
   const { t } = useLanguage()
@@ -31,6 +32,7 @@ export default function Story() {
             text={t('story.title')}
             className="font-display mt-3 text-4xl md:text-6xl text-center"
           />
+          <SectionSubtitle text={t('story.subhead')} />
           <div className="divider-leaf my-6">
             <span className="font-script text-2xl">{t('story.divider')}</span>
           </div>

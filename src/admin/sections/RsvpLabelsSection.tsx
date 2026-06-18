@@ -25,13 +25,18 @@ export default function RsvpLabelsSection() {
           defaultVi="Bạn sẽ đến chứ?"
         />
         <LabelField
+          fieldKey="rsvp.subhead"
+          label="Subtitle"
+          help="Để trống = không hiển thị"
+        />
+        <LabelField
           fieldKey="rsvp.divider"
           label="Divider text"
           defaultVi="rsvp"
         />
         <LabelField
           fieldKey="rsvp.subtitle"
-          label="Subtitle"
+          label="Description"
           defaultVi="Phản hồi của bạn là niềm vui lớn của tụi mình. Xin gửi trước ngày 30/06/2026."
           multiline
         />

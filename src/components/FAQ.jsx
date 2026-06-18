@@ -4,6 +4,7 @@ import { Plus, HelpCircle } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import FadeIn from './FadeIn.jsx'
+import SectionSubtitle from './SectionSubtitle.jsx'
 
 export default function FAQ() {
   const { t } = useLanguage()
@@ -21,6 +22,7 @@ export default function FAQ() {
           <h2 className="font-display mt-3 text-4xl md:text-6xl">
             {t('faq.title')}
           </h2>
+          <SectionSubtitle text={t('faq.subhead')} />
           <div className="divider-leaf my-6">
             <HelpCircle size={16} className="text-accent" />
           </div>

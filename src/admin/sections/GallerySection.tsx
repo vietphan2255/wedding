@@ -44,13 +44,18 @@ export default function GallerySection() {
           defaultVi="Qua ống kính"
         />
         <LabelField
+          fieldKey="gallery.subhead"
+          label="Subtitle"
+          help="Để trống = không hiển thị"
+        />
+        <LabelField
           fieldKey="gallery.divider"
           label="Divider symbol"
           defaultVi="∞"
         />
         <LabelField
           fieldKey="gallery.subtitle"
-          label="Subtitle"
+          label="Description"
           defaultVi="Một góc nhỏ của những chương đã đưa tụi mình đến hôm nay"
           multiline
         />
