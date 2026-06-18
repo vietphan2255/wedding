@@ -136,8 +136,13 @@ export interface Qr {
   logoSize: number // 0–0.5 (fraction of the QR size)
 }
 
+export interface Hero {
+  image: string // Hero background image URL; '' → built-in default photo
+}
+
 export interface WeddingConfig {
   common: Common
+  hero: Hero
   labels: Labels
   dates: Dates
   venues: Venues

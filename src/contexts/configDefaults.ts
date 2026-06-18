@@ -78,6 +78,7 @@ export const DEFAULT_LABELS: Labels = { vi: {} }
 
 export const DEFAULT_CONFIG: WeddingConfig = {
   common: DEFAULT_COMMON,
+  hero: { image: '' },
   labels: DEFAULT_LABELS,
   dates: {
     vuquyStart: '2026-07-26T09:00:00+07:00',

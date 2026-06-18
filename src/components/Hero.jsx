@@ -22,6 +22,7 @@ export default function Hero({
 
   const nameLeft = config?.common?.coupleNameLeft || 'Viet'
   const nameRight = config?.common?.coupleNameRight || 'Nguyen'
+  const heroImage = config?.hero?.image?.trim() || HERO_IMAGE
 
   // Split the date line into three pieces (vqDate, middle, year) so the
   // hero → countdown flight can lift the vqDate and year, fade the middle,
@@ -55,7 +56,7 @@ export default function Hero({
         className="absolute inset-0 will-change-transform"
       >
         <motion.img
-          src={HERO_IMAGE}
+          src={heroImage}
           alt="Couple silhouette"
           decoding="async"
           fetchPriority="high"
