@@ -2,7 +2,13 @@ import { useMemo, useState } from 'react'
 import { QrCode, Save, Download, Copy, Check, Trash2 } from 'lucide-react'
 import { useDraftConfig } from '../DraftConfigContext'
 import ImageInput from '../../components/admin/ImageInput.jsx'
-import { buildQrOptions, useStyledQr } from '../../components/admin/StyledQrCode'
+import {
+  buildQrOptions,
+  useStyledQr,
+  downloadQr,
+  QR_EXPORT_SIZE,
+} from '../../components/admin/StyledQrCode'
+import type { FileExtension } from 'qr-code-styling'
 import type { Qr } from '../../contexts/configTypes'
 
 const DOT_STYLES: Qr['dotStyle'][] = [
@@ -143,7 +149,21 @@ export default function QrCodeSection() {
     setSlice('qr', (q) => ({ ...(q as Qr), ...patch }))
 
   const options = useMemo(() => buildQrOptions(qr, 240), [qr])
-  const { containerRef, download } = useStyledQr(options)
+  const { containerRef } = useStyledQr(options)
+  // Downloads render a separate, print-ready instance (the preview stays 240px).
+  const exportOptions = useMemo(() => buildQrOptions(qr, QR_EXPORT_SIZE), [qr])
+
+  const handleDownload = async (extension: FileExtension) => {
+    try {
+      await downloadQr(exportOptions, extension)
+    } catch (err) {
+      console.error(err)
+      setStatus({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Export failed.',
+      })
+    }
+  }
 
   const encoded =
     (qr.link || '').trim() ||
@@ -199,7 +219,7 @@ export default function QrCodeSection() {
         <p className="text-sm text-muted mt-2 max-w-2xl">
           A styled, scannable code for the public site — print it on invitations, table
           cards, or a welcome sign. Tune the colours, shapes, and logo, then Save to keep
-          the design and download it as PNG, SVG, or JPEG.
+          the design and download it as a print-ready PNG (1024px), SVG, or JPEG.
         </p>
       </header>
 
@@ -230,7 +250,7 @@ export default function QrCodeSection() {
             <div className="flex flex-wrap items-center justify-center gap-2">
               <button
                 type="button"
-                onClick={() => download('png')}
+                onClick={() => handleDownload('png')}
                 className="btn-primary"
               >
                 <Download size={16} />
@@ -238,7 +258,7 @@ export default function QrCodeSection() {
               </button>
               <button
                 type="button"
-                onClick={() => download('svg')}
+                onClick={() => handleDownload('svg')}
                 className="inline-flex items-center gap-1.5 rounded-full border border-line bg-bg/60 px-4 py-2 text-sm text-ink/80 hover:bg-ink/5 hover:text-ink transition-colors"
               >
                 <Download size={16} />
@@ -246,8 +266,14 @@ export default function QrCodeSection() {
               </button>
               <button
                 type="button"
-                onClick={() => download('jpeg')}
-                className="inline-flex items-center gap-1.5 rounded-full border border-line bg-bg/60 px-4 py-2 text-sm text-ink/80 hover:bg-ink/5 hover:text-ink transition-colors"
+                onClick={() => handleDownload('jpeg')}
+                disabled={qr.bgTransparent}
+                title={
+                  qr.bgTransparent
+                    ? "JPEG can't keep transparency — use PNG or SVG"
+                    : undefined
+                }
+                className="inline-flex items-center gap-1.5 rounded-full border border-line bg-bg/60 px-4 py-2 text-sm text-ink/80 hover:bg-ink/5 hover:text-ink transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-bg/60 disabled:hover:text-ink/80"
               >
                 <Download size={16} />
                 JPEG

@@ -55,9 +55,26 @@ export function buildQrOptions(qr: Qr, size: number): Partial<Options> {
   }
 }
 
-// Wraps the imperative qr-code-styling instance: appends its canvas to a div,
-// re-renders on option changes, and exposes a download(). Pass a memoized
-// `options` object (e.g. from buildQrOptions) so update() only runs on change.
+// Print-ready raster export size. The on-screen preview stays small (240) for
+// snappy re-renders; downloads use a throwaway high-res instance instead so the
+// PNG/JPEG come out large enough to print (a 240px PNG is too low-res).
+export const QR_EXPORT_SIZE = 1024
+
+// Render a transient (non-appended) instance at the given options and download
+// it. Pass high-res options (buildQrOptions(qr, QR_EXPORT_SIZE)); the
+// transparent background carries through unchanged.
+export async function downloadQr(
+  options: Partial<Options>,
+  extension: FileExtension,
+  name = 'wedding-qr',
+): Promise<void> {
+  await new QRCodeStyling(options).download({ name, extension })
+}
+
+// Wraps the imperative qr-code-styling instance: appends its canvas to a div
+// and re-renders on option changes. Pass a memoized `options` object (e.g. from
+// buildQrOptions) so update() only runs on change. Exports are handled
+// separately by downloadQr so they can render at a higher resolution.
 export function useStyledQr(options: Partial<Options>) {
   const containerRef = useRef<HTMLDivElement>(null)
   const qrRef = useRef<QRCodeStyling | null>(null)
@@ -84,9 +101,5 @@ export function useStyledQr(options: Partial<Options>) {
     qrRef.current?.update(options)
   }, [options])
 
-  const download = (extension: FileExtension, name = 'wedding-qr') => {
-    void qrRef.current?.download({ name, extension })
-  }
-
-  return { containerRef, download }
+  return { containerRef }
 }
