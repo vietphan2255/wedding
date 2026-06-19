@@ -13,6 +13,7 @@ export default function EnvelopeIntro({
   open = false,
   coupleLeft = 'Viet',
   coupleRight = 'Nguyen',
+  guestName = '',
   dateDisplay = '',
   eyebrow = '',
   line = '',
@@ -45,7 +46,7 @@ export default function EnvelopeIntro({
           {/* printed front face — the real envelope */}
           <div className="env-front">
             <div className="env-front-text">
-              <span className="env-savedate">save the date</span>
+              <span className="env-savedate">Save The Date</span>
               <h2 className="env-names">
                 <span className="env-name-part">{coupleLeft}</span>{' '}
                 <span className="env-amp">&amp;</span>{' '}
@@ -54,7 +55,7 @@ export default function EnvelopeIntro({
               {dateDisplay ? <p className="env-date">{dateDisplay}</p> : null}
               {eyebrow ? <p className="env-eyebrow">{eyebrow}</p> : null}
             </div>
-            <span className="env-namebox" aria-hidden />
+            <span className="env-namebox">{guestName}</span>
           </div>
 
           {/* back of the envelope — revealed after the flip */}

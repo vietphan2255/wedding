@@ -120,16 +120,15 @@
   display: flex;
   flex-direction: column;
   gap: 9px;
-  margin-bottom: 18px; /* leaves room for the name box at the bottom-left */
+  margin-bottom: 8px; /* small gap down to the guest name box */
 }
 .envelope-intro .env-savedate {
   align-self: flex-end;
-  font-family: 'Great Vibes', cursive;
-  font-size: 33px;
+  font-family: 'Alex Brush', cursive;
+  font-size: 34px;
   line-height: 1;
   color: #fdeee9;
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
-  font-style: italic;
 }
 .envelope-intro .env-names {
   text-align: right;
@@ -158,30 +157,44 @@
   align-self: flex-end;
   max-width: 60%;
   text-align: right;
-  font-size: 15px;
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: 16px;
   font-weight: 400;
   letter-spacing: 0.16em;
   color: #fff;
 }
 .envelope-intro .env-eyebrow {
   align-self: flex-end;
+  margin-top: 10px;
   max-width: 60%;
   text-align: right;
+  font-family: var(--font-display, 'Playfair Display', serif);
   font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.92);
 }
-/* blank white name box, bottom-left */
+/* white address label — right-aligned with the other elements; holds the invited
+   guest's name from the ?guest= link. Stays a blank label when there's no name. */
 .envelope-intro .env-namebox {
-  left: 42px;
-  bottom: 34px;
+  align-self: flex-end;
   z-index: 1;
-  width: 156px;
-  height: 26px;
+  min-width: 156px;
+  max-width: 86%;
+  min-height: 26px;
+  padding: 4px 16px;
   background: #fbf7f2;
   border-radius: 3px;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.18);
+  font-family: 'Dancing Script', cursive;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
+  color: #7c1318;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ---------- BACK of the envelope (revealed after the flip) ---------- */
@@ -401,10 +414,10 @@
   }
   .envelope-intro .env-front-text {
     gap: 7px;
-    margin-bottom: 14px;
+    margin-bottom: 6px;
   }
   .envelope-intro .env-savedate {
-    font-size: 26px;
+    font-size: 28px;
   }
   .envelope-intro .env-names {
     font-size: 27px;
@@ -419,10 +432,9 @@
     letter-spacing: 0.18em;
   }
   .envelope-intro .env-namebox {
-    left: 32px;
-    bottom: 28px;
-    width: 132px;
-    height: 22px;
+    min-width: 132px;
+    padding: 3px 12px;
+    font-size: 16px;
   }
   .envelope-intro .ec-names {
     font-size: 26px;

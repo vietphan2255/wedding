@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useSearchParams } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import EnvelopeIntro from './EnvelopeIntro.jsx'
@@ -13,6 +14,9 @@ export default function InvitationOverlay() {
   const letter = (config.invitation?.letterImage || '').trim()
   const letterFocalX = config.invitation?.letterFocalX ?? 50
   const letterFocalY = config.invitation?.letterFocalY ?? 50
+  // Personalized link: /?guest=Tên%20Khách prints the invited guest's name on the envelope.
+  const [params] = useSearchParams()
+  const guestName = (params.get('guest') || '').trim()
   const [visible, setVisible] = useState(false)
   const [open, setOpen] = useState(false)
 
@@ -57,6 +61,7 @@ export default function InvitationOverlay() {
             open={open}
             coupleLeft={common.coupleNameLeft}
             coupleRight={common.coupleNameRight}
+            guestName={guestName}
             dateDisplay={common.dateDisplay}
             eyebrow={t('invitation.eyebrow')}
             line={t('invitation.line')}
