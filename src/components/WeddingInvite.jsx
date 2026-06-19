@@ -51,15 +51,15 @@ function FamilyBlock({ label, father, mother, hometown }) {
   if (!father && !mother && !hometown) return null
   return (
     <div className="text-center">
-      <p className="font-display text-base md:text-lg text-ink">{label}</p>
-      <div className="mt-2 space-y-1 text-sm md:text-base">
+      <p className="font-display text-sm sm:text-base md:text-lg text-ink">{label}</p>
+      <div className="mt-2 space-y-1">
         {father ? (
-          <p className="text-ink">
+          <p className="text-ink whitespace-nowrap" style={{ fontSize: 'clamp(0.7rem, 2.7vw, 1rem)' }}>
             Ông: <span className="text-ink uppercase font-semibold">{father}</span>
           </p>
         ) : null}
         {mother ? (
-          <p className="text-ink">
+          <p className="text-ink whitespace-nowrap" style={{ fontSize: 'clamp(0.7rem, 2.7vw, 1rem)' }}>
             Bà: <span className="text-ink uppercase font-semibold">{mother}</span>
           </p>
         ) : null}
@@ -95,19 +95,19 @@ function InvitationCard({ ceremonyKey, t, coupleLeft, coupleRight, inv, dateISO 
   const yearLabel = bits ? `Năm ${bits.year}` : ''
 
   return (
-    <div className="relative h-full rounded-3xl border border-line bg-bg/60 backdrop-blur px-6 py-10 md:px-12 md:py-14">
+    <div className="relative h-full rounded-3xl border border-line bg-bg/60 backdrop-blur px-4 sm:px-8 py-8 sm:py-10 md:px-12 md:py-14">
       {/* Top — vertical title + cursive couple names */}
-      <div className="flex items-center justify-center gap-5 md:gap-10">
+      <div className="flex items-center justify-center gap-3 sm:gap-5 md:gap-10">
         <VerticalTitle name={name} />
-        <div className="font-script-vn text-accent text-center leading-[1.1] break-words">
-          <div className="text-3xl md:text-5xl">{coupleLeft}</div>
-          <div className="text-xl md:text-3xl my-1 md:my-2">&amp;</div>
-          <div className="text-3xl md:text-5xl">{coupleRight}</div>
+        <div className="font-script-vn text-accent text-center leading-[1.1] min-w-0">
+          <div className="whitespace-nowrap" style={{ fontSize: 'clamp(1.4rem, 7vw, 3rem)' }}>{coupleLeft}</div>
+          <div className="my-1 md:my-2" style={{ fontSize: 'clamp(1.1rem, 4vw, 1.875rem)' }}>&amp;</div>
+          <div className="whitespace-nowrap" style={{ fontSize: 'clamp(1.4rem, 7vw, 3rem)' }}>{coupleRight}</div>
         </div>
       </div>
 
       {/* Two families */}
-      <div className="mt-10 grid grid-cols-2 gap-4 md:gap-6 max-w-xl mx-auto">
+      <div className="mt-8 md:mt-10 grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 max-w-xl mx-auto">
         <FamilyBlock
           label={t('invite.familyGroom')}
           father={inv.groomFather}
