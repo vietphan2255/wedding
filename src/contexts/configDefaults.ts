@@ -177,6 +177,7 @@ export const DEFAULT_CONFIG: WeddingConfig = {
     link: '',
     fgColor: '#1a1a1a',
     bgColor: '#ffffff',
+    bgTransparent: false,
     useGradient: false,
     gradientType: 'linear',
     gradientColor1: '#b76e79',

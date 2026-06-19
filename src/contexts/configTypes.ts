@@ -129,6 +129,7 @@ export interface Qr {
   link: string // '' → falls back to the live site origin at render time
   fgColor: string
   bgColor: string
+  bgTransparent: boolean // true → transparent background (ignores bgColor)
   useGradient: boolean
   gradientType: QrGradientType
   gradientColor1: string

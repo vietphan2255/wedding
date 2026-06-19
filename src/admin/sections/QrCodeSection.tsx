@@ -208,7 +208,20 @@ export default function QrCodeSection() {
         <div className="lg:sticky lg:top-0 lg:w-[360px] lg:shrink-0 space-y-5">
           {/* Live preview + export */}
           <div className="glass rounded-3xl p-6 md:p-7 flex flex-col items-center gap-5">
-            <div className="rounded-2xl bg-white p-4">
+            <div
+              className="rounded-2xl p-4"
+              style={
+                qr.bgTransparent
+                  ? {
+                      // checkerboard so the transparent code is visible in-preview
+                      backgroundColor: '#fff',
+                      backgroundImage:
+                        'conic-gradient(#d4d4d4 25%, #fff 0 50%, #d4d4d4 0 75%, #fff 0)',
+                      backgroundSize: '16px 16px',
+                    }
+                  : { backgroundColor: '#fff' }
+              }
+            >
               <div ref={containerRef} className="block" />
             </div>
             <p className="font-mono text-xs text-muted break-all max-w-full text-center">
@@ -279,12 +292,29 @@ export default function QrCodeSection() {
                 value={qr.fgColor}
                 onChange={(v) => setQr({ fgColor: v })}
               />
-              <ColorField
-                label="Background"
-                value={qr.bgColor}
-                onChange={(v) => setQr({ bgColor: v })}
-              />
+              {!qr.bgTransparent && (
+                <ColorField
+                  label="Background"
+                  value={qr.bgColor}
+                  onChange={(v) => setQr({ bgColor: v })}
+                />
+              )}
             </div>
+
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={qr.bgTransparent}
+                onChange={(e) => setQr({ bgTransparent: e.target.checked })}
+                className="accent-accent"
+              />
+              Transparent background
+            </label>
+            {qr.bgTransparent && (
+              <p className="text-xs text-muted">
+                PNG and SVG keep the transparency; JPEG exports with a solid background.
+              </p>
+            )}
 
             <label className="flex items-center gap-2 text-sm">
               <input
@@ -367,7 +397,7 @@ export default function QrCodeSection() {
                   label="Logo size"
                   value={qr.logoSize}
                   min={0.1}
-                  max={0.5}
+                  max={0.6}
                   step={0.05}
                   onChange={(v) => setQr({ logoSize: v })}
                 />

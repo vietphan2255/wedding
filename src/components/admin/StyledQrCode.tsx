@@ -49,7 +49,9 @@ export function buildQrOptions(qr: Qr, size: number): Partial<Options> {
     dotsOptions: { type: qr.dotStyle, ...paint },
     cornersSquareOptions: { type: qr.cornerSquareStyle, ...paint },
     cornersDotOptions: { type: qr.cornerDotStyle, ...paint },
-    backgroundOptions: { color: qr.bgColor },
+    // A fully-transparent canvas color yields transparent PNG/SVG exports
+    // (JPEG has no alpha, so it falls back to a filled background).
+    backgroundOptions: { color: qr.bgTransparent ? 'rgba(0,0,0,0)' : qr.bgColor },
   }
 }
 
