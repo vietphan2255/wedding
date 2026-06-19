@@ -78,6 +78,9 @@ export interface Faq extends OrderedItem {
 
 export interface Invitation {
   letterImage: string
+  // Full formal names shown only on the invitation card (fall back to common short names).
+  groomFullName: string
+  brideFullName: string
   // Families (Nhà Trai / Nhà Gái) — parents announced on the formal invite.
   groomFather: string
   groomMother: string

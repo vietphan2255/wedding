@@ -51,10 +51,18 @@ function FamilyBlock({ label, father, mother, hometown }) {
   if (!father && !mother && !hometown) return null
   return (
     <div className="text-center">
-      <p className="font-display text-lg md:text-2xl text-ink">{label}</p>
+      <p className="font-display text-base md:text-lg text-ink">{label}</p>
       <div className="mt-2 space-y-1 text-sm md:text-base">
-        {father ? <p className="text-ink">{father}</p> : null}
-        {mother ? <p className="text-ink">{mother}</p> : null}
+        {father ? (
+          <p className="text-ink">
+            Ông: <span className="text-ink uppercase font-semibold">{father}</span>
+          </p>
+        ) : null}
+        {mother ? (
+          <p className="text-ink">
+            Bà: <span className="text-ink uppercase font-semibold">{mother}</span>
+          </p>
+        ) : null}
         {hometown ? <p className="text-muted text-sm">{hometown}</p> : null}
       </div>
     </div>
@@ -64,11 +72,11 @@ function FamilyBlock({ label, father, mother, hometown }) {
 // THÁNG | big-day | NĂM, with the month/year framed by hairline rules.
 function BigDate({ monthLabel, day, yearLabel }) {
   const side =
-    'flex-1 max-w-[9rem] flex items-center justify-center border-t border-b border-line py-2 text-center font-display text-base md:text-xl text-ink uppercase tracking-[0.08em]'
+    'flex-1 max-w-[9rem] flex items-center justify-center border-t border-b border-line py-2 text-center font-display text-base md:text-xl text-ink uppercase tracking-[0.08em] font-bold'
   return (
     <div className="flex items-stretch justify-center gap-3 md:gap-6">
       <div className={side}>{monthLabel}</div>
-      <div className="shrink-0 self-center font-display text-6xl md:text-7xl leading-none text-accent">
+      <div className="shrink-0 self-center font-display text-6xl md:text-7xl leading-none text-accent font-bold">
         {day}
       </div>
       <div className={side}>{yearLabel}</div>
@@ -91,15 +99,15 @@ function InvitationCard({ ceremonyKey, t, coupleLeft, coupleRight, inv, dateISO 
       {/* Top — vertical title + cursive couple names */}
       <div className="flex items-center justify-center gap-5 md:gap-10">
         <VerticalTitle name={name} />
-        <div className="font-script-vn text-accent text-center leading-[1.1]">
-          <div className="text-4xl md:text-6xl">{coupleLeft}</div>
-          <div className="text-2xl md:text-4xl my-1 md:my-2">&amp;</div>
-          <div className="text-4xl md:text-6xl">{coupleRight}</div>
+        <div className="font-script-vn text-accent text-center leading-[1.1] break-words">
+          <div className="text-3xl md:text-5xl">{coupleLeft}</div>
+          <div className="text-xl md:text-3xl my-1 md:my-2">&amp;</div>
+          <div className="text-3xl md:text-5xl">{coupleRight}</div>
         </div>
       </div>
 
       {/* Two families */}
-      <div className="mt-10 grid grid-cols-2 gap-6 md:gap-12 max-w-xl mx-auto">
+      <div className="mt-10 grid grid-cols-2 gap-4 md:gap-6 max-w-xl mx-auto">
         <FamilyBlock
           label={t('invite.familyGroom')}
           father={inv.groomFather}
@@ -116,11 +124,11 @@ function InvitationCard({ ceremonyKey, t, coupleLeft, coupleRight, inv, dateISO 
 
       {/* Banquet line */}
       <div className="mt-10 text-center">
-        <p className="font-display text-lg md:text-2xl text-ink uppercase tracking-[0.08em]">
+        <p className="font-display text-lg md:text-2xl text-ink uppercase tracking-[0.08em] font-bold">
           {t('invite.banquet')} {name}
         </p>
         {bits ? (
-          <p className="text-xs md:text-sm text-muted mt-2 uppercase tracking-[0.18em]">
+          <p className="text-xs md:text-sm text-muted mt-2 uppercase tracking-[0.18em] font-semibold">
             {t('invite.atTime')} {time} · {bits.weekday}
           </p>
         ) : null}
@@ -135,7 +143,7 @@ function InvitationCard({ ceremonyKey, t, coupleLeft, coupleRight, inv, dateISO 
 
       {/* Lunar date */}
       {lunar ? (
-        <p className="mt-5 text-center font-script-vn text-xl md:text-2xl text-accent">
+        <p className="mt-5 text-center font-script-vn text-xl md:text-2xl text-accent font-bold">
           {lunar}
         </p>
       ) : null}
@@ -143,7 +151,7 @@ function InvitationCard({ ceremonyKey, t, coupleLeft, coupleRight, inv, dateISO 
       {/* Venue */}
       <div className="mt-8 text-center">
         <p className="eyebrow">{t('invite.venueLabel')}</p>
-        <p className="font-display text-xl md:text-2xl text-ink mt-2">{venue}</p>
+        <p className="font-display text-xl md:text-2xl text-ink mt-2 font-bold">{venue}</p>
         {address ? <p className="text-sm text-muted mt-1.5">{address}</p> : null}
       </div>
     </div>
@@ -157,8 +165,10 @@ export default function WeddingInvite() {
   const inv = config.invitation || {}
   const dates = config.dates || {}
 
-  const coupleLeft = common.coupleNameLeft || 'Viet'
-  const coupleRight = common.coupleNameRight || 'Nguyen'
+  // Formal full names are invitation-only; fall back to the shared short names so the
+  // hero, footer, navbar and intro envelope are untouched.
+  const coupleLeft = inv.groomFullName || common.coupleNameLeft || 'Viet'
+  const coupleRight = inv.brideFullName || common.coupleNameRight || 'Nguyen'
   const message = inv.message_vi || ''
 
   return (
@@ -166,7 +176,7 @@ export default function WeddingInvite() {
       id="invitation"
       className="section-padding relative bg-surface overflow-hidden film-grain"
     >
-      <div className="max-w-2xl lg:max-w-6xl mx-auto px-6">
+      <div className="max-w-2xl lg:max-w-7xl mx-auto px-6">
         <FadeIn className="text-center max-w-2xl mx-auto">
           <p className="eyebrow">{t('invitation.eyebrow')}</p>
           {message ? (

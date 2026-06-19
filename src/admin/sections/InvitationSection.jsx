@@ -5,6 +5,11 @@ import ImageInput from '../../components/admin/ImageInput.jsx'
 import LabelsPanel from './LabelsPanel'
 import LabelField from './LabelField'
 
+const COUPLE_FIELDS = [
+  { key: 'groomFullName', label: 'Groom · Full name (left)', placeholder: 'Phan Quốc Việt' },
+  { key: 'brideFullName', label: 'Bride · Full name (right)', placeholder: 'Nguyễn Thảo Nguyên' },
+]
+
 const FAMILY_FIELDS = [
   { key: 'groomFather', label: 'Groom · Father (Nhà Trai)', placeholder: 'Ông Phan Văn Hùng' },
   { key: 'brideFather', label: 'Bride · Father (Nhà Gái)', placeholder: 'Ông Nguyễn Văn Minh' },
@@ -112,6 +117,29 @@ export default function InvitationSection() {
             &amp; Venues sections.
           </p>
         </header>
+
+        {/* Couple full names — shown large on the invitation card */}
+        <div className="glass rounded-3xl p-6 md:p-7">
+          <p className="eyebrow">Couple full names</p>
+          <p className="text-sm text-muted mt-2 mb-4 max-w-2xl">
+            Shown large on the invitation card. Leave empty to use the short names from
+            Couple &amp; contact.
+          </p>
+          <div className="grid md:grid-cols-2 gap-4">
+            {COUPLE_FIELDS.map(({ key, label, placeholder }) => (
+              <div key={key}>
+                <label className={labelClass}>{label}</label>
+                <input
+                  type="text"
+                  value={inv[key] ?? ''}
+                  onChange={(e) => setField(key, e.target.value)}
+                  placeholder={placeholder}
+                  className={inputClass}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Two families — Nhà Trai / Nhà Gái */}
         <div className="glass rounded-3xl p-6 md:p-7">

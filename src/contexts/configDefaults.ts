@@ -155,6 +155,8 @@ export const DEFAULT_CONFIG: WeddingConfig = {
   faqs: DEFAULT_FAQS,
   invitation: {
     letterImage: '',
+    groomFullName: '',
+    brideFullName: '',
     groomFather: 'Ông Phan Văn Hùng',
     groomMother: 'Bà Trần Thị Lan',
     groomHometown: 'TP. Hà Nội',
