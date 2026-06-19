@@ -23,6 +23,8 @@ export default function Hero({
   const nameLeft = config?.common?.coupleNameLeft || 'Viet'
   const nameRight = config?.common?.coupleNameRight || 'Nguyen'
   const heroImage = config?.hero?.image?.trim() || HERO_IMAGE
+  const focalX = config?.hero?.focalX ?? 50
+  const focalY = config?.hero?.focalY ?? 50
 
   // Split the date line into three pieces (vqDate, middle, year) so the
   // hero → countdown flight can lift the vqDate and year, fade the middle,
@@ -60,6 +62,7 @@ export default function Hero({
           alt="Couple silhouette"
           decoding="async"
           fetchPriority="high"
+          style={{ objectPosition: `${focalX}% ${focalY}%` }}
           className="absolute inset-0 w-full h-full object-cover motion-reduce:!animate-none"
           animate={
             calm

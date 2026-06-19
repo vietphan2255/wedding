@@ -11,6 +11,8 @@ export default function InvitationOverlay() {
   const { config } = useWeddingConfig()
   const common = config.common || {}
   const letter = (config.invitation?.letterImage || '').trim()
+  const letterFocalX = config.invitation?.letterFocalX ?? 50
+  const letterFocalY = config.invitation?.letterFocalY ?? 50
   const [visible, setVisible] = useState(false)
   const [open, setOpen] = useState(false)
 
@@ -59,6 +61,8 @@ export default function InvitationOverlay() {
             eyebrow={t('invitation.eyebrow')}
             line={t('invitation.line')}
             letterImage={letter}
+            letterFocalX={letterFocalX}
+            letterFocalY={letterFocalY}
           />
 
           <motion.span

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Save } from 'lucide-react'
 import { useDraftConfig } from '../DraftConfigContext'
-import ImageInput from '../../components/admin/ImageInput.jsx'
+import ImageFocalInput from '../../components/admin/ImageFocalInput.jsx'
 import type { Hero } from '../../contexts/configTypes'
 import LabelsPanel from './LabelsPanel.jsx'
 import LabelField from './LabelField.jsx'
@@ -23,7 +23,11 @@ export default function HeroSection() {
     setSaving(true)
     setStatus(null)
     try {
-      const payload: Hero = { image: (hero.image || '').trim() }
+      const payload: Hero = {
+        image: (hero.image || '').trim(),
+        focalX: hero.focalX ?? 50,
+        focalY: hero.focalY ?? 50,
+      }
       setSlice('hero', payload)
       await saveSlice('hero', payload)
       setStatus({ type: 'success', message: 'Hero image saved.' })
@@ -36,8 +40,6 @@ export default function HeroSection() {
       setSaving(false)
     }
   }
-
-  const preview = (hero.image || '').trim()
 
   return (
     <div>
@@ -54,32 +56,24 @@ export default function HeroSection() {
       <form onSubmit={save} className="space-y-5 mb-6">
         <div className="glass rounded-3xl p-6 md:p-7">
           <label className={labelClass}>Hero background image</label>
-          <ImageInput
+          <ImageFocalInput
             value={hero.image || ''}
-            onChange={(next: string) => setSlice('hero', { image: next })}
+            onChange={(next: string) =>
+              setSlice('hero', (h) => ({ ...(h as Hero), image: next }))
+            }
+            focalX={hero.focalX ?? 50}
+            focalY={hero.focalY ?? 50}
+            onFocalChange={(x: number, y: number) =>
+              setSlice('hero', (h) => ({ ...(h as Hero), focalX: x, focalY: y }))
+            }
+            frames={[
+              { label: 'Phone', aspect: '9 / 16' },
+              { label: 'Desktop', aspect: '16 / 9' },
+            ]}
             placeholder="https://example.com/hero.jpg"
             inputClassName="w-full rounded-xl border border-line bg-bg px-4 py-3 font-mono text-xs"
+            emptyHint="No image set — the hero uses the built-in default photo."
           />
-
-          {preview ? (
-            <div className="mt-5">
-              <p className="eyebrow mb-3">Preview</p>
-              <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden border border-line bg-surface">
-                <img
-                  src={preview}
-                  alt="Hero background preview"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.opacity = '0.15'
-                  }}
-                />
-              </div>
-            </div>
-          ) : (
-            <p className="text-xs text-muted mt-3">
-              No image set — the hero uses the built-in default photo.
-            </p>
-          )}
         </div>
 
         <div className="flex items-center justify-between glass rounded-3xl p-5">

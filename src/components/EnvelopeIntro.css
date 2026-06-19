@@ -255,13 +255,14 @@
 .envelope-intro .env-pocket-front.open {
   opacity: 1;
 }
-/* the image keeps its natural aspect — no crop, no letterbox bars */
+/* fixed 3:2 frame — the image fills it via object-fit:cover, cropped around the
+   admin-chosen focal point (object-position, set inline). The white .env-letter
+   card sizes to this + its 8px padding, so the rise-out animation stays steady. */
 .envelope-intro .env-letter-image {
   display: block;
-  width: auto;
-  height: auto;
-  max-width: 430px;
-  max-height: 290px;
+  width: 414px;
+  height: 276px;
+  object-fit: cover;
   border-radius: 4px;
 }
 .envelope-intro .env-letter-fallback {
@@ -426,10 +427,10 @@
   .envelope-intro .ec-names {
     font-size: 26px;
   }
-  /* keep the enlarged invitation comfortably within small screens */
+  /* keep the enlarged invitation comfortably within small screens (still 3:2) */
   .envelope-intro .env-letter-image {
-    max-width: 400px;
-    max-height: 270px;
+    width: 405px;
+    height: 270px;
   }
   .envelope-intro .env-letter-fallback {
     width: 300px;

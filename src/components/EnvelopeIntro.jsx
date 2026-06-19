@@ -17,6 +17,8 @@ export default function EnvelopeIntro({
   eyebrow = '',
   line = '',
   letterImage = '',
+  letterFocalX = 50,
+  letterFocalY = 50,
 }) {
   const [scale, setScale] = useState(1)
 
@@ -72,6 +74,7 @@ export default function EnvelopeIntro({
               alt="Invitation"
               draggable={false}
               decoding="async"
+              style={{ objectPosition: `${letterFocalX}% ${letterFocalY}%` }}
             />
           ) : (
             <div className="env-letter-fallback">

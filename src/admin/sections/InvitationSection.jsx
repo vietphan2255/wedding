@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Save, Mail } from 'lucide-react'
 import { useDraftConfig } from '../DraftConfigContext'
-import ImageInput from '../../components/admin/ImageInput.jsx'
+import ImageFocalInput from '../../components/admin/ImageFocalInput.jsx'
 import LabelsPanel from './LabelsPanel'
 import LabelField from './LabelField'
 
@@ -208,32 +208,23 @@ export default function InvitationSection() {
         {/* Intro-envelope image */}
         <div className="glass rounded-3xl p-6 md:p-7">
           <label className={labelClass}>Envelope letter image URL</label>
-          <ImageInput
+          <ImageFocalInput
             value={text}
             onChange={(next) => setField('letterImage', next)}
+            focalX={inv.letterFocalX ?? 50}
+            focalY={inv.letterFocalY ?? 50}
+            onFocalChange={(x, y) =>
+              setSlice('invitation', (i) => ({
+                ...(i || {}),
+                letterFocalX: x,
+                letterFocalY: y,
+              }))
+            }
+            frames={[{ label: 'Envelope', aspect: '3 / 2' }]}
             placeholder="https://example.com/our-invitation.jpg"
             inputClassName="w-full rounded-xl border border-line bg-bg px-4 py-3 font-mono text-xs"
+            emptyHint="No image set — the envelope shows the default text card."
           />
-
-          {text.trim() ? (
-            <div className="mt-5">
-              <p className="eyebrow mb-3">Preview</p>
-              <div className="relative w-[min(360px,100%)] mx-auto aspect-[3/2] rounded-2xl overflow-hidden border border-line bg-surface shadow-[0_30px_70px_-30px_rgba(0,0,0,0.45)]">
-                <img
-                  src={text.trim()}
-                  alt="Invitation letter preview"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.opacity = '0.15'
-                  }}
-                />
-              </div>
-            </div>
-          ) : (
-            <p className="text-xs text-muted mt-3">
-              No image set — the envelope shows the default text card.
-            </p>
-          )}
         </div>
 
         <div className="flex items-center justify-between glass rounded-3xl p-5">

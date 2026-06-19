@@ -78,7 +78,7 @@ export const DEFAULT_LABELS: Labels = { vi: {} }
 
 export const DEFAULT_CONFIG: WeddingConfig = {
   common: DEFAULT_COMMON,
-  hero: { image: '' },
+  hero: { image: '', focalX: 50, focalY: 50 },
   labels: DEFAULT_LABELS,
   dates: {
     vuquyStart: '2026-07-26T09:00:00+07:00',
@@ -155,6 +155,8 @@ export const DEFAULT_CONFIG: WeddingConfig = {
   faqs: DEFAULT_FAQS,
   invitation: {
     letterImage: '',
+    letterFocalX: 50,
+    letterFocalY: 50,
     groomFullName: '',
     brideFullName: '',
     groomFather: 'Ông Phan Văn Hùng',

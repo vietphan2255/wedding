@@ -78,6 +78,10 @@ export interface Faq extends OrderedItem {
 
 export interface Invitation {
   letterImage: string
+  // Focal point (0–100, % of the image) for the envelope letter crop. Default
+  // 50/50 = centered, matching pre-focal-point behavior.
+  letterFocalX: number
+  letterFocalY: number
   // Full formal names shown only on the invitation card (fall back to common short names).
   groomFullName: string
   brideFullName: string
@@ -141,6 +145,10 @@ export interface Qr {
 
 export interface Hero {
   image: string // Hero background image URL; '' → built-in default photo
+  // Focal point (0–100, % of the image) used as `object-position` for the
+  // full-screen `object-cover` crop. Default 50/50 = centered.
+  focalX: number
+  focalY: number
 }
 
 export interface WeddingConfig {
