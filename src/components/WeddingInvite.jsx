@@ -107,7 +107,7 @@ function InvitationCard({ ceremonyKey, t, coupleLeft, coupleRight, inv, dateISO 
       </div>
 
       {/* Two families */}
-      <div className="mt-8 md:mt-10 grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 max-w-xl mx-auto">
+      <div className="mt-8 md:mt-10 grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 max-w-[40rem] mx-auto">
         <FamilyBlock
           label={t('invite.familyGroom')}
           father={inv.groomFather}
