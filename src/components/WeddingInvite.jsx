@@ -176,7 +176,7 @@ export default function WeddingInvite() {
       id="invitation"
       className="section-padding relative bg-surface overflow-hidden film-grain"
     >
-      <div className="max-w-2xl lg:max-w-7xl mx-auto px-6">
+      <div className="max-w-2xl lg:max-w-7xl mx-auto px-2">
         <FadeIn className="text-center max-w-2xl mx-auto">
           <p className="eyebrow">{t('invitation.eyebrow')}</p>
           {message ? (
