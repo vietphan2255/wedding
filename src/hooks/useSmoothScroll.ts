@@ -95,8 +95,72 @@ export default function useSmoothScroll(): void {
     }
     document.addEventListener('click', onAnchor)
 
+    // ── Hero auto-snap ───────────────────────────────────────────────────
+    // While the hero (#home) still fills the viewport, the first *downward*
+    // scroll glides the whole hero out to #invitation in one locked motion, so
+    // the hero can never be left half-scrolled. Upward scrolling stays normal,
+    // and it re-arms whenever the hero comes back into view.
+    let snapping = false
+    const heroActive = () => {
+      const hero = document.getElementById('home')
+      if (!hero) return false
+      return hero.getBoundingClientRect().bottom > window.innerHeight * 0.4
+    }
+    // Don't snap mid-animation, or while the intro envelope locks body scroll.
+    const snapBlocked = () => snapping || document.body.style.overflow === 'hidden'
+    // Cinematic ease-in-out for the hero glide — gentle start, flowing middle,
+    // soft settle. (Lenis's global easing is an input-driven expo-out, which
+    // would lurch on a programmatic A→B move.)
+    const snapEase = (t: number) =>
+      t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2
+    const snapToNext = () => {
+      const next = document.querySelector('#invitation')
+      if (!next || snapping) return
+      snapping = true
+      start()
+      lenis.scrollTo(next as HTMLElement, {
+        offset: -64,
+        duration: 1.9,
+        easing: snapEase,
+        lock: true, // uninterruptible — no piece-by-piece scrolling
+        onComplete: () => {
+          snapping = false
+        },
+      })
+    }
+    const onWheelSnap = (e: WheelEvent) => {
+      if (snapBlocked()) return
+      if (e.deltaY > 0 && heroActive()) snapToNext()
+    }
+    let touchStartY = 0
+    const onTouchStartSnap = (e: TouchEvent) => {
+      touchStartY = e.touches[0]?.clientY ?? 0
+    }
+    const onTouchMoveSnap = (e: TouchEvent) => {
+      if (snapBlocked()) return
+      const y = e.touches[0]?.clientY ?? 0
+      // finger sliding up (start − current > 0) = scrolling the page down
+      if (touchStartY - y > 6 && heroActive()) snapToNext()
+    }
+    const snapKeys = new Set(['ArrowDown', 'PageDown', ' '])
+    const onKeySnap = (e: KeyboardEvent) => {
+      if (snapBlocked()) return
+      if (snapKeys.has(e.key) && heroActive()) {
+        e.preventDefault()
+        snapToNext()
+      }
+    }
+    window.addEventListener('wheel', onWheelSnap, opts)
+    window.addEventListener('touchstart', onTouchStartSnap, opts)
+    window.addEventListener('touchmove', onTouchMoveSnap, opts)
+    window.addEventListener('keydown', onKeySnap)
+
     return () => {
       document.removeEventListener('click', onAnchor)
+      window.removeEventListener('wheel', onWheelSnap)
+      window.removeEventListener('touchstart', onTouchStartSnap)
+      window.removeEventListener('touchmove', onTouchMoveSnap)
+      window.removeEventListener('keydown', onKeySnap)
       window.removeEventListener('wheel', onInput)
       window.removeEventListener('touchstart', onInput)
       window.removeEventListener('touchmove', onInput)

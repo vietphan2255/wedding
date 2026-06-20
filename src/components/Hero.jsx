@@ -145,7 +145,7 @@ export default function Hero({
 
       <div className="absolute bottom-8 inset-x-0 z-10 flex justify-center pointer-events-none">
         <motion.a
-          href="#countdown"
+          href="#invitation"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1.4 }}
