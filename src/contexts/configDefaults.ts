@@ -111,6 +111,9 @@ export const DEFAULT_LABELS: Labels = { vi: {} }
 export const DEFAULT_CONFIG: WeddingConfig = {
   common: DEFAULT_COMMON,
   hero: { image: '', focalX: 50, focalY: 50 },
+  // Empty by default — the hero shows the single `hero.image` until an admin
+  // adds slides (see HeroSlidesSection). `kind: 'list'` keeps the fallback.
+  heroSlides: [],
   labels: DEFAULT_LABELS,
   dates: {
     vuquyStart: '2026-07-26T09:00:00+07:00',

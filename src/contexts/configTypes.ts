@@ -170,9 +170,26 @@ export interface Hero {
   focalY: number
 }
 
+// One slide in the hero background slideshow. When `heroSlides` is non-empty the
+// hero cycles through these (sorted by `priority`, ascending) with randomized
+// in/out transitions instead of showing the single `hero.image`; an empty list
+// falls back to that single image.
+export interface HeroSlide extends OrderedItem {
+  // `id` (Firebase push key) + `order` (admin list position) come from OrderedItem.
+  src: string // image URL ('' = skipped at render)
+  priority: number // play order, ascending (lower shows earlier); loops
+  durationSeconds: number // how long this slide is held before advancing
+  // Per-slide focal point (0–100, % of the image) for the full-screen
+  // `object-cover` crop. Default 50/50 = centered.
+  focalX: number
+  focalY: number
+  placeholder?: string
+}
+
 export interface WeddingConfig {
   common: Common
   hero: Hero
+  heroSlides: HeroSlide[]
   labels: Labels
   dates: Dates
   venues: Venues

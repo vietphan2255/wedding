@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import {
   Calendar,
   Image,
+  Images,
   Heart,
   LogOut,
   ExternalLink,
@@ -42,6 +43,7 @@ import WishesSection from './sections/WishesSection'
 import GuestsSection from './sections/GuestsSection'
 import CommonCoupleSection from './sections/CommonCoupleSection'
 import HeroSection from './sections/HeroSection'
+import HeroSlidesSection from './sections/HeroSlidesSection'
 import CountdownSection from './sections/CountdownSection'
 import FooterSection from './sections/FooterSection'
 import RsvpLabelsSection from './sections/RsvpLabelsSection'
@@ -72,6 +74,7 @@ const GROUPS = [
     label: 'Sections',
     items: [
       { id: 'hero', label: 'Hero', icon: Sparkles, Component: HeroSection },
+      { id: 'hero-slides', label: 'Hero slideshow', icon: Images, Component: HeroSlidesSection },
       { id: 'countdown', label: 'Countdown', icon: Timer, Component: CountdownSection },
       { id: 'story', label: 'Story', icon: Heart, Component: StorySection },
       { id: 'timeline', label: 'Timeline', icon: MapPin, Component: VenuesSection },

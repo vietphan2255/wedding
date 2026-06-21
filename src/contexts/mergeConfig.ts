@@ -31,6 +31,7 @@ type SliceDef =
 const SLICE_DEFS: Record<keyof WeddingConfig, SliceDef> = {
   common:     { kind: 'shallow', default: DEFAULT_CONFIG.common },
   hero:       { kind: 'shallow', default: DEFAULT_CONFIG.hero },
+  heroSlides: { kind: 'list',    default: DEFAULT_CONFIG.heroSlides },
   labels:     { kind: 'labels',  default: DEFAULT_CONFIG.labels },
   dates:      { kind: 'shallow', default: DEFAULT_CONFIG.dates },
   music:      { kind: 'shallow', default: DEFAULT_CONFIG.music },

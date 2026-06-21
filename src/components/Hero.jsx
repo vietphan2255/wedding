@@ -4,6 +4,7 @@ import { ChevronDown } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import useIsPhone from '../hooks/useIsPhone'
+import HeroSlideshow from './HeroSlideshow'
 
 const HERO_IMAGE =
   'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=2400&q=80'
@@ -25,6 +26,9 @@ export default function Hero({
   const heroImage = config?.hero?.image?.trim() || HERO_IMAGE
   const focalX = config?.hero?.focalX ?? 50
   const focalY = config?.hero?.focalY ?? 50
+  // When the admin has configured a slideshow (at least one slide with an
+  // image), cycle through it; otherwise fall back to the single hero image.
+  const heroSlides = (config?.heroSlides ?? []).filter((s) => (s?.src || '').trim())
 
   // Split the date line into three pieces (vqDate, middle, year) so the
   // hero → countdown flight can lift the vqDate and year, fade the middle,
@@ -61,17 +65,16 @@ export default function Hero({
       ref={ref}
       className="relative h-[100svh] w-full overflow-hidden film-grain"
     >
+      {/* Outer wrapper = scroll parallax (MotionValue-driven, gated by calm). */}
       <motion.div
         style={imgStyle}
         className={`absolute inset-0${calm ? '' : ' will-change-transform'}`}
       >
-        <motion.img
-          src={heroImage}
-          alt="Couple silhouette"
-          decoding="async"
-          fetchPriority="high"
-          style={{ objectPosition: `${focalX}% ${focalY}%` }}
-          className="absolute inset-0 w-full h-full object-cover motion-reduce:!animate-none"
+        {/* Inner wrapper = Ken-Burns keyframe loop (desktop only). Lives on its
+            own element so it never fights the slide enter/exit transforms below
+            or the parallax MotionValues above for the same axis. */}
+        <motion.div
+          className="absolute inset-0 motion-reduce:!animate-none"
           animate={
             calm
               ? undefined
@@ -86,11 +89,26 @@ export default function Hero({
               ? undefined
               : { duration: 22, repeat: Infinity, ease: 'easeInOut' }
           }
-        />
-        <div
-          className="absolute inset-0"
-          style={{ background: 'var(--hero-overlay)' }}
-        />
+        >
+          {heroSlides.length > 0 ? (
+            <HeroSlideshow slides={heroSlides} calm={calm} />
+          ) : (
+            <>
+              <img
+                src={heroImage}
+                alt="Couple silhouette"
+                decoding="async"
+                fetchPriority="high"
+                style={{ objectPosition: `${focalX}% ${focalY}%` }}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div
+                className="absolute inset-0"
+                style={{ background: 'var(--hero-overlay)' }}
+              />
+            </>
+          )}
+        </motion.div>
       </motion.div>
 
       <motion.div
