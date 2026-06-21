@@ -85,9 +85,7 @@ export default function Hero({
                 }
           }
           transition={
-            calm
-              ? undefined
-              : { duration: 22, repeat: Infinity, ease: 'easeInOut' }
+            calm ? undefined : { duration: 22, repeat: Infinity, ease: 'easeInOut' }
           }
         >
           {heroSlides.length > 0 ? (
@@ -131,10 +129,14 @@ export default function Hero({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="font-display mt-6 text-ink leading-[1.0]"
-          style={{ fontSize: 'clamp(3rem, 12vw, 9.5rem)', fontFamily: "'Great Vibes', cursive", fontWeight: 900 }}
+          style={{
+            fontSize: 'clamp(3rem, 12vw, 9.5rem)',
+            fontFamily: "'Great Vibes', cursive",
+            fontWeight: 900,
+          }}
         >
           <span className="block">{nameLeft}</span>
-          <span className="block font-script text-accent text-[0.65em] my-1">
+          <span className="block font-script text-ink text-[0.65em] my-1">
             {t('hero.and')}
           </span>
           <span className="block">{nameRight}</span>
@@ -162,7 +164,12 @@ export default function Hero({
               ref={flightSourceBRef}
               className="inline-block"
               animate={reduce ? undefined : { y: [0, -3, 0] }}
-              transition={{ duration: 3.6, repeat: Infinity, ease: 'easeInOut', delay: 1.8 }}
+              transition={{
+                duration: 3.6,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: 1.8,
+              }}
               style={{ willChange: 'transform' }}
             >
               {year}

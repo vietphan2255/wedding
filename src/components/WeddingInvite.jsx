@@ -41,13 +41,13 @@ function VerticalTitle({ name }) {
   if (!words.length) return null
   return (
     <div className="flex flex-col items-center gap-2 shrink-0 text-accent">
-      <span className="w-px h-7 md:h-9 bg-line" aria-hidden />
-      <div className="font-script-vn font-extrabold text-2xl md:text-3xl leading-[1.15] flex flex-col items-center">
+      <span className="w-[2px] h-7 md:h-9 bg-line" aria-hidden />
+      <div className="font-display font-medium text-lg md:text-3xl leading-[1.15] flex flex-col items-center">
         {words.map((w, i) => (
           <span key={i}>{w}</span>
         ))}
       </div>
-      <span className="w-px h-7 md:h-9 bg-line" aria-hidden />
+      <span className="w-[2px] h-7 md:h-9 bg-line" aria-hidden />
     </div>
   )
 }
@@ -63,7 +63,8 @@ function FamilyBlock({ label, father, mother, hometown }) {
             className="text-ink whitespace-nowrap"
             style={{ fontSize: 'clamp(0.7rem, 2.7vw, 1rem)' }}
           >
-            Ông: <span className="text-ink uppercase font-semibold">{father}</span>
+            Ông:{' '}
+            <span className="text-ink uppercase font-bold font-display">{father}</span>
           </p>
         ) : null}
         {mother ? (
@@ -71,7 +72,8 @@ function FamilyBlock({ label, father, mother, hometown }) {
             className="text-ink whitespace-nowrap"
             style={{ fontSize: 'clamp(0.7rem, 2.7vw, 1rem)' }}
           >
-            Bà: <span className="text-ink uppercase font-semibold">{mother}</span>
+            Bà:{' '}
+            <span className="text-ink uppercase font-bold font-display">{mother}</span>
           </p>
         ) : null}
         {hometown ? <p className="text-muted text-sm">{hometown}</p> : null}
@@ -83,7 +85,7 @@ function FamilyBlock({ label, father, mother, hometown }) {
 // THÁNG | big-day | NĂM, with the month/year framed by hairline rules.
 function BigDate({ monthLabel, day, yearLabel }) {
   const side =
-    'flex-1 max-w-[9rem] flex items-center justify-center border-t border-b border-line py-2 text-center font-display text-base md:text-xl text-ink uppercase tracking-[0.08em] font-bold'
+    'flex-1 max-w-[9rem] flex items-center justify-center border-t-2 border-b-2 border-line py-2 text-center font-display text-base md:text-xl text-ink uppercase tracking-[0.08em] font-bold'
   return (
     <div className="flex items-stretch justify-center gap-3 md:gap-6">
       <div className={side}>{monthLabel}</div>
@@ -119,7 +121,8 @@ function InvitationCard({
 
   return (
     <div
-      className={`relative h-full rounded-3xl border bg-bg/60 backdrop-blur px-4 sm:px-6 py-8 sm:py-10 md:px-8 md:py-14 transition shadow-xl border-line hover:shadow-accent hover:scale-105`} style={{transition: 'all 0.25s ease-in-out'}}
+      className={`relative h-full rounded-3xl border bg-bg/60 backdrop-blur px-4 sm:px-6 py-8 sm:py-10 md:px-8 md:py-14 transition shadow-xl border-line hover:shadow-accent hover:scale-105`}
+      style={{ transition: 'all 0.25s ease-in-out' }}
     >
       {/* "Thiệp của bạn" badge — only on the ceremony this guest is invited to */}
       {highlighted ? (
@@ -130,26 +133,17 @@ function InvitationCard({
       {/* Top — vertical title + cursive couple names */}
       <div className="flex items-center justify-center gap-3 sm:gap-5 md:gap-10">
         <VerticalTitle name={name} />
-        <div
-          style={{ fontFamily: 'Alex Brush, cursive' }}
-          className="font-extrabold text-muted text-center leading-[1.1] min-w-0"
-        >
-          <div
-            className="whitespace-nowrap"
-            style={{ fontSize: 'clamp(1.4rem, 7vw, 3rem)' }}
-          >
+        <div className="font-display font-extralight text-muted text-center leading-[1.1] min-w-0">
+          <div className="whitespace-nowrap" style={{ fontSize: '36px' }}>
             {coupleLeft}
           </div>
           <div
             className="my-1 md:my-2"
-            style={{ fontSize: 'clamp(1.1rem, 4vw, 1.875rem)' }}
+            style={{ fontSize: 'clamp(1.1rem, 3vw, 1.875rem)' }}
           >
             &amp;
           </div>
-          <div
-            className="whitespace-nowrap"
-            style={{ fontSize: 'clamp(1.4rem, 7vw, 3rem)' }}
-          >
+          <div className="whitespace-nowrap" style={{ fontSize: '36px' }}>
             {coupleRight}
           </div>
         </div>
@@ -192,7 +186,7 @@ function InvitationCard({
 
       {/* Lunar date */}
       {lunar ? (
-        <p className="mt-5 text-center font-script-vn text-xl md:text-2xl text-accent font-bold">
+        <p className="mt-5 text-center font-display text-lg md:text-xl text-accent">
           {lunar}
         </p>
       ) : null}
@@ -242,7 +236,7 @@ function InvitationCard({
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-[12px] tracking-[0.18em] uppercase text-accent font-bold hover:text-ink transition-colors"
           >
-            <CalendarPlus size={15} className='font-bold' />
+            <CalendarPlus size={15} className="font-bold" />
             {t('timeline.addCalendar')}
           </a>
         </div>
@@ -265,7 +259,6 @@ export default function WeddingInvite() {
   const coupleRight = inv.brideFullName || common.coupleNameRight || 'Nguyen'
   // Address the message to the invited guest ("…quý khách…" → "…<invitation name>…");
   // visitors with no/unknown invite keep the generic salutation.
-  const message = personalizeInvite(inv.message_vi || '', found ? invitationName : '')
 
   // For a guest invited to one ceremony, lead with (and highlight) their card;
   // the other stays visible. 'both' / no invite keeps the default order.
@@ -282,8 +275,10 @@ export default function WeddingInvite() {
     >
       <div className="max-w-2xl lg:max-w-7xl mx-auto px-2">
         <FadeIn className="text-center max-w-2xl mx-auto">
-          <p className="eyebrow">{t('invitation.eyebrow')}</p>
-          {message ? <p className="text-muted mt-4 leading-relaxed">{message}</p> : null}
+          <p className="eyebrow text-bold">{t('invitation.eyebrow')}</p>
+          <p className="mt-4 leading-relaxed font-script text-3xl font-semibold text-accent" style={{letterSpacing: '1px'}}>
+            {found ? invitationName : ''}
+          </p>
         </FadeIn>
 
         <div className="mt-10 grid grid-cols-1 xl:grid-cols-2 gap-8 lg:gap-10 items-stretch">

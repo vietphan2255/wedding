@@ -142,7 +142,7 @@ export default function Countdown({
     <section
       id="countdown"
       data-cursor-id="countdown"
-      className="section-padding relative bg-surface text-ink overflow-hidden"
+      className="section-padding pt-0 relative bg-surface text-ink overflow-hidden"
     >
       <motion.div
         initial={{ scale: 0.7, opacity: 0 }}

@@ -130,3 +130,11 @@ export default function App() {
     </ErrorBoundary>
   )
 }
+
+// Note:
+// - float button open modal mung cuoi as same as mung cuoi section
+// - changing shape of the floating green circle to be heart or st
+// - toast the new wishes after submit by broadcasting to all other users. - if no new wishes, toast a messages already submitted randomly
+// - add ability to like the wishes
+// - allow user to submit questions to the admin
+// - add a thank you message to the footer
