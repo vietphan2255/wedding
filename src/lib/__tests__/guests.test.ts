@@ -5,6 +5,7 @@ import {
   normalizeParty,
   parseGuestCsv,
   inviteLink,
+  personalizeInvite,
 } from '../guests'
 
 describe('normalizeParty', () => {
@@ -92,5 +93,33 @@ describe('parseGuestCsv', () => {
 describe('inviteLink', () => {
   it('builds an origin-qualified ?invite= URL', () => {
     expect(inviteLink('a7Qk2Ztb').endsWith('/?invite=a7Qk2Ztb')).toBe(true)
+  })
+})
+
+describe('personalizeInvite', () => {
+  const msg =
+    'Trân trọng kính mời quý khách đến chung vui cùng gia đình chúng tôi trong ngày lễ thành hôn của hai con.'
+
+  it('swaps "quý khách" for the guest name', () => {
+    expect(personalizeInvite(msg, 'Gia đình Anh A')).toBe(
+      'Trân trọng kính mời Gia đình Anh A đến chung vui cùng gia đình chúng tôi trong ngày lễ thành hôn của hai con.',
+    )
+  })
+
+  it('is case-insensitive on the salutation', () => {
+    expect(personalizeInvite('Kính mời Quý Khách!', 'Cô B')).toBe('Kính mời Cô B!')
+  })
+
+  it('returns the text unchanged when there is no guest', () => {
+    expect(personalizeInvite(msg, '')).toBe(msg)
+  })
+
+  it('substitutes a {ten}/{name} placeholder for the guest, or "quý khách" without one', () => {
+    expect(personalizeInvite('Kính mời {ten} đến dự', 'Anh A')).toBe(
+      'Kính mời Anh A đến dự',
+    )
+    expect(personalizeInvite('Kính mời {name} đến dự', '')).toBe(
+      'Kính mời quý khách đến dự',
+    )
   })
 })

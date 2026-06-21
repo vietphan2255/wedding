@@ -12,6 +12,7 @@ import {
 } from 'firebase/database'
 import { db, isConfigured } from '../firebase/config'
 import { useLanguage } from '../contexts/LanguageContext'
+import { useInvitedGuest } from '../contexts/InvitedGuestContext.jsx'
 import FadeIn from './FadeIn.jsx'
 import SectionSubtitle from './SectionSubtitle.jsx'
 
@@ -26,22 +27,32 @@ const DEMO_WISHES = [
   {
     id: 'demo-2',
     name: 'Linh',
-    message:
-      'So happy for both of you! Cannot wait to celebrate in July & August!',
+    message: 'So happy for both of you! Cannot wait to celebrate in July & August!',
     createdAt: Date.now() - 1000 * 60 * 60 * 20,
   },
 ]
 
 export default function Wishes() {
   const { t } = useLanguage()
+  const { found, invitationName } = useInvitedGuest()
   const [wishes, setWishes] = useState([])
   const [loading, setLoading] = useState(true)
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm()
+
+  // Personalized link: prefill the name with the guest's invitation name (unless
+  // they've already typed something).
+  useEffect(() => {
+    if (found && invitationName && !getValues('name')) {
+      setValue('name', invitationName)
+    }
+  }, [found, invitationName, setValue, getValues])
 
   useEffect(() => {
     if (!isConfigured || !db) {
@@ -91,13 +102,15 @@ export default function Wishes() {
   const labelClass = 'block text-[11px] tracking-[0.22em] uppercase text-muted mb-2'
 
   return (
-    <section id="wishes" data-cursor-id="wishes" className="section-padding relative bg-bg overflow-hidden">
+    <section
+      id="wishes"
+      data-cursor-id="wishes"
+      className="section-padding relative bg-bg overflow-hidden"
+    >
       <div className="max-w-5xl mx-auto px-6">
         <FadeIn className="text-center">
           <p className="eyebrow">{t('wishes.eyebrow')}</p>
-          <h2 className="font-display mt-3 text-4xl md:text-6xl">
-            {t('wishes.title')}
-          </h2>
+          <h2 className="font-display mt-3 text-4xl md:text-6xl">{t('wishes.title')}</h2>
           <SectionSubtitle text={t('wishes.subhead')} />
           <div className="divider-leaf my-6">
             <Heart size={16} className="text-accent" />

@@ -131,3 +131,16 @@ export function inviteLink(code) {
     typeof window !== 'undefined' && window.location ? window.location.origin : ''
   return `${origin}/?invite=${code}`
 }
+
+// Address the invitation to a specific guest: prefer an explicit {ten}/{name}/{invite}
+// placeholder if the couple added one, otherwise swap the generic salutation "quý khách"
+// for the guest's name. With no name (no/unknown invite) the text is returned unchanged —
+// except a bare placeholder, which falls back to "quý khách" so it never leaks to the page.
+export function personalizeInvite(text, name) {
+  const s = String(text || '')
+  if (/\{(ten|name|invite)\}/i.test(s)) {
+    return s.replace(/\{(ten|name|invite)\}/gi, name || 'quý khách')
+  }
+  if (name) return s.replace(/quý khách/gi, name)
+  return s
+}

@@ -1,6 +1,7 @@
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import { useInvitedGuest } from '../contexts/InvitedGuestContext.jsx'
+import { personalizeInvite } from '../lib/guests'
 import FadeIn from './FadeIn.jsx'
 
 // Formal "thiệp cưới" section, restyled after the cinelove thiep-cuoi-42
@@ -209,7 +210,7 @@ function InvitationCard({
 export default function WeddingInvite() {
   const { t } = useLanguage()
   const { config } = useWeddingConfig()
-  const { found, party } = useInvitedGuest()
+  const { found, party, invitationName } = useInvitedGuest()
   const common = config.common || {}
   const inv = config.invitation || {}
   const dates = config.dates || {}
@@ -218,7 +219,9 @@ export default function WeddingInvite() {
   // hero, footer, navbar and intro envelope are untouched.
   const coupleLeft = inv.groomFullName || common.coupleNameLeft || 'Viet'
   const coupleRight = inv.brideFullName || common.coupleNameRight || 'Nguyen'
-  const message = inv.message_vi || ''
+  // Address the message to the invited guest ("…quý khách…" → "…<invitation name>…");
+  // visitors with no/unknown invite keep the generic salutation.
+  const message = personalizeInvite(inv.message_vi || '', found ? invitationName : '')
 
   // For a guest invited to one ceremony, lead with (and highlight) their card;
   // the other stays visible. 'both' / no invite keeps the default order.
