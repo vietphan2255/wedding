@@ -115,6 +115,15 @@ export default function Hero({
           calm ? '' : ' will-change-transform'
         }`}
       >
+        {/* Soft radial scrim, sized to the centered text, so the labels stay
+            legible over any hero slide. -z-10 keeps it above the photo but
+            beneath the text within this layer. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{ background: 'var(--hero-text-scrim)' }}
+        />
+
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}

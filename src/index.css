@@ -14,6 +14,7 @@
   --color-line: #E6D7CF;
   --font-display: 'Playfair Display', serif;
   --hero-overlay: linear-gradient(180deg, rgba(250, 247, 242, 0.1) 0%, rgba(250, 247, 242, 0.55) 70%, rgba(250, 247, 242, 1) 100%);
+  --hero-text-scrim: radial-gradient(ellipse 80% 50% at 50% 48%, color-mix(in srgb, var(--color-bg) 62%, transparent) 0%, color-mix(in srgb, var(--color-bg) 28%, transparent) 48%, transparent 72%);
   --grain-opacity: 0.04;
 }
 
@@ -27,6 +28,7 @@
   --color-line: #3A2C30;
   --font-display: 'Cormorant Garamond', serif;
   --hero-overlay: linear-gradient(180deg, rgba(20, 16, 20, 0.35) 0%, rgba(20, 16, 20, 0.6) 60%, rgba(20, 16, 20, 1) 100%);
+  --hero-text-scrim: radial-gradient(ellipse 80% 50% at 50% 48%, color-mix(in srgb, var(--color-bg) 70%, transparent) 0%, color-mix(in srgb, var(--color-bg) 34%, transparent) 48%, transparent 72%);
   --grain-opacity: 0.08;
 }
 
@@ -40,6 +42,7 @@
   --color-line: #D9CABB;
   --font-display: 'Fraunces', serif;
   --hero-overlay: linear-gradient(180deg, rgba(250, 247, 242, 0.05) 0%, rgba(250, 247, 242, 0.5) 70%, rgba(250, 247, 242, 1) 100%);
+  --hero-text-scrim: radial-gradient(ellipse 80% 50% at 50% 48%, color-mix(in srgb, var(--color-bg) 60%, transparent) 0%, color-mix(in srgb, var(--color-bg) 26%, transparent) 48%, transparent 72%);
   --grain-opacity: 0.05;
 }
 
