@@ -20,6 +20,7 @@ import ParallaxPetals from './components/ParallaxPetals.jsx'
 import MobileRsvpBar from './components/MobileRsvpBar.jsx'
 import InvitationOverlay from './components/InvitationOverlay.jsx'
 import { MusicProvider } from './contexts/MusicContext.jsx'
+import { InvitedGuestProvider } from './contexts/InvitedGuestContext.jsx'
 // Temporarily disabled: flying date overlay (Hero → Countdown).
 // import FlyingDate from './components/fx/FlyingDate.jsx'
 import CustomCursor from './components/fx/CustomCursor.jsx'
@@ -49,36 +50,37 @@ function WeddingSite() {
   const { config } = useWeddingConfig()
   const cursorGif = (config.effects?.cursorGif || '').trim()
   return (
-    <MusicProvider>
-      <InvitationOverlay />
-      <ScrollProgress />
-      <CustomCursor />
-      <ParallaxPetals />
-      <Navbar />
-      <main {...(cursorGif ? { 'data-cursor': cursorGif } : {})}>
-        <Hero
-          flightSourceARef={flightSourceARef}
-          flightMiddleRef={flightMiddleRef}
-          flightSourceBRef={flightSourceBRef}
-        />
-        <WeddingInvite />
-        <Countdown
-          flightTargetRef={flightTargetRef}
-          flightTargetARef={flightTargetARef}
-          flightTargetBRef={flightTargetBRef}
-        />
-        <StoryV2 />
-        <GalleryV2 />
-        <CeremonyTimelineV2 />
-        <RSVP />
-        <Wishes />
-        <GiftCard />
-        <FAQ />
-      </main>
-      {/* Temporarily disabled: flying date overlay (Hero → Countdown). The hero
+    <InvitedGuestProvider>
+      <MusicProvider>
+        <InvitationOverlay />
+        <ScrollProgress />
+        <CustomCursor />
+        <ParallaxPetals />
+        <Navbar />
+        <main {...(cursorGif ? { 'data-cursor': cursorGif } : {})}>
+          <Hero
+            flightSourceARef={flightSourceARef}
+            flightMiddleRef={flightMiddleRef}
+            flightSourceBRef={flightSourceBRef}
+          />
+          <WeddingInvite />
+          <Countdown
+            flightTargetRef={flightTargetRef}
+            flightTargetARef={flightTargetARef}
+            flightTargetBRef={flightTargetBRef}
+          />
+          <StoryV2 />
+          <GalleryV2 />
+          <CeremonyTimelineV2 />
+          <RSVP />
+          <Wishes />
+          <GiftCard />
+          <FAQ />
+        </main>
+        {/* Temporarily disabled: flying date overlay (Hero → Countdown). The hero
           and countdown show their date labels statically while this is off.
           Re-enable by uncommenting the import above and this block. */}
-      {/* <FlyingDate
+        {/* <FlyingDate
         sourceARef={flightSourceARef}
         sourceBRef={flightSourceBRef}
         middleRef={flightMiddleRef}
@@ -86,10 +88,11 @@ function WeddingSite() {
         targetARef={flightTargetARef}
         targetBRef={flightTargetBRef}
       /> */}
-      <Footer />
-      <FloatingDock />
-      <MobileRsvpBar />
-    </MusicProvider>
+        <Footer />
+        <FloatingDock />
+        <MobileRsvpBar />
+      </MusicProvider>
+    </InvitedGuestProvider>
   )
 }
 

@@ -86,6 +86,19 @@ RSVPs stay private:
         "createdAt": { ".validate": "newData.val() != null" },
         "$other":    { ".validate": false }
       }
+    },
+    "guests": {
+      ".read": true,
+      ".write": true,
+      "$code": {
+        ".validate": "newData.hasChildren(['invitationName', 'party'])",
+        "name":           { ".validate": "newData.isString() && newData.val().length <= 120" },
+        "invitationName": { ".validate": "newData.isString() && newData.val().length <= 160" },
+        "party":          { ".validate": "newData.isString() && newData.val().matches(/^(vuquy|thanhhon|both)$/)" },
+        "order":          { ".validate": "newData.isNumber()" },
+        "createdAt":      { ".validate": "newData.val() != null" },
+        "$other":         { ".validate": false }
+      }
     }
   }
 }
@@ -93,6 +106,16 @@ RSVPs stay private:
 
 RSVPs are private (only the Firebase console / Admin SDK can read them) while
 wishes are publicly readable so the guestbook can stream them live.
+
+The **guests** node powers personalized `?invite=<code>` links — the public site
+reads a single `guests/<code>` to print the guest's name and highlight their
+ceremony, and the `/admin` → **Guests** screen reads/writes the whole list to
+import and manage it. Like the `config` node, it's read+write so the client-side
+admin can manage it; access is gated by the secret `/admin` URL + password rather
+than by rules. The field validation above still constrains what can be written.
+**Hardening (optional, not yet wired):** add Firebase Auth for the admin, then set
+`guests` `.write` to the authed admin only and expose just `guests/$code` for public
+read — the runtime lookup already reads one record by code, so it keeps working.
 
 ## Deploy to Vercel
 

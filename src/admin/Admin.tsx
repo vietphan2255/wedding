@@ -24,6 +24,7 @@ import {
   MousePointer2,
   MousePointerClick,
   QrCode,
+  Ticket,
 } from 'lucide-react'
 import { isConfigured } from '../firebase/config'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
@@ -38,6 +39,7 @@ import GiftsSection from './sections/GiftsSection'
 import FaqsSection from './sections/FaqsSection'
 import RsvpsSection from './sections/RsvpsSection'
 import WishesSection from './sections/WishesSection'
+import GuestsSection from './sections/GuestsSection'
 import CommonCoupleSection from './sections/CommonCoupleSection'
 import HeroSection from './sections/HeroSection'
 import CountdownSection from './sections/CountdownSection'
@@ -98,6 +100,7 @@ const GROUPS = [
     id: 'submissions',
     label: 'Submissions',
     items: [
+      { id: 'guests', label: 'Guests', icon: Ticket, Component: GuestsSection },
       { id: 'rsvps', label: 'RSVPs', icon: ClipboardList, Component: RsvpsSection },
       {
         id: 'wishes-submissions',

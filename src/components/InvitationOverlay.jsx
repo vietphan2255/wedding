@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
+import { useInvitedGuest } from '../contexts/InvitedGuestContext.jsx'
 import EnvelopeIntro from './EnvelopeIntro.jsx'
 
 const STORAGE_KEY = 'vn-invitation-opened'
@@ -14,9 +15,12 @@ export default function InvitationOverlay() {
   const letter = (config.invitation?.letterImage || '').trim()
   const letterFocalX = config.invitation?.letterFocalX ?? 50
   const letterFocalY = config.invitation?.letterFocalY ?? 50
-  // Personalized link: /?guest=Tên%20Khách prints the invited guest's name on the envelope.
+  // Personalized link: a recognised /?invite=<code> prints that guest's invitation
+  // name on the envelope; otherwise the manual /?guest=Tên%20Khách still works.
+  const { found, invitationName } = useInvitedGuest()
   const [params] = useSearchParams()
-  const guestName = (params.get('guest') || '').trim()
+  const guestName =
+    found && invitationName ? invitationName : (params.get('guest') || '').trim()
   const [visible, setVisible] = useState(false)
   const [open, setOpen] = useState(false)
 

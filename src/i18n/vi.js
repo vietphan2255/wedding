@@ -132,7 +132,8 @@ export default {
   'rsvp.submit': 'Gửi xác nhận',
   'rsvp.submitting': 'Đang gửi…',
   'rsvp.success.title': 'Cảm ơn bạn!',
-  'rsvp.success.body': 'Tụi mình đã nhận được xác nhận. Hẹn gặp bạn trong ngày trọng đại.',
+  'rsvp.success.body':
+    'Tụi mình đã nhận được xác nhận. Hẹn gặp bạn trong ngày trọng đại.',
   'rsvp.error': 'Đã có lỗi xảy ra. Vui lòng thử lại.',
   'rsvp.validation.required': 'Vui lòng điền thông tin này',
 
@@ -200,6 +201,7 @@ export default {
   'invite.banquet': 'Tiệc mừng',
   'invite.atTime': 'Vào lúc',
   'invite.venueLabel': 'Địa điểm tổ chức',
+  'invite.yourCard': 'Thiệp mời của bạn',
 
   // Mobile RSVP bar
   'mobileRsvp.cta': 'Xác nhận tham dự',

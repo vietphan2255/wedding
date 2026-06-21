@@ -6,6 +6,7 @@ import { ref, push, serverTimestamp } from 'firebase/database'
 import confetti from 'canvas-confetti'
 import { db, isConfigured } from '../firebase/config'
 import { useLanguage } from '../contexts/LanguageContext'
+import { useInvitedGuest } from '../contexts/InvitedGuestContext.jsx'
 import FadeIn from './FadeIn.jsx'
 import SectionSubtitle from './SectionSubtitle.jsx'
 
@@ -19,11 +20,14 @@ function readAccent() {
 
 export default function RSVP() {
   const { t } = useLanguage()
+  const { found, party, name: invitedName } = useInvitedGuest()
   const {
     register,
     handleSubmit,
     reset,
     watch,
+    setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -35,6 +39,14 @@ export default function RSVP() {
   const [status, setStatus] = useState(null) // 'success' | 'error'
   const attending = watch('attending')
   const firedRef = useRef(false)
+
+  // Personalized link: default the event to the ceremony this guest is invited
+  // to, and prefill their name if the field is still empty.
+  useEffect(() => {
+    if (!found) return
+    if (party === 'vuquy' || party === 'thanhhon') setValue('events', party)
+    if (invitedName && !getValues('name')) setValue('name', invitedName)
+  }, [found, party, invitedName, setValue, getValues])
 
   useEffect(() => {
     if (status !== 'success' || firedRef.current) return
@@ -88,9 +100,7 @@ export default function RSVP() {
       <div className="max-w-3xl mx-auto px-6">
         <FadeIn className="text-center">
           <p className="eyebrow">{t('rsvp.eyebrow')}</p>
-          <h2 className="font-display mt-3 text-4xl md:text-6xl">
-            {t('rsvp.title')}
-          </h2>
+          <h2 className="font-display mt-3 text-4xl md:text-6xl">{t('rsvp.title')}</h2>
           <SectionSubtitle text={t('rsvp.subhead')} />
           <div className="divider-leaf my-6">
             <span className="font-script text-2xl">{t('rsvp.divider')}</span>
@@ -116,14 +126,9 @@ export default function RSVP() {
               className="mt-14 glass rounded-3xl p-10 md:p-14 text-center"
             >
               <CheckCircle2 size={48} className="text-accent mx-auto" />
-              <h3 className="font-display text-3xl mt-4">
-                {t('rsvp.success.title')}
-              </h3>
+              <h3 className="font-display text-3xl mt-4">{t('rsvp.success.title')}</h3>
               <p className="text-muted mt-3">{t('rsvp.success.body')}</p>
-              <button
-                onClick={() => setStatus(null)}
-                className="btn-ghost mt-8"
-              >
+              <button onClick={() => setStatus(null)} className="btn-ghost mt-8">
                 ←
               </button>
             </motion.div>
@@ -149,11 +154,7 @@ export default function RSVP() {
 
                 <div className="md:col-span-2">
                   <label className={labelClass}>{t('rsvp.phone')}</label>
-                  <input
-                    type="tel"
-                    className={fieldClass}
-                    {...register('phone')}
-                  />
+                  <input type="tel" className={fieldClass} {...register('phone')} />
                 </div>
 
                 <div className="md:col-span-2">
@@ -189,9 +190,7 @@ export default function RSVP() {
                       <label className={labelClass}>{t('rsvp.events')}</label>
                       <select className={fieldClass} {...register('events')}>
                         <option value="vuquy">{t('rsvp.events.vuquy')}</option>
-                        <option value="thanhhon">
-                          {t('rsvp.events.thanhhon')}
-                        </option>
+                        <option value="thanhhon">{t('rsvp.events.thanhhon')}</option>
                         <option value="both">{t('rsvp.events.both')}</option>
                       </select>
                     </div>
@@ -211,11 +210,7 @@ export default function RSVP() {
 
                 <div className="md:col-span-2">
                   <label className={labelClass}>{t('rsvp.message')}</label>
-                  <textarea
-                    rows={4}
-                    className={fieldClass}
-                    {...register('message')}
-                  />
+                  <textarea rows={4} className={fieldClass} {...register('message')} />
                 </div>
 
                 <div className="md:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">

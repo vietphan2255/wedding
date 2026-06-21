@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
+import { useInvitedGuest } from '../contexts/InvitedGuestContext.jsx'
 import {
   MS_PER_SECOND,
   MS_PER_MINUTE,
@@ -29,8 +30,7 @@ function diff(target) {
   }
   const now = new Date(nowMs)
   let mo =
-    (target.getFullYear() - now.getFullYear()) * 12 +
-    (target.getMonth() - now.getMonth())
+    (target.getFullYear() - now.getFullYear()) * 12 + (target.getMonth() - now.getMonth())
   const probe = new Date(now)
   probe.setMonth(probe.getMonth() + mo)
   if (probe.getTime() > targetMs) {
@@ -38,10 +38,14 @@ function diff(target) {
     probe.setMonth(probe.getMonth() - 1)
   }
   let rem = targetMs - probe.getTime()
-  const w = Math.floor(rem / MS_PER_WEEK);   rem -= w * MS_PER_WEEK
-  const d = Math.floor(rem / MS_PER_DAY);    rem -= d * MS_PER_DAY
-  const h = Math.floor(rem / MS_PER_HOUR);   rem -= h * MS_PER_HOUR
-  const m = Math.floor(rem / MS_PER_MINUTE); rem -= m * MS_PER_MINUTE
+  const w = Math.floor(rem / MS_PER_WEEK)
+  rem -= w * MS_PER_WEEK
+  const d = Math.floor(rem / MS_PER_DAY)
+  rem -= d * MS_PER_DAY
+  const h = Math.floor(rem / MS_PER_HOUR)
+  rem -= h * MS_PER_HOUR
+  const m = Math.floor(rem / MS_PER_MINUTE)
+  rem -= m * MS_PER_MINUTE
   const s = Math.floor(rem / MS_PER_SECOND)
   return { mo, w, d, h, m, s }
 }
@@ -53,18 +57,27 @@ export default function Countdown({
 }) {
   const { t } = useLanguage()
   const { config } = useWeddingConfig()
+  const { found, party } = useInvitedGuest()
   const reduce = useReducedMotion()
   const calm = reduce
-  const upcomingEvents = useMemo(
-    () => pickUpcomingEvents(config.dates),
-    [config.dates],
-  )
+  const upcomingEvents = useMemo(() => pickUpcomingEvents(config.dates), [config.dates])
   const [index, setIndex] = useState(0)
+
+  // Personalized link: open the countdown on the ceremony this guest is invited
+  // to (once, when it resolves). The prev/next nav still lets them switch.
+  const appliedInviteRef = useRef(false)
+  useEffect(() => {
+    if (appliedInviteRef.current || !found || party === 'both') return
+    const i = upcomingEvents.findIndex((e) => e.key === party)
+    if (i >= 0) {
+      setIndex(i)
+      appliedInviteRef.current = true
+    }
+  }, [found, party, upcomingEvents])
   const safeIndex =
     upcomingEvents.length === 0
       ? 0
-      : ((index % upcomingEvents.length) + upcomingEvents.length) %
-        upcomingEvents.length
+      : ((index % upcomingEvents.length) + upcomingEvents.length) % upcomingEvents.length
   const current = upcomingEvents[safeIndex] ?? null
   const [now, setNow] = useState(() => diff(current?.date ?? new Date()))
 
@@ -123,8 +136,7 @@ export default function Countdown({
   const showNav = upcomingEvents.length > 1
   const goPrev = () =>
     setIndex((i) => (i - 1 + upcomingEvents.length) % upcomingEvents.length)
-  const goNext = () =>
-    setIndex((i) => (i + 1) % upcomingEvents.length)
+  const goNext = () => setIndex((i) => (i + 1) % upcomingEvents.length)
 
   return (
     <section
@@ -199,37 +211,55 @@ export default function Countdown({
               {(now.mo >= 1
                 ? [
                     [now.mo, t('countdown.months')],
-                    [now.w,  t('countdown.weeks')],
-                    [now.d,  t('countdown.days')],
-                    [now.h,  t('countdown.hours')],
-                  ]
-                : now.w >= 1
-                ? [
                     [now.w, t('countdown.weeks')],
                     [now.d, t('countdown.days')],
                     [now.h, t('countdown.hours')],
-                    [now.m, t('countdown.minutes')],
                   ]
-                : [
-                    [now.d, t('countdown.days')],
-                    [now.h, t('countdown.hours')],
-                    [now.m, t('countdown.minutes')],
-                    [now.s, t('countdown.seconds')],
-                  ]
+                : now.w >= 1
+                  ? [
+                      [now.w, t('countdown.weeks')],
+                      [now.d, t('countdown.days')],
+                      [now.h, t('countdown.hours')],
+                      [now.m, t('countdown.minutes')],
+                    ]
+                  : [
+                      [now.d, t('countdown.days')],
+                      [now.h, t('countdown.hours')],
+                      [now.m, t('countdown.minutes')],
+                      [now.s, t('countdown.seconds')],
+                    ]
               ).map(([n, lbl], i) => {
                 const drift = [
-                  { y: [0, -6, 4, -3, 0], x: [0, 3, -2, 4, 0], rotate: [0, 1.2, -0.8, 1, 0], duration: 6.5 },
-                  { y: [0, 5, -4, 3, 0], x: [0, -3, 2, -4, 0], rotate: [0, -1, 1.2, -0.6, 0], duration: 7.2 },
-                  { y: [0, -4, 5, -3, 0], x: [0, 4, -3, 2, 0], rotate: [0, 0.8, -1.4, 0.6, 0], duration: 8 },
-                  { y: [0, 4, -5, 3, 0], x: [0, -2, 3, -3, 0], rotate: [0, -1.2, 0.6, -1, 0], duration: 6.8 },
+                  {
+                    y: [0, -6, 4, -3, 0],
+                    x: [0, 3, -2, 4, 0],
+                    rotate: [0, 1.2, -0.8, 1, 0],
+                    duration: 6.5,
+                  },
+                  {
+                    y: [0, 5, -4, 3, 0],
+                    x: [0, -3, 2, -4, 0],
+                    rotate: [0, -1, 1.2, -0.6, 0],
+                    duration: 7.2,
+                  },
+                  {
+                    y: [0, -4, 5, -3, 0],
+                    x: [0, 4, -3, 2, 0],
+                    rotate: [0, 0.8, -1.4, 0.6, 0],
+                    duration: 8,
+                  },
+                  {
+                    y: [0, 4, -5, 3, 0],
+                    x: [0, -2, 3, -3, 0],
+                    rotate: [0, -1.2, 0.6, -1, 0],
+                    duration: 6.8,
+                  },
                 ][i]
                 return (
                   <motion.div
                     key={i}
                     animate={
-                      calm
-                        ? undefined
-                        : { y: drift.y, x: drift.x, rotate: drift.rotate }
+                      calm ? undefined : { y: drift.y, x: drift.x, rotate: drift.rotate }
                     }
                     transition={
                       calm

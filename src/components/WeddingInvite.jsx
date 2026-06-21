@@ -1,5 +1,6 @@
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
+import { useInvitedGuest } from '../contexts/InvitedGuestContext.jsx'
 import FadeIn from './FadeIn.jsx'
 
 // Formal "thiệp cưới" section, restyled after the cinelove thiep-cuoi-42
@@ -18,7 +19,8 @@ function dateBits(iso) {
   if (!iso) return null
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return null
-  const f = (opts) => new Intl.DateTimeFormat('vi-VN', { ...opts, timeZone: TZ }).format(d)
+  const f = (opts) =>
+    new Intl.DateTimeFormat('vi-VN', { ...opts, timeZone: TZ }).format(d)
   const monthNum = Number(
     new Intl.DateTimeFormat('vi-VN', { month: 'numeric', timeZone: TZ }).format(d),
   )
@@ -54,12 +56,18 @@ function FamilyBlock({ label, father, mother, hometown }) {
       <p className="font-display text-sm sm:text-base md:text-lg text-ink">{label}</p>
       <div className="mt-2 space-y-1">
         {father ? (
-          <p className="text-ink whitespace-nowrap" style={{ fontSize: 'clamp(0.7rem, 2.7vw, 1rem)' }}>
+          <p
+            className="text-ink whitespace-nowrap"
+            style={{ fontSize: 'clamp(0.7rem, 2.7vw, 1rem)' }}
+          >
             Ông: <span className="text-ink uppercase font-semibold">{father}</span>
           </p>
         ) : null}
         {mother ? (
-          <p className="text-ink whitespace-nowrap" style={{ fontSize: 'clamp(0.7rem, 2.7vw, 1rem)' }}>
+          <p
+            className="text-ink whitespace-nowrap"
+            style={{ fontSize: 'clamp(0.7rem, 2.7vw, 1rem)' }}
+          >
             Bà: <span className="text-ink uppercase font-semibold">{mother}</span>
           </p>
         ) : null}
@@ -84,7 +92,15 @@ function BigDate({ monthLabel, day, yearLabel }) {
   )
 }
 
-function InvitationCard({ ceremonyKey, t, coupleLeft, coupleRight, inv, dateISO }) {
+function InvitationCard({
+  ceremonyKey,
+  t,
+  coupleLeft,
+  coupleRight,
+  inv,
+  dateISO,
+  highlighted,
+}) {
   const name = t(`events.${ceremonyKey}.name`)
   const venue = t(`events.${ceremonyKey}.venue`)
   const time = t(`events.${ceremonyKey}.time`)
@@ -95,7 +111,19 @@ function InvitationCard({ ceremonyKey, t, coupleLeft, coupleRight, inv, dateISO 
   const yearLabel = bits ? `Năm ${bits.year}` : ''
 
   return (
-    <div className="relative h-full rounded-3xl border border-line bg-bg/60 backdrop-blur px-4 sm:px-8 py-8 sm:py-10 md:px-12 md:py-14">
+    <div
+      className={`relative h-full rounded-3xl border bg-bg/60 backdrop-blur px-4 sm:px-8 py-8 sm:py-10 md:px-12 md:py-14 transition ${
+        highlighted
+          ? 'border-accent ring-2 ring-accent/60 shadow-xl shadow-accent/10'
+          : 'border-line'
+      }`}
+    >
+      {/* "Thiệp của bạn" badge — only on the ceremony this guest is invited to */}
+      {highlighted ? (
+        <span className="absolute top-4 right-4 z-10 inline-flex items-center rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-accent">
+          {t('invite.yourCard')}
+        </span>
+      ) : null}
       {/* Top — vertical title + cursive couple names */}
       <div className="flex items-center justify-center gap-3 sm:gap-5 md:gap-10">
         <VerticalTitle name={name} />
@@ -181,6 +209,7 @@ function InvitationCard({ ceremonyKey, t, coupleLeft, coupleRight, inv, dateISO 
 export default function WeddingInvite() {
   const { t } = useLanguage()
   const { config } = useWeddingConfig()
+  const { found, party } = useInvitedGuest()
   const common = config.common || {}
   const inv = config.invitation || {}
   const dates = config.dates || {}
@@ -191,6 +220,13 @@ export default function WeddingInvite() {
   const coupleRight = inv.brideFullName || common.coupleNameRight || 'Nguyen'
   const message = inv.message_vi || ''
 
+  // For a guest invited to one ceremony, lead with (and highlight) their card;
+  // the other stays visible. 'both' / no invite keeps the default order.
+  const highlightKey = found && party !== 'both' ? party : null
+  const ceremonies = highlightKey
+    ? [highlightKey, ...CEREMONIES.filter((k) => k !== highlightKey)]
+    : CEREMONIES
+
   return (
     <section
       id="invitation"
@@ -200,13 +236,11 @@ export default function WeddingInvite() {
       <div className="max-w-2xl lg:max-w-7xl mx-auto px-2">
         <FadeIn className="text-center max-w-2xl mx-auto">
           <p className="eyebrow">{t('invitation.eyebrow')}</p>
-          {message ? (
-            <p className="text-muted mt-4 leading-relaxed">{message}</p>
-          ) : null}
+          {message ? <p className="text-muted mt-4 leading-relaxed">{message}</p> : null}
         </FadeIn>
 
         <div className="mt-10 grid grid-cols-1 xl:grid-cols-2 gap-8 lg:gap-10 items-stretch">
-          {CEREMONIES.map((key, i) => (
+          {ceremonies.map((key, i) => (
             <FadeIn key={key} delay={i * 0.2} className="h-full">
               <InvitationCard
                 ceremonyKey={key}
@@ -215,6 +249,7 @@ export default function WeddingInvite() {
                 coupleRight={coupleRight}
                 inv={inv}
                 dateISO={dates[`${key}Start`]}
+                highlighted={key === highlightKey}
               />
             </FadeIn>
           ))}
