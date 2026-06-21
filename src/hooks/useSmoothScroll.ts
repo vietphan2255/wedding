@@ -18,8 +18,17 @@ export default function useSmoothScroll(): void {
       duration: 1.1,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
+      // Drive touch through Lenis too, so the hero snap's `lock` cleanly takes
+      // over from native iOS momentum instead of fighting it (smooths all touch
+      // scrolling site-wide). syncTouchLerp tunes the smoothing strength.
+      syncTouch: true,
+      syncTouchLerp: 0.075,
       touchMultiplier: 1.6,
     })
+
+    // Phones use a coarse pointer; shorten the locked glide there so it feels
+    // responsive rather than drawn-out.
+    const coarsePointer = window.matchMedia('(pointer: coarse)').matches
 
     let rafId = 0
     let running = false
@@ -120,7 +129,7 @@ export default function useSmoothScroll(): void {
       start()
       lenis.scrollTo(next as HTMLElement, {
         offset: -64,
-        duration: 1.9,
+        duration: coarsePointer ? 1.3 : 1.9,
         easing: snapEase,
         lock: true, // uninterruptible — no piece-by-piece scrolling
         onComplete: () => {
@@ -132,15 +141,24 @@ export default function useSmoothScroll(): void {
       if (snapBlocked()) return
       if (e.deltaY > 0 && heroActive()) snapToNext()
     }
+    // Detect an upward swipe across the gesture, but only fire the snap once the
+    // finger lifts — starting the glide mid-drag fights the active touch (and the
+    // iOS momentum that follows), which is what made it stutter on mobile.
     let touchStartY = 0
+    let touchIntent = false
     const onTouchStartSnap = (e: TouchEvent) => {
       touchStartY = e.touches[0]?.clientY ?? 0
+      touchIntent = false
     }
     const onTouchMoveSnap = (e: TouchEvent) => {
-      if (snapBlocked()) return
       const y = e.touches[0]?.clientY ?? 0
       // finger sliding up (start − current > 0) = scrolling the page down
-      if (touchStartY - y > 6 && heroActive()) snapToNext()
+      if (touchStartY - y > 8) touchIntent = true
+    }
+    const onTouchEndSnap = () => {
+      if (snapBlocked()) return
+      if (touchIntent && heroActive()) snapToNext()
+      touchIntent = false
     }
     const snapKeys = new Set(['ArrowDown', 'PageDown', ' '])
     const onKeySnap = (e: KeyboardEvent) => {
@@ -153,6 +171,7 @@ export default function useSmoothScroll(): void {
     window.addEventListener('wheel', onWheelSnap, opts)
     window.addEventListener('touchstart', onTouchStartSnap, opts)
     window.addEventListener('touchmove', onTouchMoveSnap, opts)
+    window.addEventListener('touchend', onTouchEndSnap, opts)
     window.addEventListener('keydown', onKeySnap)
 
     return () => {
@@ -160,6 +179,7 @@ export default function useSmoothScroll(): void {
       window.removeEventListener('wheel', onWheelSnap)
       window.removeEventListener('touchstart', onTouchStartSnap)
       window.removeEventListener('touchmove', onTouchMoveSnap)
+      window.removeEventListener('touchend', onTouchEndSnap)
       window.removeEventListener('keydown', onKeySnap)
       window.removeEventListener('wheel', onInput)
       window.removeEventListener('touchstart', onInput)

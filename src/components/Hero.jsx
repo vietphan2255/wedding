@@ -47,6 +47,13 @@ export default function Hero({
   const scaleText = useTransform(scrollYProgress, [0, 1], [1, 0.45])
   const opacity = useTransform(scrollYProgress, [0, 0.85], [1, 0])
 
+  // On phones / reduced-motion, bind the layers to static styles instead of the
+  // per-frame scroll parallax, so the hero auto-snap renders cheaply (no
+  // full-screen re-raster competing with the glide). Matches how the Ken-Burns
+  // loop is already gated by `calm`.
+  const imgStyle = calm ? { scale: 1.05 } : { y: yImg, scale: scaleImg }
+  const textStyle = calm ? undefined : { y: yText, opacity, scale: scaleText }
+
   return (
     <section
       id="home"
@@ -54,8 +61,8 @@ export default function Hero({
       className="relative h-[100svh] w-full overflow-hidden film-grain"
     >
       <motion.div
-        style={{ y: yImg, scale: scaleImg }}
-        className="absolute inset-0 will-change-transform"
+        style={imgStyle}
+        className={`absolute inset-0${calm ? '' : ' will-change-transform'}`}
       >
         <motion.img
           src={heroImage}
@@ -86,8 +93,10 @@ export default function Hero({
       </motion.div>
 
       <motion.div
-        style={{ y: yText, opacity, scale: scaleText }}
-        className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6 will-change-transform"
+        style={textStyle}
+        className={`relative z-10 h-full flex flex-col items-center justify-center text-center px-6${
+          calm ? '' : ' will-change-transform'
+        }`}
       >
         <motion.p
           initial={{ opacity: 0, y: 16 }}
