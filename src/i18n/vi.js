@@ -7,6 +7,7 @@ export default {
   'nav.timeline': 'Sự kiện',
   'nav.rsvp': 'Xác nhận',
   'nav.wishes': 'Lời chúc',
+  'nav.music': 'Nhạc',
 
   // Hero
   'hero.eyebrow': 'Chúng mình sắp về chung một nhà',

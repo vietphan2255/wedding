@@ -19,6 +19,7 @@ import ScrollProgress from './components/ScrollProgress.jsx'
 import ParallaxPetals from './components/ParallaxPetals.jsx'
 import MobileRsvpBar from './components/MobileRsvpBar.jsx'
 import InvitationOverlay from './components/InvitationOverlay.jsx'
+import { MusicProvider } from './contexts/MusicContext.jsx'
 // Temporarily disabled: flying date overlay (Hero → Countdown).
 // import FlyingDate from './components/fx/FlyingDate.jsx'
 import CustomCursor from './components/fx/CustomCursor.jsx'
@@ -48,7 +49,7 @@ function WeddingSite() {
   const { config } = useWeddingConfig()
   const cursorGif = (config.effects?.cursorGif || '').trim()
   return (
-    <>
+    <MusicProvider>
       <InvitationOverlay />
       <ScrollProgress />
       <CustomCursor />
@@ -88,7 +89,7 @@ function WeddingSite() {
       <Footer />
       <FloatingDock />
       <MobileRsvpBar />
-    </>
+    </MusicProvider>
   )
 }
 

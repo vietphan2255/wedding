@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send } from 'lucide-react'
+import { Send, Heart } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
+import { useMusic, MusicGlyph } from '../contexts/MusicContext'
 
 function pickEvent(config) {
   const now = Date.now()
@@ -13,9 +14,17 @@ function pickEvent(config) {
   return null
 }
 
+// Phone-only bottom tab bar (the desktop FloatingDock is hidden on phones). One
+// row: countdown-days block, then equal Wish / RSVP / Music tabs.
+const tabClass =
+  'flex-1 flex flex-col items-center justify-center gap-1 rounded-xl py-1.5 px-1 text-ink/80 hover:text-ink hover:bg-ink/5 active:scale-95 transition'
+const tabLabelClass =
+  'text-[10px] uppercase tracking-[0.14em] leading-none whitespace-nowrap'
+
 export default function MobileRsvpBar() {
   const { t } = useLanguage()
   const { config } = useWeddingConfig()
+  const { enabled: musicEnabled, playing, toggle } = useMusic()
   const [hidden, setHidden] = useState(false)
 
   const target = useMemo(() => pickEvent(config), [config])
@@ -42,33 +51,53 @@ export default function MobileRsvpBar() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 180, damping: 24 }}
-          className="md:hidden fixed bottom-0 inset-x-0 z-40 px-3 pb-3 pointer-events-none"
+          className="md:hidden fixed bottom-0 inset-x-0 z-40 px-3 pb-3 pointer-events-none bg-transparent"
         >
-          <div className="pointer-events-auto glass rounded-2xl shadow-xl flex items-center gap-3 pl-4 pr-2 py-2">
-            <div className="flex-1 min-w-0">
+          <div className="pointer-events-auto glass rounded-2xl shadow-xl flex items-stretch gap-1.5 px-2 py-2 bg-opacity-40">
+            {/* Countdown days (or couple names once both events have passed) */}
+            <div className="flex flex-col items-center justify-center px-2 min-w-[3.25rem] shrink-0">
               {days !== null ? (
                 <>
-                  <p className="font-display text-lg leading-tight tabular-nums">
+                  <span className="font-display text-xl leading-none tabular-nums">
                     {days}
-                  </p>
-                  <p className="text-[10px] uppercase tracking-[0.22em] text-muted">
+                  </span>
+                  <span className="text-[9px] uppercase tracking-[0.16em] text-muted mt-1 leading-none">
                     {t('mobileRsvp.days')}
-                  </p>
+                  </span>
                 </>
               ) : (
-                <p className="font-display text-base leading-tight">
-                  {(config?.common?.coupleNameLeft || 'Viet')} &amp;{' '}
-                  {(config?.common?.coupleNameRight || 'Nguyen')}
-                </p>
+                <span className="font-display text-sm leading-tight text-center">
+                  {config?.common?.coupleNameLeft || 'Viet'} &amp;{' '}
+                  {config?.common?.coupleNameRight || 'Nguyen'}
+                </span>
               )}
             </div>
-            <a
-              href="#rsvp"
-              className="inline-flex items-center gap-2 rounded-full bg-ink text-bg px-5 py-3 text-xs tracking-[0.22em] uppercase font-medium shadow active:scale-95 transition-transform"
-            >
-              <Send size={14} />
-              {t('mobileRsvp.cta')}
+
+            <span className="w-px self-stretch bg-line/70 shrink-0" aria-hidden />
+
+            {/* Equal action tabs */}
+            <a href="#wishes" className={tabClass} aria-label={t('nav.wishes')}>
+              <Heart size={18} />
+              <span className={tabLabelClass}>{t('nav.wishes')}</span>
             </a>
+            <a href="#rsvp" className={tabClass} aria-label={t('nav.rsvp')}>
+              <Send size={18} />
+              <span className={tabLabelClass}>{t('nav.rsvp')}</span>
+            </a>
+            {musicEnabled && (
+              <button
+                type="button"
+                onClick={toggle}
+                data-music-toggle="true"
+                aria-label={playing ? 'Pause background music' : 'Play background music'}
+                className={tabClass}
+              >
+                <span className="h-[18px] flex items-center justify-center">
+                  <MusicGlyph playing={playing} />
+                </span>
+                <span className={tabLabelClass}>{t('nav.music')}</span>
+              </button>
+            )}
           </div>
         </motion.div>
       )}
