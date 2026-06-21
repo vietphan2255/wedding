@@ -1,42 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Heart, Send } from 'lucide-react'
-import {
-  ref,
-  push,
-  onValue,
-  query,
-  limitToLast,
-  serverTimestamp,
-} from 'firebase/database'
-import { db, isConfigured } from '../firebase/config'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useInvitedGuest } from '../contexts/InvitedGuestContext.jsx'
+import { useWishes } from '../contexts/WishesContext.jsx'
+import { useToast } from '../contexts/ToastContext.jsx'
 import FadeIn from './FadeIn.jsx'
 import SectionSubtitle from './SectionSubtitle.jsx'
-
-const DEMO_WISHES = [
-  {
-    id: 'demo-1',
-    name: 'Mai & Phong',
-    message:
-      'Chúc hai bạn mãi mãi hạnh phúc — wishing you a lifetime of love and laughter!',
-    createdAt: Date.now() - 1000 * 60 * 60 * 5,
-  },
-  {
-    id: 'demo-2',
-    name: 'Linh',
-    message: 'So happy for both of you! Cannot wait to celebrate in July & August!',
-    createdAt: Date.now() - 1000 * 60 * 60 * 20,
-  },
-]
 
 export default function Wishes() {
   const { t } = useLanguage()
   const { found, invitationName } = useInvitedGuest()
-  const [wishes, setWishes] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { wishes, loading, submitWish } = useWishes()
+  const toast = useToast()
   const {
     register,
     handleSubmit,
@@ -54,46 +31,14 @@ export default function Wishes() {
     }
   }, [found, invitationName, setValue, getValues])
 
-  useEffect(() => {
-    if (!isConfigured || !db) {
-      setWishes(DEMO_WISHES)
-      setLoading(false)
-      return
-    }
-    const q = query(ref(db, 'wishes'), limitToLast(50))
-    const unsub = onValue(
-      q,
-      (snap) => {
-        const list = []
-        snap.forEach((child) => {
-          list.push({ id: child.key, ...child.val() })
-        })
-        list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
-        setWishes(list)
-        setLoading(false)
-      },
-      () => setLoading(false),
-    )
-    return () => unsub()
-  }, [])
-
   const onSubmit = async ({ name, message }) => {
     try {
-      if (isConfigured && db) {
-        await push(ref(db, 'wishes'), {
-          name,
-          message,
-          createdAt: serverTimestamp(),
-        })
-      } else {
-        setWishes((prev) => [
-          { id: `local-${Date.now()}`, name, message, createdAt: Date.now() },
-          ...prev,
-        ])
-      }
+      await submitWish({ name, message })
       reset()
+      toast.success(t('wishes.toast.success'))
     } catch (err) {
       console.error(err)
+      toast.error(t('wishes.toast.error'))
     }
   }
 

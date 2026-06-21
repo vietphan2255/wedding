@@ -22,6 +22,8 @@ import GiftModal from './components/GiftModal.jsx'
 import InvitationOverlay from './components/InvitationOverlay.jsx'
 import { MusicProvider } from './contexts/MusicContext.jsx'
 import { InvitedGuestProvider } from './contexts/InvitedGuestContext.jsx'
+import { ToastProvider } from './contexts/ToastContext.jsx'
+import { WishesProvider } from './contexts/WishesContext.jsx'
 // Temporarily disabled: flying date overlay (Hero → Countdown).
 // import FlyingDate from './components/fx/FlyingDate.jsx'
 import CustomCursor from './components/fx/CustomCursor.jsx'
@@ -54,46 +56,50 @@ function WeddingSite() {
   return (
     <InvitedGuestProvider>
       <MusicProvider>
-        <InvitationOverlay />
-        <ScrollProgress />
-        <CustomCursor />
-        <ParallaxPetals />
-        <Navbar />
-        <main {...(cursorGif ? { 'data-cursor': cursorGif } : {})}>
-          <Hero
-            flightSourceARef={flightSourceARef}
-            flightMiddleRef={flightMiddleRef}
-            flightSourceBRef={flightSourceBRef}
-          />
-          <WeddingInvite />
-          <Countdown
-            flightTargetRef={flightTargetRef}
-            flightTargetARef={flightTargetARef}
-            flightTargetBRef={flightTargetBRef}
-          />
-          <StoryV2 />
-          <GalleryV2 />
-          {/*<CeremonyTimelineV2 />*/}
-          <RSVP />
-          <Wishes />
-          <GiftCard />
-          <FAQ />
-        </main>
-        {/* Temporarily disabled: flying date overlay (Hero → Countdown). The hero
-          and countdown show their date labels statically while this is off.
-          Re-enable by uncommenting the import above and this block. */}
-        {/* <FlyingDate
-        sourceARef={flightSourceARef}
-        sourceBRef={flightSourceBRef}
-        middleRef={flightMiddleRef}
-        targetRef={flightTargetRef}
-        targetARef={flightTargetARef}
-        targetBRef={flightTargetBRef}
-      /> */}
-        <Footer />
-        <FloatingDock onGiftClick={() => setGiftOpen(true)} />
-        <MobileRsvpBar onGiftClick={() => setGiftOpen(true)} />
-        <GiftModal open={giftOpen} onClose={() => setGiftOpen(false)} />
+        <ToastProvider>
+          <WishesProvider>
+            <InvitationOverlay />
+            <ScrollProgress />
+            <CustomCursor />
+            <ParallaxPetals />
+            <Navbar />
+            <main {...(cursorGif ? { 'data-cursor': cursorGif } : {})}>
+              <Hero
+                flightSourceARef={flightSourceARef}
+                flightMiddleRef={flightMiddleRef}
+                flightSourceBRef={flightSourceBRef}
+              />
+              <WeddingInvite />
+              <Countdown
+                flightTargetRef={flightTargetRef}
+                flightTargetARef={flightTargetARef}
+                flightTargetBRef={flightTargetBRef}
+              />
+              <StoryV2 />
+              <GalleryV2 />
+              {/*<CeremonyTimelineV2 />*/}
+              <RSVP />
+              <Wishes />
+              <GiftCard />
+              <FAQ />
+            </main>
+            {/* Temporarily disabled: flying date overlay (Hero → Countdown). The hero
+              and countdown show their date labels statically while this is off.
+              Re-enable by uncommenting the import above and this block. */}
+            {/* <FlyingDate
+            sourceARef={flightSourceARef}
+            sourceBRef={flightSourceBRef}
+            middleRef={flightMiddleRef}
+            targetRef={flightTargetRef}
+            targetARef={flightTargetARef}
+            targetBRef={flightTargetBRef}
+          /> */}
+            <Footer />
+            <FloatingDock onGiftClick={() => setGiftOpen(true)} />
+            <MobileRsvpBar onGiftClick={() => setGiftOpen(true)} />
+            <GiftModal open={giftOpen} onClose={() => setGiftOpen(false)} />
+          </WishesProvider>
+        </ToastProvider>
       </MusicProvider>
     </InvitedGuestProvider>
   )
@@ -136,7 +142,7 @@ export default function App() {
 
 // Note:
 // - changing shape of the floating green circle to be heart or st
-// - toast the new wishes after submit by broadcasting to all other users. - if no new wishes, toast a messages already submitted randomly
+// - if no new wishes, toast a message already submitted randomly
 // - add ability to like the wishes
 // - allow user to submit questions to the admin
 // - add a thank you message to the footer

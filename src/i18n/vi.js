@@ -149,6 +149,10 @@ export default {
   'wishes.submitting': 'Đang gửi…',
   'wishes.empty': 'Hãy là người đầu tiên gửi lời chúc nhé.',
   'wishes.loading': 'Đang tải lời chúc…',
+  'wishes.toast.success': 'Đã gửi lời chúc — cảm ơn bạn!',
+  'wishes.toast.error': 'Không gửi được lời chúc. Vui lòng thử lại.',
+  'wishes.notif.title': '💌 {name} vừa gửi lời chúc',
+  'wishes.notif.action': 'Xem lời chúc',
 
   // Footer
   'footer.tagline': 'Thực hiện bằng cả trái tim · 2026',
