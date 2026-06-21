@@ -35,7 +35,7 @@ function VerticalTitle({ name }) {
   const words = String(name).split(/\s+/).filter(Boolean)
   if (!words.length) return null
   return (
-    <div className="flex flex-col items-center gap-2 shrink-0 text-highlight absolute top-8 left-4">
+    <div className="flex flex-col items-center gap-2 shrink-0 text-accent absolute top-8 left-4">
       <span className="w-px h-7 md:h-9 bg-line" aria-hidden />
       <div className="font-script-vn font-extrabold text-2xl md:text-3xl leading-[1.15] flex flex-col items-center">
         {words.map((w, i) => (
@@ -76,7 +76,7 @@ function BigDate({ monthLabel, day, yearLabel }) {
   return (
     <div className="flex items-stretch justify-center gap-3 md:gap-6">
       <div className={side}>{monthLabel}</div>
-      <div className="shrink-0 self-center font-display text-6xl md:text-7xl leading-none text-highlight font-bold">
+      <div className="shrink-0 self-center font-display text-6xl md:text-7xl leading-none text-accent font-extrabold">
         {day}
       </div>
       <div className={side}>{yearLabel}</div>
@@ -99,7 +99,10 @@ function InvitationCard({ ceremonyKey, t, coupleLeft, coupleRight, inv, dateISO 
       {/* Top — vertical title + cursive couple names */}
       <div className="flex items-center justify-center gap-3 sm:gap-5 md:gap-10">
         <VerticalTitle name={name} />
-        <div style={{  fontFamily: 'Alex Brush, cursive'}} className="font-bold text-accent text-center leading-[1.1] min-w-0">
+        <div
+          style={{ fontFamily: 'Alex Brush, cursive' }}
+          className="font-extrabold text-muted text-center leading-[1.1] min-w-0"
+        >
           <div
             className="whitespace-nowrap"
             style={{ fontSize: 'clamp(1.4rem, 7vw, 3rem)' }}
@@ -158,7 +161,7 @@ function InvitationCard({ ceremonyKey, t, coupleLeft, coupleRight, inv, dateISO 
 
       {/* Lunar date */}
       {lunar ? (
-        <p className="mt-5 text-center font-script-vn text-xl md:text-2xl text-highlight font-bold">
+        <p className="mt-5 text-center font-script-vn text-xl md:text-2xl text-accent font-bold">
           {lunar}
         </p>
       ) : null}
