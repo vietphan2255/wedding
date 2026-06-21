@@ -84,7 +84,7 @@ export default function RSVP() {
   const labelClass = 'block text-[11px] tracking-[0.22em] uppercase text-muted mb-2'
 
   return (
-    <section id="rsvp" className="section-padding relative bg-surface overflow-hidden">
+    <section id="rsvp" data-cursor-id="rsvp" className="section-padding relative bg-surface overflow-hidden">
       <div className="max-w-3xl mx-auto px-6">
         <FadeIn className="text-center">
           <p className="eyebrow">{t('rsvp.eyebrow')}</p>

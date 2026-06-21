@@ -132,7 +132,7 @@ export default function GiftCard() {
   if (gifts.enabled === false) return null
 
   return (
-    <section id="gifts" className="section-padding relative bg-bg overflow-hidden">
+    <section id="gifts" data-cursor-id="gifts" className="section-padding relative bg-bg overflow-hidden">
       <div className="max-w-5xl mx-auto px-6">
         <FadeIn className="text-center max-w-2xl mx-auto">
           <p className="eyebrow">{t('gift.eyebrow')}</p>

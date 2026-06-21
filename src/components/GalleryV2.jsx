@@ -250,7 +250,7 @@ export default function Gallery() {
   const paused = open !== null || !inView || tabHidden
 
   return (
-    <section ref={sectionRef} id="gallery" className="section-padding relative bg-bg overflow-hidden">
+    <section ref={sectionRef} id="gallery" data-cursor-id="gallery" className="section-padding relative bg-bg overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center max-w-2xl mx-auto">
           <p className="eyebrow">{t('gallery.eyebrow')}</p>

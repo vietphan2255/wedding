@@ -23,7 +23,7 @@ export default function Story() {
   const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1])
 
   return (
-    <section id="story" className="section-padding relative bg-bg overflow-hidden">
+    <section id="story" data-cursor-id="story" className="section-padding relative bg-bg overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center max-w-2xl mx-auto">
           <p className="eyebrow">{t('story.eyebrow')}</p>

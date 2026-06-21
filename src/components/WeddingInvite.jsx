@@ -194,6 +194,7 @@ export default function WeddingInvite() {
   return (
     <section
       id="invitation"
+      data-cursor-id="invitation"
       className="section-padding relative bg-surface overflow-hidden film-grain"
     >
       <div className="max-w-2xl lg:max-w-7xl mx-auto px-2">

@@ -86,6 +86,7 @@ export default function CeremonyTimeline() {
   return (
     <section
       id="ceremonies"
+      data-cursor-id="ceremonies"
       className="section-padding relative bg-bg overflow-hidden"
     >
       <div className="max-w-6xl mx-auto px-6">

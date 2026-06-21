@@ -57,6 +57,7 @@ export default function Hero({
   return (
     <section
       id="home"
+      data-cursor-id="hero"
       ref={ref}
       className="relative h-[100svh] w-full overflow-hidden film-grain"
     >

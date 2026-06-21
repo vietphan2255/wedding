@@ -2,7 +2,39 @@
 // pipeline and the admin draft system. Lives in its own module so the
 // WeddingConfigContext file stays focused on React subscription wiring.
 
-import type { Common, Faq, Gifts, Labels, OrderedItem, WeddingConfig } from './configTypes'
+import type { Common, CursorConfig, Faq, Gifts, Labels, OrderedItem, WeddingConfig } from './configTypes'
+
+// Seed one starter cursor config per wired section id (see CustomCursor +
+// the data-cursor-id attributes in the section components). Empty image →
+// nothing renders until the admin sets one; idle behaviors off. The
+// `default-cursor-*` id prefix makes useFirebaseSlice assign a real Firebase
+// push key on first save (same convention as faqs/story/gallery defaults).
+export const DEFAULT_CURSORS: CursorConfig[] = (
+  [
+    ['hero', 'Hero'],
+    ['countdown', 'Countdown'],
+    ['story', 'Story'],
+    ['gallery', 'Gallery'],
+    ['ceremonies', 'Ceremonies'],
+    ['rsvp', 'RSVP'],
+    ['wishes', 'Wishes'],
+    ['gifts', 'Gifts'],
+    ['faq', 'FAQ'],
+    ['invitation', 'Invitation'],
+  ] as const
+).map(([cursorId, name], i) => ({
+  id: `default-cursor-${cursorId}`,
+  cursorId,
+  name,
+  order: i,
+  image: '',
+  size: 56,
+  style: '',
+  idleSwap: false,
+  idleZoom: false,
+  idleDelay: 1.5,
+  idleZoomLevels: 3,
+}))
 
 export const DEFAULT_GIFTS: Gifts = {
   enabled: true,
@@ -173,6 +205,7 @@ export const DEFAULT_CONFIG: WeddingConfig = {
     thanhhonAddress: '456 Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh',
   },
   effects: { cursorGif: '' },
+  cursors: DEFAULT_CURSORS,
   qr: {
     link: '',
     fgColor: '#1a1a1a',

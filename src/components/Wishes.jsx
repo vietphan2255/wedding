@@ -91,7 +91,7 @@ export default function Wishes() {
   const labelClass = 'block text-[11px] tracking-[0.22em] uppercase text-muted mb-2'
 
   return (
-    <section id="wishes" className="section-padding relative bg-bg overflow-hidden">
+    <section id="wishes" data-cursor-id="wishes" className="section-padding relative bg-bg overflow-hidden">
       <div className="max-w-5xl mx-auto px-6">
         <FadeIn className="text-center">
           <p className="eyebrow">{t('wishes.eyebrow')}</p>

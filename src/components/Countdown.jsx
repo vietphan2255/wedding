@@ -129,6 +129,7 @@ export default function Countdown({
   return (
     <section
       id="countdown"
+      data-cursor-id="countdown"
       className="section-padding relative bg-surface text-ink overflow-hidden"
     >
       <motion.div

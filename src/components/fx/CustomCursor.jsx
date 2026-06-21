@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   motion,
   useMotionValue,
@@ -6,18 +6,22 @@ import {
   useReducedMotion,
   AnimatePresence,
 } from 'framer-motion'
+import { useWeddingConfig } from '../../contexts/WeddingConfigContext'
+import cssStringToStyle from '../../lib/cssStringToStyle'
 
 // A fixed follower cursor: a small precise dot plus a larger lagging ring.
-// Elements opt in to a richer state with `data-cursor="view|open|drag|…"`
-// (optional `data-cursor-label` overrides the word).
 //
-// If the `data-cursor` value *looks like a URL*, the cursor renders that
-// URL as a 56px GIF/img in place of the ring + label — used for the
-// "GIF cursor" feature, where <main> carries `data-cursor={cursorGif}`
-// page-wide and interactive children override with a keyword.
+// Three opt-in layers, resolved from the nearest ancestor on each move:
+//  - `data-cursor="view|open|drag|…"` (a keyword) → ring + label state. Always
+//    wins, so interactive UI keeps its affordance.
+//  - `data-cursor-id="<id>"` → a per-section GIF cursor configured in the admin
+//    (`config.cursors`): image, size, free-form CSS, and optional idle behaviors
+//    (show-only-when-idle, progressive zoom-when-idle).
+//  - `data-cursor="<url>"` on <main> → the global GIF cursor (effects.cursorGif),
+//    used page-wide and as the fallback while a show-when-idle cursor waits.
 //
-// Self-disables on coarse pointers and reduced-motion, restoring the
-// native cursor.
+// Self-disables on coarse pointers and reduced-motion, restoring the native
+// cursor.
 
 const isUrlLike = (v) =>
   typeof v === 'string' &&
@@ -26,18 +30,36 @@ const isUrlLike = (v) =>
     v.startsWith('/') ||
     v.startsWith('data:'))
 
+const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n))
+
+const NO_HOVER = { mode: 'none', label: '', cfg: null, globalUrl: '' }
+
 export default function CustomCursor() {
   const reduce = useReducedMotion()
+  const { config } = useWeddingConfig()
   const [enabled, setEnabled] = useState(false)
-  const [active, setActive] = useState(false) // hovering a keyword opt-in
-  const [label, setLabel] = useState('')
-  const [gifUrl, setGifUrl] = useState('')
   const [hidden, setHidden] = useState(true) // hide until first move / off-screen
+  const [hover, setHover] = useState(NO_HOVER) // resolved nearest opt-in target
+  const [idleStep, setIdleStep] = useState(0) // # of idleDelay ticks elapsed while still
 
   const x = useMotionValue(-100)
   const y = useMotionValue(-100)
   const ringX = useSpring(x, { stiffness: 350, damping: 30, mass: 0.4 })
   const ringY = useSpring(y, { stiffness: 350, damping: 30, mass: 0.4 })
+
+  // cursorId -> config, kept in a ref so the stable mousemove handler always
+  // reads the latest admin config without re-binding the listener.
+  const mapRef = useRef({})
+  const hoverKeyRef = useRef('') // dedupes setHover so we only re-render on real changes
+  const idleTimerRef = useRef(null)
+
+  useEffect(() => {
+    const m = {}
+    for (const c of config.cursors || []) {
+      if (c && c.cursorId) m[c.cursorId] = c
+    }
+    mapRef.current = m
+  }, [config.cursors])
 
   useEffect(() => {
     if (reduce) return
@@ -46,38 +68,135 @@ export default function CustomCursor() {
     setEnabled(true)
     document.documentElement.setAttribute('data-cursor-on', '')
 
+    const stopIdle = () => {
+      if (idleTimerRef.current) {
+        clearInterval(idleTimerRef.current)
+        idleTimerRef.current = null
+      }
+    }
+
     const onMove = (e) => {
       x.set(e.clientX)
       y.set(e.clientY)
       setHidden(false)
-      const target = e.target.closest?.('[data-cursor]')
-      const value = target?.getAttribute('data-cursor') || ''
-      if (target && isUrlLike(value)) {
-        setGifUrl(value)
-        setActive(false)
-        setLabel('')
-      } else if (target && value) {
-        setGifUrl('')
-        setActive(true)
-        setLabel(target.getAttribute('data-cursor-label') || value)
-      } else {
-        setGifUrl('')
-        setActive(false)
-        setLabel('')
+
+      const map = mapRef.current
+      const el = e.target.closest?.('[data-cursor-id], [data-cursor]')
+      let res = NO_HOVER
+      if (el) {
+        const kw = el.getAttribute('data-cursor')
+        const cid = el.getAttribute('data-cursor-id')
+        const cfg = cid ? map[cid] : null
+        const globalUrl = () => {
+          const g = e.target.closest?.('[data-cursor]')?.getAttribute('data-cursor') || ''
+          return isUrlLike(g) ? g : ''
+        }
+        if (kw && !isUrlLike(kw)) {
+          // Keyword opt-in (interactive UI) — always wins.
+          res = {
+            mode: 'keyword',
+            label: el.getAttribute('data-cursor-label') || kw,
+            cfg: null,
+            globalUrl: '',
+          }
+        } else if (cfg && cfg.image) {
+          // Configured per-section cursor. Capture the global url for the
+          // show-when-idle fallback (shown while the mouse is still moving).
+          res = { mode: 'section', label: '', cfg, globalUrl: globalUrl() }
+        } else if (kw && isUrlLike(kw)) {
+          res = { mode: 'global', label: '', cfg: null, globalUrl: kw }
+        } else if (cid) {
+          // data-cursor-id present but unconfigured / no image → global fallback.
+          const g = globalUrl()
+          res = g ? { mode: 'global', label: '', cfg: null, globalUrl: g } : NO_HOVER
+        }
+      }
+
+      const key =
+        res.mode +
+        '|' +
+        res.label +
+        '|' +
+        (res.cfg?.cursorId || '') +
+        '|' +
+        (res.cfg?.image || '') +
+        '|' +
+        res.globalUrl
+      if (key !== hoverKeyRef.current) {
+        hoverKeyRef.current = key
+        setHover(res)
+      }
+
+      // Movement resets the idle progression. Re-arm the stepped timer only
+      // when the hovered section opts into an idle behavior; it fires once per
+      // idleDelay until the cap (reveal step + zoom levels) is reached.
+      stopIdle()
+      setIdleStep(0)
+      const cfg = res.mode === 'section' ? res.cfg : null
+      if (cfg && (cfg.idleSwap || cfg.idleZoom)) {
+        const delayMs = Math.max(50, (Number(cfg.idleDelay) || 1.5) * 1000)
+        const cap =
+          (cfg.idleSwap ? 1 : 0) +
+          (cfg.idleZoom ? Math.max(1, Math.round(Number(cfg.idleZoomLevels)) || 1) : 0)
+        idleTimerRef.current = setInterval(() => {
+          setIdleStep((s) => {
+            const next = s + 1
+            if (next >= cap) stopIdle()
+            return next > cap ? cap : next
+          })
+        }, delayMs)
       }
     }
-    const onLeave = () => setHidden(true)
+
+    const onLeave = () => {
+      setHidden(true)
+      stopIdle()
+      setIdleStep(0)
+      hoverKeyRef.current = ''
+      setHover(NO_HOVER)
+    }
 
     window.addEventListener('mousemove', onMove, { passive: true })
     document.addEventListener('mouseleave', onLeave)
     return () => {
       window.removeEventListener('mousemove', onMove)
       document.removeEventListener('mouseleave', onLeave)
+      stopIdle()
       document.documentElement.removeAttribute('data-cursor-on')
     }
   }, [reduce, x, y])
 
   if (!enabled) return null
+
+  // Derive what to draw from the resolved hover + how long the mouse has idled.
+  let active = false // keyword ring + label
+  let label = ''
+  let gifUrl = ''
+  let gifSize = 56
+  let gifStyle = {}
+  let gifScale = 1
+
+  if (hover.mode === 'keyword') {
+    active = true
+    label = hover.label
+  } else if (hover.mode === 'section' && hover.cfg) {
+    const cfg = hover.cfg
+    const revealed = cfg.idleSwap ? idleStep >= 1 : true
+    if (revealed) {
+      gifUrl = cfg.image
+      gifSize = Number(cfg.size) || 56
+      gifStyle = cssStringToStyle(cfg.style)
+      if (cfg.idleZoom) {
+        const levels = Math.max(1, Math.round(Number(cfg.idleZoomLevels)) || 1)
+        const level = clamp(idleStep - (cfg.idleSwap ? 1 : 0), 0, levels)
+        gifScale = 1 + 0.5 * level
+      }
+    } else if (hover.globalUrl) {
+      gifUrl = hover.globalUrl // show-when-idle: global cursor while still moving
+    }
+  } else if (hover.mode === 'global') {
+    gifUrl = hover.globalUrl
+  }
 
   const gifMode = gifUrl !== ''
 
@@ -122,21 +241,25 @@ export default function CustomCursor() {
         animate={{ opacity: active || gifMode ? 0 : 1 }}
       />
 
-      {/* GIF cursor — follows precisely (no lag), centered on pointer. */}
+      {/* GIF cursor — follows precisely (no lag), centered on pointer; scale
+          animates the progressive idle zoom. */}
       <motion.img
         key={gifUrl /* re-mount when URL changes so the GIF restarts */}
         src={gifUrl || undefined}
         alt=""
         draggable={false}
         className="absolute top-0 left-0 select-none"
+        animate={{ scale: gifScale }}
+        transition={{ type: 'spring', stiffness: 200, damping: 22 }}
         style={{
+          ...gifStyle,
           x,
           y,
           translateX: '-50%',
           translateY: '-50%',
-          width: 56,
-          height: 56,
-          objectFit: 'contain',
+          width: gifSize,
+          height: gifSize,
+          objectFit: gifStyle.objectFit || 'contain',
           willChange: 'transform',
           display: gifMode ? 'block' : 'none',
         }}

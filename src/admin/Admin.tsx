@@ -22,6 +22,7 @@ import {
   Sparkles,
   Layout,
   MousePointer2,
+  MousePointerClick,
   QrCode,
 } from 'lucide-react'
 import { isConfigured } from '../firebase/config'
@@ -44,6 +45,7 @@ import FooterSection from './sections/FooterSection'
 import RsvpLabelsSection from './sections/RsvpLabelsSection'
 import WishesLabelsSection from './sections/WishesLabelsSection'
 import EffectsSection from './sections/EffectsSection'
+import CursorsSection from './sections/CursorsSection'
 import QrCodeSection from './sections/QrCodeSection'
 import { DraftConfigProvider } from './DraftConfigContext'
 
@@ -84,6 +86,12 @@ const GROUPS = [
       },
       { id: 'footer', label: 'Footer', icon: Layout, Component: FooterSection },
       { id: 'effects', label: 'Effects', icon: MousePointer2, Component: EffectsSection },
+      {
+        id: 'cursors',
+        label: 'Cursors',
+        icon: MousePointerClick,
+        Component: CursorsSection,
+      },
     ],
   },
   {

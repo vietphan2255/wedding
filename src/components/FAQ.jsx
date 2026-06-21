@@ -15,7 +15,7 @@ export default function FAQ() {
   if (!items.length) return null
 
   return (
-    <section id="faq" className="section-padding relative bg-surface overflow-hidden">
+    <section id="faq" data-cursor-id="faq" className="section-padding relative bg-surface overflow-hidden">
       <div className="max-w-3xl mx-auto px-6">
         <FadeIn className="text-center">
           <p className="eyebrow">{t('faq.eyebrow')}</p>

@@ -109,6 +109,24 @@ export interface Effects {
   cursorGif: string
 }
 
+// Per-section GIF cursor. Elements carry `data-cursor-id="<cursorId>"`; the
+// cursor overlay looks up the matching config and renders its GIF (sized +
+// styled) while the pointer is over that element. Coexists with `effects
+// .cursorGif` (the page-wide default) — a section's id wins within its area.
+export interface CursorConfig extends OrderedItem {
+  // `id` (Firebase push key) + `order` come from OrderedItem.
+  cursorId: string // matches the data-cursor-id attribute in markup (e.g. "gallery")
+  name: string // admin-friendly label
+  image: string // GIF/PNG URL ('' = nothing renders for this id)
+  size: number // rendered px (square)
+  style: string // free-form inline CSS applied to the cursor <img>
+  // Idle behaviors — both off by default (cursor shows immediately on hover).
+  idleSwap: boolean // show ONLY when idle; while moving, fall back to the global/default cursor
+  idleZoom: boolean // progressively zoom up the longer the mouse stays idle
+  idleDelay: number // seconds of no-movement per idle step (shared by both toggles)
+  idleZoomLevels: number // number of zoom steps when idleZoom is on (each +0.5×, capped)
+}
+
 // Visual config for the admin QR code generator. Kept flat (primitive fields
 // only) so it round-trips through the `shallow` merge + Firebase cleanly. The
 // string-literal unions mirror qr-code-styling's option values; the section
@@ -165,6 +183,7 @@ export interface WeddingConfig {
   faqs: Faq[]
   invitation: Invitation
   effects: Effects
+  cursors: CursorConfig[]
   qr: Qr
 }
 

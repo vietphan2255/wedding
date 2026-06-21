@@ -41,6 +41,7 @@ const SLICE_DEFS: Record<keyof WeddingConfig, SliceDef> = {
   story:      { kind: 'list',    default: DEFAULT_CONFIG.story },
   gallery:    { kind: 'list',    default: DEFAULT_CONFIG.gallery },
   effects:    { kind: 'shallow', default: DEFAULT_CONFIG.effects },
+  cursors:    { kind: 'list',    default: DEFAULT_CONFIG.cursors },
   qr:         { kind: 'shallow', default: DEFAULT_CONFIG.qr },
 }
 
