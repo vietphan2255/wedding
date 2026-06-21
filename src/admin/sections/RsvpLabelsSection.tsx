@@ -37,8 +37,13 @@ export default function RsvpLabelsSection() {
         <LabelField
           fieldKey="rsvp.subtitle"
           label="Description"
-          defaultVi="Phản hồi của bạn là niềm vui lớn của tụi mình. Xin gửi trước ngày 30/06/2026."
+          defaultVi="Phản hồi của bạn là niềm vui lớn của tụi mình."
           multiline
+        />
+        <LabelField
+          fieldKey="rsvp.deadline"
+          label="Deadline (highlighted)"
+          defaultVi="Xin gửi trước ngày 30/06/2026."
         />
         <LabelField
           fieldKey="rsvp.submit"

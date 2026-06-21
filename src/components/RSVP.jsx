@@ -96,6 +96,13 @@ export default function RSVP() {
             <span className="font-script text-2xl">{t('rsvp.divider')}</span>
           </div>
           <p className="text-muted">{t('rsvp.subtitle')}</p>
+          {t('rsvp.deadline') && (
+            <p className="mt-3 text-[12px]">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-highlight/40 bg-highlight/10 px-3.5 py-1.5 tracking-[0.06em] font-medium text-highlight">
+                {t('rsvp.deadline')}
+              </span>
+            </p>
+          )}
         </FadeIn>
 
         <AnimatePresence mode="wait">

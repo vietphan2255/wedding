@@ -7,6 +7,7 @@ export default {
         bg: 'var(--color-bg)',
         surface: 'var(--color-surface)',
         accent: 'var(--color-accent)',
+        highlight: 'var(--color-highlight)',
         ink: 'var(--color-ink)',
         muted: 'var(--color-muted)',
         line: 'var(--color-line)',

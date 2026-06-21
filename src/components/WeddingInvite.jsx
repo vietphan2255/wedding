@@ -35,9 +35,9 @@ function VerticalTitle({ name }) {
   const words = String(name).split(/\s+/).filter(Boolean)
   if (!words.length) return null
   return (
-    <div className="flex flex-col items-center gap-2 shrink-0 text-accent">
+    <div className="flex flex-col items-center gap-2 shrink-0 text-highlight absolute top-8 left-4">
       <span className="w-px h-7 md:h-9 bg-line" aria-hidden />
-      <div className="font-script-vn text-2xl md:text-3xl leading-[1.15] flex flex-col items-center">
+      <div className="font-script-vn font-extrabold text-2xl md:text-3xl leading-[1.15] flex flex-col items-center">
         {words.map((w, i) => (
           <span key={i}>{w}</span>
         ))}
@@ -76,7 +76,7 @@ function BigDate({ monthLabel, day, yearLabel }) {
   return (
     <div className="flex items-stretch justify-center gap-3 md:gap-6">
       <div className={side}>{monthLabel}</div>
-      <div className="shrink-0 self-center font-display text-6xl md:text-7xl leading-none text-accent font-bold">
+      <div className="shrink-0 self-center font-display text-6xl md:text-7xl leading-none text-highlight font-bold">
         {day}
       </div>
       <div className={side}>{yearLabel}</div>
@@ -99,10 +99,25 @@ function InvitationCard({ ceremonyKey, t, coupleLeft, coupleRight, inv, dateISO 
       {/* Top — vertical title + cursive couple names */}
       <div className="flex items-center justify-center gap-3 sm:gap-5 md:gap-10">
         <VerticalTitle name={name} />
-        <div className="font-script-vn text-accent text-center leading-[1.1] min-w-0">
-          <div className="whitespace-nowrap" style={{ fontSize: 'clamp(1.4rem, 7vw, 3rem)' }}>{coupleLeft}</div>
-          <div className="my-1 md:my-2" style={{ fontSize: 'clamp(1.1rem, 4vw, 1.875rem)' }}>&amp;</div>
-          <div className="whitespace-nowrap" style={{ fontSize: 'clamp(1.4rem, 7vw, 3rem)' }}>{coupleRight}</div>
+        <div style={{  fontFamily: 'Alex Brush, cursive'}} className="font-bold text-accent text-center leading-[1.1] min-w-0">
+          <div
+            className="whitespace-nowrap"
+            style={{ fontSize: 'clamp(1.4rem, 7vw, 3rem)' }}
+          >
+            {coupleLeft}
+          </div>
+          <div
+            className="my-1 md:my-2"
+            style={{ fontSize: 'clamp(1.1rem, 4vw, 1.875rem)' }}
+          >
+            &amp;
+          </div>
+          <div
+            className="whitespace-nowrap"
+            style={{ fontSize: 'clamp(1.4rem, 7vw, 3rem)' }}
+          >
+            {coupleRight}
+          </div>
         </div>
       </div>
 
@@ -124,7 +139,7 @@ function InvitationCard({ ceremonyKey, t, coupleLeft, coupleRight, inv, dateISO 
 
       {/* Banquet line */}
       <div className="mt-10 text-center">
-        <p className="font-display text-lg md:text-2xl text-ink uppercase tracking-[0.08em] font-bold">
+        <p className="font-display text-lg md:text-2xl text-ink uppercase tracking-[0.08em] font-bold ">
           {t('invite.banquet')} {name}
         </p>
         {bits ? (
@@ -143,7 +158,7 @@ function InvitationCard({ ceremonyKey, t, coupleLeft, coupleRight, inv, dateISO 
 
       {/* Lunar date */}
       {lunar ? (
-        <p className="mt-5 text-center font-script-vn text-xl md:text-2xl text-accent font-bold">
+        <p className="mt-5 text-center font-script-vn text-xl md:text-2xl text-highlight font-bold">
           {lunar}
         </p>
       ) : null}
@@ -151,7 +166,9 @@ function InvitationCard({ ceremonyKey, t, coupleLeft, coupleRight, inv, dateISO 
       {/* Venue */}
       <div className="mt-8 text-center">
         <p className="eyebrow">{t('invite.venueLabel')}</p>
-        <p className="font-display text-xl md:text-2xl text-ink mt-2 font-bold">{venue}</p>
+        <p className="font-display text-xl md:text-2xl text-ink mt-2 font-bold">
+          {venue}
+        </p>
         {address ? <p className="text-sm text-muted mt-1.5">{address}</p> : null}
       </div>
     </div>
