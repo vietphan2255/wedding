@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
+import { buildIcs, mapsSearchUrl, formatVnTime } from '../lib/calendar'
 import FadeIn from './FadeIn.jsx'
 import ParallaxImage from './ParallaxImage.jsx'
 import DressIcon from './icons/DressIcons.jsx'
@@ -31,33 +32,6 @@ const CEREMONIES = [
     img: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1600&q=80',
   },
 ]
-
-function buildIcs({ title, start, end, location, description }) {
-  const fmt = (d) =>
-    d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
-  const ics = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//Viet Nguyen Wedding//EN',
-    'BEGIN:VEVENT',
-    `UID:${Date.now()}@viet-nguyen-wedding`,
-    `DTSTAMP:${fmt(new Date())}`,
-    `DTSTART:${fmt(start)}`,
-    `DTEND:${fmt(end)}`,
-    `SUMMARY:${title}`,
-    `LOCATION:${location}`,
-    `DESCRIPTION:${description}`,
-    'END:VEVENT',
-    'END:VCALENDAR',
-  ].join('\n')
-  return `data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}`
-}
-
-function mapsSearchUrl(query) {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    query,
-  )}`
-}
 
 export default function CeremonyTimeline() {
   const { t } = useLanguage()
@@ -175,7 +149,7 @@ function CeremonyCard({
   const name = t(`events.${eventKey}.name`)
   const subtitle = t(`events.${eventKey}.subtitle`)
   const date = t(`events.${eventKey}.date`)
-  const time = t(`events.${eventKey}.time`)
+  const time = formatVnTime(start)
   const venue = t(`events.${eventKey}.venue`)
   const dress = t(`events.${eventKey}.dress`)
   const mapUrl = mapsSearchUrl(venue)

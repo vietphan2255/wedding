@@ -1,7 +1,9 @@
+import { MapPin, CalendarPlus } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import { useInvitedGuest } from '../contexts/InvitedGuestContext.jsx'
 import { personalizeInvite } from '../lib/guests'
+import { mapsSearchUrl, googleCalendarUrl, formatVnTime } from '../lib/calendar'
 import FadeIn from './FadeIn.jsx'
 
 // Formal "thiệp cưới" section, restyled after the cinelove thiep-cuoi-42
@@ -100,20 +102,24 @@ function InvitationCard({
   coupleRight,
   inv,
   dateISO,
+  endISO,
   highlighted,
 }) {
   const name = t(`events.${ceremonyKey}.name`)
   const venue = t(`events.${ceremonyKey}.venue`)
-  const time = t(`events.${ceremonyKey}.time`)
+  // Time comes from the same admin datetime as the date, so the two never drift.
+  const time = formatVnTime(dateISO)
   const lunar = inv[`${ceremonyKey}Lunar`] || ''
   const address = inv[`${ceremonyKey}Address`] || ''
+  // Both the venue name and address open Google Maps; prefer the precise address.
+  const mapUrl = address || venue ? mapsSearchUrl(address || venue) : null
   const bits = dateBits(dateISO)
   const monthLabel = bits ? `Tháng ${bits.monthNum}` : ''
   const yearLabel = bits ? `Năm ${bits.year}` : ''
 
   return (
     <div
-      className={`relative h-full rounded-3xl border bg-bg/60 backdrop-blur px-4 sm:px-6 py-8 sm:py-10 md:px-8 md:py-14 transition shadow-xl border-line hover:shadow-accent hover:scale-105`}
+      className={`relative h-full rounded-3xl border bg-bg/60 backdrop-blur px-4 sm:px-6 py-8 sm:py-10 md:px-8 md:py-14 transition shadow-xl border-line hover:shadow-accent hover:scale-105`} style={{transition: 'all 0.25s ease-in-out'}}
     >
       {/* "Thiệp của bạn" badge — only on the ceremony this guest is invited to */}
       {highlighted ? (
@@ -191,14 +197,56 @@ function InvitationCard({
         </p>
       ) : null}
 
-      {/* Venue */}
+      {/* Venue — name + address both deep-link to Google Maps */}
       <div className="mt-8 text-center">
         <p className="eyebrow">{t('invite.venueLabel')}</p>
         <p className="font-display text-xl md:text-2xl text-ink mt-2 font-bold">
-          {venue}
+          {mapUrl ? (
+            <a
+              href={mapUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-accent transition-colors"
+            >
+              {venue}
+            </a>
+          ) : (
+            venue
+          )}
         </p>
-        {address ? <p className="text-sm text-muted mt-1.5">{address}</p> : null}
+        {address ? (
+          <a
+            href={mapUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1.5 inline-flex items-center justify-center gap-1.5 text-sm text-muted hover:text-accent transition-colors underline decoration-line decoration-1 underline-offset-4"
+          >
+            <MapPin size={14} className="shrink-0" />
+            {address}
+          </a>
+        ) : null}
       </div>
+
+      {/* Add to calendar — opens Google Calendar prefilled from the admin datetime */}
+      {bits && endISO ? (
+        <div className="mt-8 flex justify-center">
+          <a
+            href={googleCalendarUrl({
+              title: `${name} — ${coupleLeft} & ${coupleRight}`,
+              start: new Date(dateISO),
+              end: new Date(endISO),
+              location: address || venue,
+              details: lunar,
+            })}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-[12px] tracking-[0.18em] uppercase text-accent font-bold hover:text-ink transition-colors"
+          >
+            <CalendarPlus size={15} className='font-bold' />
+            {t('timeline.addCalendar')}
+          </a>
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -248,6 +296,7 @@ export default function WeddingInvite() {
                 coupleRight={coupleRight}
                 inv={inv}
                 dateISO={dates[`${key}Start`]}
+                endISO={dates[`${key}End`]}
                 highlighted={key === highlightKey}
               />
             </FadeIn>
