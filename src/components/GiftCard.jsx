@@ -63,7 +63,7 @@ function CopyButton({ value, label, labelCopied }) {
   )
 }
 
-function GiftBlock({ title, info, copyLabel, copiedLabel, bankLabel, holderLabel, accountLabel, qrLabel }) {
+export function GiftBlock({ title, info, copyLabel, copiedLabel, bankLabel, holderLabel, accountLabel, qrLabel }) {
   return (
     <article className="relative h-full rounded-3xl border border-line bg-surface p-7 md:p-8 overflow-hidden">
       <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-accent/10 blur-3xl" />

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useRef } from 'react'
+import { lazy, Suspense, useRef, useState } from 'react'
 import { Routes, Route, Link } from 'react-router-dom'
 import useSmoothScroll from './hooks/useSmoothScroll'
 import { useWeddingConfig } from './contexts/WeddingConfigContext'
@@ -18,6 +18,7 @@ import FloatingDock from './components/FloatingDock.jsx'
 import ScrollProgress from './components/ScrollProgress.jsx'
 import ParallaxPetals from './components/ParallaxPetals.jsx'
 import MobileRsvpBar from './components/MobileRsvpBar.jsx'
+import GiftModal from './components/GiftModal.jsx'
 import InvitationOverlay from './components/InvitationOverlay.jsx'
 import { MusicProvider } from './contexts/MusicContext.jsx'
 import { InvitedGuestProvider } from './contexts/InvitedGuestContext.jsx'
@@ -49,6 +50,7 @@ function WeddingSite() {
   // etc. still win because the cursor handler reads the closest ancestor.
   const { config } = useWeddingConfig()
   const cursorGif = (config.effects?.cursorGif || '').trim()
+  const [giftOpen, setGiftOpen] = useState(false)
   return (
     <InvitedGuestProvider>
       <MusicProvider>
@@ -89,8 +91,9 @@ function WeddingSite() {
         targetBRef={flightTargetBRef}
       /> */}
         <Footer />
-        <FloatingDock />
-        <MobileRsvpBar />
+        <FloatingDock onGiftClick={() => setGiftOpen(true)} />
+        <MobileRsvpBar onGiftClick={() => setGiftOpen(true)} />
+        <GiftModal open={giftOpen} onClose={() => setGiftOpen(false)} />
       </MusicProvider>
     </InvitedGuestProvider>
   )
@@ -132,7 +135,6 @@ export default function App() {
 }
 
 // Note:
-// - float button open modal mung cuoi as same as mung cuoi section
 // - changing shape of the floating green circle to be heart or st
 // - toast the new wishes after submit by broadcasting to all other users. - if no new wishes, toast a messages already submitted randomly
 // - add ability to like the wishes

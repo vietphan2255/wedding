@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, Heart } from 'lucide-react'
+import { Send, Heart, Gift } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import { useMusic, MusicGlyph } from '../contexts/MusicContext'
@@ -21,11 +21,13 @@ const tabClass =
 const tabLabelClass =
   'text-[10px] uppercase tracking-[0.14em] leading-none whitespace-nowrap'
 
-export default function MobileRsvpBar() {
+/** @param {{ onGiftClick?: () => void }} props `onGiftClick` opens the gift modal. */
+export default function MobileRsvpBar({ onGiftClick }) {
   const { t } = useLanguage()
   const { config } = useWeddingConfig()
   const { enabled: musicEnabled, playing, toggle } = useMusic()
   const [hidden, setHidden] = useState(false)
+  const giftsEnabled = config.gifts?.enabled !== false
 
   const target = useMemo(() => pickEvent(config), [config])
   const days = target
@@ -84,6 +86,17 @@ export default function MobileRsvpBar() {
               <Send size={18} />
               <span className={tabLabelClass}>{t('nav.rsvp')}</span>
             </a>
+            {giftsEnabled && onGiftClick && (
+              <button
+                type="button"
+                onClick={onGiftClick}
+                className={tabClass}
+                aria-label={t('nav.gift')}
+              >
+                <Gift size={18} />
+                <span className={tabLabelClass}>{t('nav.gift')}</span>
+              </button>
+            )}
             {musicEnabled && (
               <button
                 type="button"

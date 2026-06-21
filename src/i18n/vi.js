@@ -8,6 +8,7 @@ export default {
   'nav.rsvp': 'Xác nhận',
   'nav.wishes': 'Lời chúc',
   'nav.music': 'Nhạc',
+  'nav.gift': 'Mừng cưới',
 
   // Hero
   'hero.eyebrow': 'Chúng mình sắp về chung một nhà',
