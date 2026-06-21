@@ -1,8 +1,17 @@
 import { useState } from 'react'
-import { Save, MousePointer2 } from 'lucide-react'
+import { Save, MousePointer2, Sparkles } from 'lucide-react'
 import { useDraftConfig } from '../DraftConfigContext'
 import ImageInput from '../../components/admin/ImageInput.jsx'
-import type { Effects } from '../../contexts/configTypes'
+import type { Effects, PetalShape } from '../../contexts/configTypes'
+
+const PETAL_SHAPES: PetalShape[] = [
+  'petal',
+  'circle',
+  'heart',
+  'bubble',
+  'star',
+  'snowflake',
+]
 
 // Single-field admin section for the GIF cursor URL. Mirrors the pattern in
 // InvitationSection — paste-or-upload via ImageInput, save via the `effects`
@@ -34,10 +43,17 @@ export default function EffectsSection() {
         idleZoom: Boolean(eff?.idleZoom),
         idleDelay: Number(eff?.idleDelay) || 1.5,
         idleZoomLevels: Math.max(1, Math.round(Number(eff?.idleZoomLevels) || 3)),
+        petalsEnabled: eff?.petalsEnabled !== false,
+        petalShape: PETAL_SHAPES.includes(eff?.petalShape as PetalShape)
+          ? (eff!.petalShape as PetalShape)
+          : 'petal',
+        petalCount: Math.max(0, Math.min(60, Math.round(Number(eff?.petalCount) || 12))),
+        petalSpeed: Math.max(0.1, Math.min(3, Number(eff?.petalSpeed) || 1)),
+        petalColor: (eff?.petalColor || '').trim(),
       }
       await saveSlice('effects', payload)
       setSlice('effects', payload)
-      setStatus({ type: 'success', message: 'Cursor saved.' })
+      setStatus({ type: 'success', message: 'Effects saved.' })
     } catch (err) {
       console.error(err)
       setStatus({
@@ -181,6 +197,118 @@ export default function EffectsSection() {
         ) : null}
       </div>
 
+      <div className="glass rounded-3xl p-6 md:p-7">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="eyebrow flex items-center gap-2">
+              <Sparkles size={12} />
+              Floating shapes
+            </p>
+            <p className="text-sm text-muted mt-2 max-w-2xl">
+              Decorative shapes that drift down the page behind the content.
+              Desktop only, and hidden for visitors who prefer reduced motion.
+            </p>
+          </div>
+          <label className="flex items-center gap-2 text-sm cursor-pointer shrink-0">
+            <input
+              type="checkbox"
+              checked={eff?.petalsEnabled !== false}
+              onChange={(e) => setEff({ petalsEnabled: e.target.checked })}
+            />
+            <span className="font-medium">Enabled</span>
+          </label>
+        </div>
+
+        <fieldset
+          disabled={eff?.petalsEnabled === false}
+          className="mt-5 space-y-4 disabled:opacity-50"
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[11px] tracking-[0.22em] uppercase text-muted mb-2">
+                Shape
+              </label>
+              <select
+                value={eff?.petalShape ?? 'petal'}
+                onChange={(e) =>
+                  setEff({ petalShape: e.target.value as PetalShape })
+                }
+                className="w-full rounded-xl border border-line bg-bg px-4 py-3"
+              >
+                <option value="petal">Petal (organic)</option>
+                <option value="circle">Circle</option>
+                <option value="heart">Heart</option>
+                <option value="bubble">Bubble (glassy)</option>
+                <option value="star">Star</option>
+                <option value="snowflake">Snowflake</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-[11px] tracking-[0.22em] uppercase text-muted mb-2">
+                Count
+              </label>
+              <input
+                type="number"
+                min={0}
+                max={60}
+                step={1}
+                value={eff?.petalCount ?? 12}
+                onChange={(e) => setEff({ petalCount: Number(e.target.value) })}
+                className="w-full rounded-xl border border-line bg-bg px-4 py-3"
+              />
+              <p className="text-xs text-muted mt-2">0–60. Set to 0 to hide.</p>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[11px] tracking-[0.22em] uppercase text-muted mb-2">
+              Speed — {(Number(eff?.petalSpeed) || 1).toFixed(1)}×
+            </label>
+            <input
+              type="range"
+              min={0.1}
+              max={3}
+              step={0.1}
+              value={eff?.petalSpeed ?? 1}
+              onChange={(e) => setEff({ petalSpeed: Number(e.target.value) })}
+              className="w-full accent-[var(--color-accent)]"
+            />
+          </div>
+
+          <div>
+            <label className="flex items-center gap-2 text-sm cursor-pointer mb-3">
+              <input
+                type="checkbox"
+                checked={!(eff?.petalColor || '').trim()}
+                onChange={(e) =>
+                  setEff({ petalColor: e.target.checked ? '' : '#B8C5A6' })
+                }
+              />
+              <span>Use theme accent colour</span>
+            </label>
+            {(eff?.petalColor || '').trim() ? (
+              <div className="flex items-center gap-2">
+                <input
+                  aria-label="Shape colour picker"
+                  type="color"
+                  value={eff?.petalColor || '#B8C5A6'}
+                  onChange={(e) => setEff({ petalColor: e.target.value })}
+                  className="h-10 w-12 shrink-0 cursor-pointer rounded-lg border border-line bg-bg p-1"
+                />
+                <input
+                  aria-label="Shape colour hex value"
+                  type="text"
+                  value={eff?.petalColor || ''}
+                  onChange={(e) => setEff({ petalColor: e.target.value })}
+                  className="w-full rounded-xl border border-line bg-bg px-3 py-2 text-sm font-mono"
+                />
+              </div>
+            ) : null}
+          </div>
+        </fieldset>
+      </div>
+
       <div className="flex items-center justify-between glass rounded-3xl p-5">
         {status ? (
           <p
@@ -201,7 +329,7 @@ export default function EffectsSection() {
           className="btn-primary disabled:opacity-60"
         >
           <Save size={16} />
-          {saving ? 'Saving…' : 'Save cursor'}
+          {saving ? 'Saving…' : 'Save effects'}
         </button>
       </div>
     </form>

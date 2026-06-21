@@ -102,6 +102,16 @@ export interface Invitation {
   thanhhonAddress: string
 }
 
+// Shape of the decorative floating particles in ParallaxPetals. 'petal' is the
+// original organic blob (default; preserves the existing look).
+export type PetalShape =
+  | 'petal'
+  | 'circle'
+  | 'heart'
+  | 'bubble'
+  | 'star'
+  | 'snowflake'
+
 export interface Effects {
   // GIF URL applied as the page cursor on `/` via a `data-cursor` attribute
   // on <main>. Empty string disables the GIF cursor and the page falls back
@@ -113,6 +123,13 @@ export interface Effects {
   idleZoom: boolean // progressively zoom the GIF the longer the pointer stays idle
   idleDelay: number // seconds of no-movement per idle step (shared by both toggles)
   idleZoomLevels: number // number of zoom steps when idleZoom is on (each +0.5×, capped)
+  // Floating decorative shapes (ParallaxPetals). Defaults reproduce the legacy
+  // 12 sage-green petals exactly.
+  petalsEnabled: boolean // master on/off (keeps shape/count/speed/color when off)
+  petalShape: PetalShape // which icon floats
+  petalCount: number // how many float at once (integer, clamped 0..60)
+  petalSpeed: number // drift speed multiplier; 1 = legacy speed, >1 faster
+  petalColor: string // hex like '#e58aa0'; '' = use the theme accent color
 }
 
 // Per-section GIF cursor. Elements carry `data-cursor-id="<cursorId>"`; the
