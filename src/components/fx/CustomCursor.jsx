@@ -32,6 +32,24 @@ const isUrlLike = (v) =>
 
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n))
 
+// Shared idle math for both per-section and global GIF cursors.
+// idleCap = total idle steps: 1 reveal (if idleSwap) + one per zoom level (if idleZoom).
+const idleCap = (c) =>
+  (c.idleSwap ? 1 : 0) +
+  (c.idleZoom ? Math.max(1, Math.round(Number(c.idleZoomLevels)) || 1) : 0)
+
+// Given the elapsed idle steps, whether the GIF is revealed yet and at what scale.
+const idleReveal = (c, step) => {
+  const revealed = c.idleSwap ? step >= 1 : true
+  let scale = 1
+  if (revealed && c.idleZoom) {
+    const levels = Math.max(1, Math.round(Number(c.idleZoomLevels)) || 1)
+    const level = clamp(step - (c.idleSwap ? 1 : 0), 0, levels)
+    scale = 1 + 0.5 * level
+  }
+  return { revealed, scale }
+}
+
 const NO_HOVER = { mode: 'none', label: '', cfg: null, globalUrl: '' }
 
 export default function CustomCursor() {
@@ -52,6 +70,7 @@ export default function CustomCursor() {
   const mapRef = useRef({})
   const hoverKeyRef = useRef('') // dedupes setHover so we only re-render on real changes
   const idleTimerRef = useRef(null)
+  const effectsRef = useRef(config.effects) // latest global-cursor config for the bound handler
 
   useEffect(() => {
     const m = {}
@@ -60,6 +79,12 @@ export default function CustomCursor() {
     }
     mapRef.current = m
   }, [config.cursors])
+
+  // Keep the latest global-cursor (effects) config in a ref so the once-bound
+  // mousemove handler reads fresh idle settings without re-binding the listener.
+  useEffect(() => {
+    effectsRef.current = config.effects
+  }, [config.effects])
 
   useEffect(() => {
     if (reduce) return
@@ -128,16 +153,20 @@ export default function CustomCursor() {
       }
 
       // Movement resets the idle progression. Re-arm the stepped timer only
-      // when the hovered section opts into an idle behavior; it fires once per
-      // idleDelay until the cap (reveal step + zoom levels) is reached.
+      // when the hovered target — a per-section cursor or the global cursor —
+      // opts into an idle behavior; it fires once per idleDelay until the cap
+      // (reveal step + zoom levels) is reached.
       stopIdle()
       setIdleStep(0)
-      const cfg = res.mode === 'section' ? res.cfg : null
-      if (cfg && (cfg.idleSwap || cfg.idleZoom)) {
-        const delayMs = Math.max(50, (Number(cfg.idleDelay) || 1.5) * 1000)
-        const cap =
-          (cfg.idleSwap ? 1 : 0) +
-          (cfg.idleZoom ? Math.max(1, Math.round(Number(cfg.idleZoomLevels)) || 1) : 0)
+      const idleCfg =
+        res.mode === 'section'
+          ? res.cfg
+          : res.mode === 'global'
+            ? effectsRef.current
+            : null
+      if (idleCfg && (idleCfg.idleSwap || idleCfg.idleZoom)) {
+        const delayMs = Math.max(50, (Number(idleCfg.idleDelay) || 1.5) * 1000)
+        const cap = idleCap(idleCfg)
         idleTimerRef.current = setInterval(() => {
           setIdleStep((s) => {
             const next = s + 1
@@ -181,21 +210,23 @@ export default function CustomCursor() {
     label = hover.label
   } else if (hover.mode === 'section' && hover.cfg) {
     const cfg = hover.cfg
-    const revealed = cfg.idleSwap ? idleStep >= 1 : true
+    const { revealed, scale } = idleReveal(cfg, idleStep)
     if (revealed) {
       gifUrl = cfg.image
       gifSize = Number(cfg.size) || 56
       gifStyle = cssStringToStyle(cfg.style)
-      if (cfg.idleZoom) {
-        const levels = Math.max(1, Math.round(Number(cfg.idleZoomLevels)) || 1)
-        const level = clamp(idleStep - (cfg.idleSwap ? 1 : 0), 0, levels)
-        gifScale = 1 + 0.5 * level
-      }
+      gifScale = scale
     } else if (hover.globalUrl) {
       gifUrl = hover.globalUrl // show-when-idle: global cursor while still moving
     }
   } else if (hover.mode === 'global') {
-    gifUrl = hover.globalUrl
+    const eff = config.effects || {}
+    const { revealed, scale } = idleReveal(eff, idleStep)
+    if (revealed) {
+      gifUrl = hover.globalUrl
+      gifScale = scale
+    }
+    // not revealed → gifUrl stays '' → gifMode false → the default ring + dot shows
   }
 
   const gifMode = gifUrl !== ''

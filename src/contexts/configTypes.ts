@@ -107,6 +107,12 @@ export interface Effects {
   // on <main>. Empty string disables the GIF cursor and the page falls back
   // to the default ring + dot.
   cursorGif: string
+  // Idle behaviors for the global GIF cursor — same semantics as CursorConfig's
+  // per-section idle. No-ops unless cursorGif is set.
+  idleSwap: boolean // show the GIF only once the pointer sits still; while moving, the default ring + dot shows
+  idleZoom: boolean // progressively zoom the GIF the longer the pointer stays idle
+  idleDelay: number // seconds of no-movement per idle step (shared by both toggles)
+  idleZoomLevels: number // number of zoom steps when idleZoom is on (each +0.5×, capped)
 }
 
 // Per-section GIF cursor. Elements carry `data-cursor-id="<cursorId>"`; the

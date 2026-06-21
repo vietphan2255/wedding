@@ -207,7 +207,7 @@ export const DEFAULT_CONFIG: WeddingConfig = {
     thanhhonLunar: 'Nhằm ngày 19 tháng 6 năm Bính Ngọ (Âm lịch)',
     thanhhonAddress: '456 Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh',
   },
-  effects: { cursorGif: '' },
+  effects: { cursorGif: '', idleSwap: false, idleZoom: false, idleDelay: 1.5, idleZoomLevels: 3 },
   cursors: DEFAULT_CURSORS,
   qr: {
     link: '',
