@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import {
   ref,
   push,
+  set,
   onValue,
   query,
   limitToLast,
@@ -129,18 +130,19 @@ export function WishesProvider({ children }) {
     return () => unsub()
   }, [])
 
-  // Throws on write failure so the caller can show the error toast. Records the
-  // push key synchronously (Firebase assigns it client-side) before any onValue
-  // echo can arrive, so self-suppression is race-free.
+  // Throws on write failure so the caller can show the error toast. Reserves the
+  // key with a value-less push() (no write, no echo), records it as our own, then
+  // writes — so the write's local onValue echo can never beat the key into
+  // ownKeysRef, and the submitting tab never notifies itself.
   const submitWish = async ({ name, message }) => {
     if (isConfigured && db) {
-      const newRef = push(ref(db, 'wishes'), {
+      const newRef = push(ref(db, 'wishes'))
+      if (newRef.key) ownKeysRef.current.add(newRef.key)
+      await set(newRef, {
         name,
         message,
         createdAt: serverTimestamp(),
       })
-      if (newRef.key) ownKeysRef.current.add(newRef.key)
-      await newRef
     } else {
       setWishes((prev) => [
         { id: `local-${Date.now()}`, name, message, createdAt: Date.now() },
