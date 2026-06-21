@@ -38,7 +38,7 @@ function VerticalTitle({ name }) {
   const words = String(name).split(/\s+/).filter(Boolean)
   if (!words.length) return null
   return (
-    <div className="flex flex-col items-center gap-2 shrink-0 text-accent absolute top-8 left-4">
+    <div className="flex flex-col items-center gap-2 shrink-0 text-accent">
       <span className="w-px h-7 md:h-9 bg-line" aria-hidden />
       <div className="font-script-vn font-extrabold text-2xl md:text-3xl leading-[1.15] flex flex-col items-center">
         {words.map((w, i) => (
@@ -53,7 +53,7 @@ function VerticalTitle({ name }) {
 function FamilyBlock({ label, father, mother, hometown }) {
   if (!father && !mother && !hometown) return null
   return (
-    <div className="text-center">
+    <div className="text-center max-w-[245px]">
       <p className="font-display text-sm sm:text-base md:text-lg text-ink">{label}</p>
       <div className="mt-2 space-y-1">
         {father ? (
@@ -113,11 +113,7 @@ function InvitationCard({
 
   return (
     <div
-      className={`relative h-full rounded-3xl border bg-bg/60 backdrop-blur px-4 sm:px-8 py-8 sm:py-10 md:px-12 md:py-14 transition ${
-        highlighted
-          ? 'border-accent ring-2 ring-accent/60 shadow-xl shadow-accent/10'
-          : 'border-line'
-      }`}
+      className={`relative h-full rounded-3xl border bg-bg/60 backdrop-blur px-4 sm:px-6 py-8 sm:py-10 md:px-8 md:py-14 transition shadow-xl border-line hover:shadow-accent hover:scale-105`}
     >
       {/* "Thiệp của bạn" badge — only on the ceremony this guest is invited to */}
       {highlighted ? (
