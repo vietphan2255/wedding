@@ -14,7 +14,7 @@ const FIELDS = [
   { key: 'bank', label: 'Bank name' },
   { key: 'holder', label: 'Account holder' },
   { key: 'account', label: 'Account number' },
-  { key: 'qrUrl', label: 'QR image URL (optional)' },
+  { key: 'qrUrl', label: 'QR / banking portrait image' },
 ]
 
 export default function GiftsSection() {
@@ -90,9 +90,11 @@ export default function GiftsSection() {
           Bank details for wedding gifts
         </h2>
         <p className="text-sm text-muted mt-2 max-w-2xl">
-          Edit the bank-transfer info shown on the public site. Each card has an
-          optional QR image — paste a public image URL (e.g. a VietQR PNG)
-          generated from your banking app.
+          Edit the bank-transfer info shown on the public site. Each card shows a
+          portrait QR image (e.g. a VietQR card, ~2:3 vertical) as its centerpiece
+          — use the same style for both sides. The account number below it stays
+          editable so guests can copy it. If no image is set, the card falls back
+          to plain bank text.
         </p>
         <label className="mt-4 inline-flex items-center gap-2 text-sm">
           <input
@@ -138,7 +140,7 @@ export default function GiftsSection() {
                 <img
                   src={form[key].qrUrl}
                   alt="QR preview"
-                  className="w-20 h-20 rounded-lg object-contain bg-bg"
+                  className="w-16 aspect-[2/3] rounded-lg object-contain bg-ink"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none'
                   }}

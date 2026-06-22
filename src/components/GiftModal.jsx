@@ -31,10 +31,11 @@ export default function GiftModal({ open, onClose }) {
   const labels = {
     copyLabel: t('gift.copy'),
     copiedLabel: t('gift.copied'),
-    bankLabel: t('gift.bank'),
     holderLabel: t('gift.holder'),
     accountLabel: t('gift.account'),
     qrLabel: t('gift.qrLabel'),
+    saveLabel: t('gift.save'),
+    tapToZoomLabel: t('gift.tapToZoom'),
   }
 
   return (

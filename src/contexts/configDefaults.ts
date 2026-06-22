@@ -42,13 +42,15 @@ export const DEFAULT_GIFTS: Gifts = {
     bank: 'Vietcombank',
     holder: 'NGUYEN THI NGUYEN',
     account: '0123 4567 8901',
-    qrUrl: '',
+    // Falls back to the text card until public/qr/bride.png is added (or an
+    // image URL is set in the admin).
+    qrUrl: '/qr/bride.png',
   },
   groom: {
-    bank: 'Techcombank',
-    holder: 'PHAN VIET',
-    account: '9876 5432 1098',
-    qrUrl: '',
+    bank: 'VietinBank',
+    holder: 'PHAN QUOC VIET',
+    account: '105678105298',
+    qrUrl: '/qr/groom.png',
   },
 }
 

@@ -183,6 +183,8 @@ export default {
   'gift.copy': 'Sao chép',
   'gift.copied': 'Đã sao chép!',
   'gift.qrLabel': 'Quét QR để chuyển khoản',
+  'gift.save': 'Lưu ảnh QR',
+  'gift.tapToZoom': 'Nhấn để phóng to',
 
   // FAQ
   'faq.eyebrow': 'Có thể bạn quan tâm',
