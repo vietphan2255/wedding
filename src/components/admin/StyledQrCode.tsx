@@ -29,11 +29,17 @@ export function buildQrOptions(qr: Qr, size: number): Partial<Options> {
 
   const paint = gradient ? { gradient } : { color: qr.fgColor }
 
+  // `margin` and the logo `imageOptions.margin` are absolute pixels, so scale
+  // them with the canvas size (relative to the preview). This makes a download
+  // a true high-res copy of the preview with the same proportional quiet zone,
+  // instead of a thin, sub-spec border at large export sizes.
+  const scale = size / QR_PREVIEW_SIZE
+
   return {
     type: 'canvas',
     width: size,
     height: size,
-    margin: qr.margin,
+    margin: Math.round(qr.margin * scale),
     data,
     image: qr.logoUrl || undefined,
     qrOptions: { errorCorrectionLevel: qr.errorCorrection },
@@ -44,7 +50,7 @@ export function buildQrOptions(qr: Qr, size: number): Partial<Options> {
       saveAsBlob: true,
       hideBackgroundDots: true,
       imageSize: qr.logoSize,
-      margin: 4,
+      margin: Math.round(4 * scale),
     },
     dotsOptions: { type: qr.dotStyle, ...paint },
     cornersSquareOptions: { type: qr.cornerSquareStyle, ...paint },
@@ -55,10 +61,14 @@ export function buildQrOptions(qr: Qr, size: number): Partial<Options> {
   }
 }
 
-// Print-ready raster export size. The on-screen preview stays small (240) for
-// snappy re-renders; downloads use a throwaway high-res instance instead so the
-// PNG/JPEG come out large enough to print (a 240px PNG is too low-res).
-export const QR_EXPORT_SIZE = 1024
+// On-screen preview size — kept small for snappy re-renders. Also the reference
+// size that buildQrOptions scales absolute-pixel margins (quiet zone, logo
+// margin) against, so an export is a true high-res copy of the preview.
+export const QR_PREVIEW_SIZE = 240
+
+// Print-ready raster export size. Downloads use a throwaway high-res instance
+// so the PNG/JPEG come out large enough to print (a 240px PNG is too low-res).
+export const QR_EXPORT_SIZE = 4096
 
 // Render a transient (non-appended) instance at the given options and download
 // it. Pass high-res options (buildQrOptions(qr, QR_EXPORT_SIZE)); the

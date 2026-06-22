@@ -7,6 +7,7 @@ import {
   useStyledQr,
   downloadQr,
   QR_EXPORT_SIZE,
+  QR_PREVIEW_SIZE,
 } from '../../components/admin/StyledQrCode'
 import type { FileExtension } from 'qr-code-styling'
 import type { Qr } from '../../contexts/configTypes'
@@ -148,7 +149,7 @@ export default function QrCodeSection() {
   const setQr = (patch: Partial<Qr>) =>
     setSlice('qr', (q) => ({ ...(q as Qr), ...patch }))
 
-  const options = useMemo(() => buildQrOptions(qr, 240), [qr])
+  const options = useMemo(() => buildQrOptions(qr, QR_PREVIEW_SIZE), [qr])
   const { containerRef } = useStyledQr(options)
   // Downloads render a separate, print-ready instance (the preview stays 240px).
   const exportOptions = useMemo(() => buildQrOptions(qr, QR_EXPORT_SIZE), [qr])
