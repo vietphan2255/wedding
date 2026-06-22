@@ -134,7 +134,7 @@ function InvitationCard({
       <div className="flex items-center justify-center gap-3 sm:gap-5 md:gap-10">
         <VerticalTitle name={name} />
         <div className="font-display font-extralight text-muted text-center leading-[1.1] min-w-0">
-          <div className="whitespace-nowrap" style={{ fontSize: '36px' }}>
+          <div className="whitespace-nowrap" style={{ fontSize: 'clamp(1.25rem, 5.5vw, 2.25rem)' }}>
             {coupleLeft}
           </div>
           <div
@@ -143,7 +143,7 @@ function InvitationCard({
           >
             &amp;
           </div>
-          <div className="whitespace-nowrap" style={{ fontSize: '36px' }}>
+          <div className="whitespace-nowrap" style={{ fontSize: 'clamp(1.25rem, 5.5vw, 2.25rem)' }}>
             {coupleRight}
           </div>
         </div>
