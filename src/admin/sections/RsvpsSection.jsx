@@ -70,7 +70,11 @@ export default function RsvpsSection() {
       ref(db, 'rsvps'),
       (snap) => {
         const list = []
-        snap.forEach((child) => list.push({ id: child.key, ...child.val() }))
+        // Block body: returning push()'s truthy length would cancel RTDB's
+        // forEach enumeration after the first child (only one record shows).
+        snap.forEach((child) => {
+          list.push({ id: child.key, ...child.val() })
+        })
         list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
         setRsvps(list)
         setLoading(false)
