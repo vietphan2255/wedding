@@ -145,4 +145,3 @@ export default function App() {
 // - if no new wishes, toast a message already submitted randomly
 // - add ability to like the wishes
 // - allow user to submit questions to the admin
-// - add a thank you message to the footer

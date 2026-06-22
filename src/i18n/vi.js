@@ -155,6 +155,9 @@ export default {
   'wishes.notif.action': 'Xem lời chúc',
 
   // Footer
+  'footer.thanksEyebrow': 'Lời cảm ơn',
+  'footer.thankyou':
+    'Cảm ơn bạn đã dành thời gian chung vui cùng chúng mình trong ngày trọng đại — sự hiện diện và những lời chúc của bạn là món quà quý giá nhất.',
   'footer.tagline': 'Thực hiện bằng cả trái tim · 2026',
   'footer.contact': 'Mọi thắc mắc xin liên hệ',
 

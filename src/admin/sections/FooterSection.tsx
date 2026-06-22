@@ -15,6 +15,17 @@ export default function FooterSection() {
 
       <LabelsPanel title="Footer labels">
         <LabelField
+          fieldKey="footer.thanksEyebrow"
+          label="Thank-you eyebrow"
+          defaultVi="Lời cảm ơn"
+        />
+        <LabelField
+          fieldKey="footer.thankyou"
+          label="Thank-you message"
+          defaultVi="Cảm ơn bạn đã dành thời gian chung vui cùng chúng mình trong ngày trọng đại — sự hiện diện và những lời chúc của bạn là món quà quý giá nhất."
+          multiline
+        />
+        <LabelField
           fieldKey="footer.tagline"
           label="Tagline"
           defaultVi="Thực hiện bằng cả trái tim · 2026"

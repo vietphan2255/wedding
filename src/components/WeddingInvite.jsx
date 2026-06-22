@@ -134,8 +134,11 @@ function InvitationCard({
       <div className="flex items-center justify-center gap-3 sm:gap-5 md:gap-10">
         <VerticalTitle name={name} />
         <div className="font-display font-extralight text-muted text-center leading-[1.1] min-w-0">
-          <div className="whitespace-nowrap" style={{ fontSize: 'clamp(1.25rem, 5.5vw, 2.25rem)' }}>
-            {coupleLeft}
+          <div
+            className="whitespace-nowrap"
+            style={{ fontSize: 'clamp(1.25rem, 5.5vw, 2.25rem)' }}
+          >
+            {ceremonyKey === 'vuquy' ? coupleRight : coupleLeft}
           </div>
           <div
             className="my-1 md:my-2"
@@ -143,26 +146,39 @@ function InvitationCard({
           >
             &amp;
           </div>
-          <div className="whitespace-nowrap" style={{ fontSize: 'clamp(1.25rem, 5.5vw, 2.25rem)' }}>
-            {coupleRight}
+          <div
+            className="whitespace-nowrap"
+            style={{ fontSize: 'clamp(1.25rem, 5.5vw, 2.25rem)' }}
+          >
+            {ceremonyKey === 'vuquy' ? coupleLeft : coupleRight}
           </div>
         </div>
       </div>
 
       {/* Two families */}
       <div className="mt-8 md:mt-10 grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 max-w-[40rem] mx-auto">
+        {ceremonyKey === 'vuquy' ? (
+          <FamilyBlock
+            label={t('invite.familyBride')}
+            father={inv.brideFather}
+            mother={inv.brideMother}
+            hometown={inv.brideHometown}
+          />
+        ) : null}
         <FamilyBlock
           label={t('invite.familyGroom')}
           father={inv.groomFather}
           mother={inv.groomMother}
           hometown={inv.groomHometown}
         />
-        <FamilyBlock
-          label={t('invite.familyBride')}
-          father={inv.brideFather}
-          mother={inv.brideMother}
-          hometown={inv.brideHometown}
-        />
+        {ceremonyKey === 'vuquy' ? null : (
+          <FamilyBlock
+            label={t('invite.familyBride')}
+            father={inv.brideFather}
+            mother={inv.brideMother}
+            hometown={inv.brideHometown}
+          />
+        )}
       </div>
 
       {/* Banquet line */}
@@ -276,7 +292,10 @@ export default function WeddingInvite() {
       <div className="max-w-2xl lg:max-w-7xl mx-auto px-2">
         <FadeIn className="text-center max-w-2xl mx-auto">
           <p className="eyebrow text-bold">{t('invitation.eyebrow')}</p>
-          <p className="mt-4 leading-relaxed font-script text-3xl font-semibold text-accent" style={{letterSpacing: '1px'}}>
+          <p
+            className="mt-4 leading-relaxed font-script text-3xl font-semibold text-accent"
+            style={{ letterSpacing: '1px' }}
+          >
             {found ? invitationName : ''}
           </p>
         </FadeIn>

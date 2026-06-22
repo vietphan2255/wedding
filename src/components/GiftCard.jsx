@@ -165,23 +165,16 @@ export function GiftBlock({
   const downloadName = info.qrUrl ? downloadNameFor(info.qrUrl) : 'qr.png'
 
   return (
-    <article className="relative h-full rounded-3xl border border-line bg-surface p-6 md:p-7 overflow-hidden flex flex-col items-center text-center">
-      <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-accent/10 blur-3xl pointer-events-none" />
-
-      <p className="eyebrow text-accent flex items-center gap-2">
-        <Gift size={12} />
-        {title}
-      </p>
-
+    <article className="relative h-full rounded-3xl border border-line bg-surface p-0 pb-4 overflow-hidden flex flex-col items-center text-center shadow shadow-xl">
       {hasImage ? (
         <>
           <button
             type="button"
             onClick={() => setZoomed(true)}
             aria-label={tapToZoomLabel}
-            className="group relative mt-5 block w-full max-w-[340px] mx-auto cursor-zoom-in rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+            className="group relative block w-full max-w-[476px] mx-auto cursor-zoom-in rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
           >
-            <div className="relative aspect-[2/3] rounded-2xl bg-ink overflow-hidden ring-1 ring-line/30 shadow-xl">
+            <div className="relative aspect-[2/3] w-full rounded-t-2xl bg-ink overflow-hidden ring-1 ring-line/30 shadow-xl">
               <img
                 src={info.qrUrl}
                 alt={qrLabel}
@@ -197,7 +190,7 @@ export function GiftBlock({
           </button>
 
           <div className="mt-5 space-y-1">
-            {info.holder && <p className="text-sm text-muted">{info.holder}</p>}
+            {info.holder && <p className="text-sm text-muted font-bold">{info.holder}</p>}
             {info.account && (
               <div className="flex items-center justify-center gap-3 flex-wrap">
                 <span className="font-display text-xl tabular-nums tracking-wider">
@@ -284,13 +277,15 @@ export default function GiftCard() {
   }
 
   return (
-    <section id="gifts" data-cursor-id="gifts" className="section-padding relative bg-bg overflow-hidden">
+    <section
+      id="gifts"
+      data-cursor-id="gifts"
+      className="section-padding relative bg-bg overflow-hidden"
+    >
       <div className="max-w-5xl mx-auto px-6">
         <FadeIn className="text-center max-w-2xl mx-auto">
           <p className="eyebrow">{t('gift.eyebrow')}</p>
-          <h2 className="font-display mt-3 text-4xl md:text-6xl">
-            {t('gift.title')}
-          </h2>
+          <h2 className="font-display mt-3 text-4xl md:text-6xl">{t('gift.title')}</h2>
           <SectionSubtitle text={t('gift.subhead')} />
           <div className="divider-leaf my-6">
             <Gift size={16} className="text-accent" />
@@ -300,10 +295,10 @@ export default function GiftCard() {
 
         <div className="mt-12 grid md:grid-cols-2 gap-5 md:gap-6">
           <FadeIn delay={0.05}>
-            <GiftBlock title={t('gift.bride')} info={gifts.bride || {}} {...labels} />
+            <GiftBlock title={t('gift.groom')} info={gifts.groom || {}} {...labels} />
           </FadeIn>
           <FadeIn delay={0.12}>
-            <GiftBlock title={t('gift.groom')} info={gifts.groom || {}} {...labels} />
+            <GiftBlock title={t('gift.bride')} info={gifts.bride || {}} {...labels} />
           </FadeIn>
         </div>
       </div>

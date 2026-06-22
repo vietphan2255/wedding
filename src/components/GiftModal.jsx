@@ -87,8 +87,8 @@ export default function GiftModal({ open, onClose }) {
             </div>
 
             <div className="mt-8 grid md:grid-cols-2 gap-5">
-              <GiftBlock title={t('gift.bride')} info={gifts.bride || {}} {...labels} />
               <GiftBlock title={t('gift.groom')} info={gifts.groom || {}} {...labels} />
+              <GiftBlock title={t('gift.bride')} info={gifts.bride || {}} {...labels} />
             </div>
           </motion.div>
         </motion.div>
