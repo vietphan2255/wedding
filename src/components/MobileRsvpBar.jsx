@@ -80,11 +80,9 @@ export default function MobileRsvpBar({ onGiftClick }) {
             {/* Equal action tabs */}
             <a href="#wishes" className={tabClass} aria-label={t('nav.wishes')}>
               <Heart size={18} />
-              <span className={tabLabelClass}>{t('nav.wishes')}</span>
             </a>
             <a href="#rsvp" className={tabClass} aria-label={t('nav.rsvp')}>
               <Send size={18} />
-              <span className={tabLabelClass}>{t('nav.rsvp')}</span>
             </a>
             {giftsEnabled && onGiftClick && (
               <button
@@ -94,7 +92,6 @@ export default function MobileRsvpBar({ onGiftClick }) {
                 aria-label={t('nav.gift')}
               >
                 <Gift size={18} />
-                <span className={tabLabelClass}>{t('nav.gift')}</span>
               </button>
             )}
             {musicEnabled && (
@@ -108,7 +105,6 @@ export default function MobileRsvpBar({ onGiftClick }) {
                 <span className="h-[18px] flex items-center justify-center">
                   <MusicGlyph playing={playing} />
                 </span>
-                <span className={tabLabelClass}>{t('nav.music')}</span>
               </button>
             )}
           </div>

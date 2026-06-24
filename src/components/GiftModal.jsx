@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Gift } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -12,6 +12,8 @@ export default function GiftModal({ open, onClose }) {
   const { t } = useLanguage()
   const { config } = useWeddingConfig()
   const gifts = config.gifts || {}
+  // Which account to show on phones (desktop shows both side by side).
+  const [side, setSide] = useState('groom')
 
   // Esc to close + lock background scroll while the modal is open.
   useEffect(() => {
@@ -75,20 +77,47 @@ export default function GiftModal({ open, onClose }) {
               <X size={18} />
             </button>
 
-            <div className="text-center max-w-xl mx-auto">
-              <p className="eyebrow">{t('gift.eyebrow')}</p>
-              <h2 className="font-display mt-2 text-3xl md:text-4xl">
-                {t('gift.title')}
-              </h2>
-              <div className="divider-leaf my-4">
-                <Gift size={16} className="text-accent" />
-              </div>
-              <p className="text-muted text-sm">{t('gift.subtitle')}</p>
+            {/* Minimal title — keeps the cards as high as possible on desktop */}
+            <div className="flex items-center justify-center gap-2 pr-10">
+              <Gift size={18} className="text-accent" />
+              <h2 className="font-display text-2xl">{t('gift.title')}</h2>
             </div>
 
-            <div className="mt-8 grid md:grid-cols-2 gap-5">
+            {/* Desktop: both accounts side by side */}
+            <div className="hidden md:grid md:grid-cols-2 gap-5 mt-6">
               <GiftBlock title={t('gift.groom')} info={gifts.groom || {}} {...labels} />
               <GiftBlock title={t('gift.bride')} info={gifts.bride || {}} {...labels} />
+            </div>
+
+            {/* Mobile: one account at a time via a bride/groom segmented control */}
+            <div className="md:hidden mt-6">
+              <div className="flex justify-center">
+                <div className="inline-flex rounded-full border border-line bg-surface p-1">
+                  {[
+                    { key: 'groom', label: t('gift.tabGroom') },
+                    { key: 'bride', label: t('gift.tabBride') },
+                  ].map((s) => (
+                    <button
+                      key={s.key}
+                      type="button"
+                      onClick={() => setSide(s.key)}
+                      aria-pressed={side === s.key}
+                      className={`rounded-full px-5 py-2 text-sm tracking-wide transition ${
+                        side === s.key ? 'bg-accent text-bg' : 'text-ink/70 hover:text-ink'
+                      }`}
+                    >
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-5">
+                <GiftBlock
+                  title={side === 'groom' ? t('gift.groom') : t('gift.bride')}
+                  info={(side === 'groom' ? gifts.groom : gifts.bride) || {}}
+                  {...labels}
+                />
+              </div>
             </div>
           </motion.div>
         </motion.div>

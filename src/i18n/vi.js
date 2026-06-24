@@ -157,7 +157,7 @@ export default {
   // Footer
   'footer.thanksEyebrow': 'Lời cảm ơn',
   'footer.thankyou':
-    'Cảm ơn bạn đã dành thời gian chung vui cùng chúng mình trong ngày trọng đại — sự hiện diện và những lời chúc của bạn là món quà quý giá nhất.',
+    'Cảm ơn bạn đã dành thời gian chung vui cùng chúng mình trong ngày trọng đại\nSự hiện diện và những lời chúc của bạn là món quà quý giá nhất.',
   'footer.tagline': 'Thực hiện bằng cả trái tim · 2026',
   'footer.contact': 'Mọi thắc mắc xin liên hệ',
 
@@ -180,6 +180,8 @@ export default {
     'Sự có mặt của bạn đã là món quà lớn nhất — nhưng nếu bạn muốn gửi mừng cưới, đây là thông tin tài khoản.',
   'gift.bride': 'Tài khoản cô dâu',
   'gift.groom': 'Tài khoản chú rể',
+  'gift.tabGroom': 'Chú rể',
+  'gift.tabBride': 'Cô dâu',
   'gift.bank': 'Ngân hàng',
   'gift.holder': 'Chủ tài khoản',
   'gift.account': 'Số tài khoản',

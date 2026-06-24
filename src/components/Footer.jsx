@@ -17,7 +17,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 py-14 text-center">
         <FadeIn>
           <p className="eyebrow">{t('footer.thanksEyebrow')}</p>
-          <p className="font-display mt-4 text-2xl md:text-3xl leading-relaxed text-ink/90 max-w-2xl mx-auto">
+          <p className="font-script-vn font-thin mt-4 text-xl md:text-3xl leading-relaxed text-muted/90 max-w-4xl mx-auto whitespace-pre-line">
             {t('footer.thankyou')}
           </p>
           <div className="divider-leaf my-8">
