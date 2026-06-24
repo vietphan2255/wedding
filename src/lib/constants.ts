@@ -17,3 +17,8 @@ export const SMOOTH_SCROLL_IDLE_VELOCITY = 0.05
 // Gallery marquee baseline drift per row, in px/sec. Sign flips per row so
 // the two rows scroll in opposite directions.
 export const GALLERY_BASE_VELOCITY = 50
+
+// Minimum photos a line must have before the gallery honors the explicit
+// Line 1 / Line 2 split. If either line has fewer, both rows fall back to a
+// merged even/odd split so neither marquee looks sparse.
+export const GALLERY_MIN_PER_LINE = 10

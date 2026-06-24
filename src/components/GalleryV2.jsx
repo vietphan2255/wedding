@@ -15,7 +15,7 @@ import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import useFocusTrap from '../hooks/useFocusTrap'
-import { GALLERY_BASE_VELOCITY } from '../lib/constants'
+import { GALLERY_BASE_VELOCITY, GALLERY_MIN_PER_LINE } from '../lib/constants'
 import SplitText from './fx/SplitText.jsx'
 import SectionSubtitle from './SectionSubtitle.jsx'
 
@@ -190,11 +190,22 @@ export default function Gallery() {
   })
 
   // Split photos into two rows, preserving each photo's global index for the
-  // lightbox.
+  // lightbox. When both editor-assigned lines are well stocked we honor the
+  // split (Line 1 → top row, Line 2 → bottom row); otherwise we fall back to a
+  // merged even/odd split so neither marquee row looks sparse.
   const [rowA, rowB] = useMemo(() => {
+    const indexed = photos.map((p, i) => ({ ...p, globalIndex: i }))
+    const line1 = indexed.filter((p) => (p.line === 2 ? 2 : 1) === 1)
+    const line2 = indexed.filter((p) => p.line === 2)
+    if (
+      line1.length >= GALLERY_MIN_PER_LINE &&
+      line2.length >= GALLERY_MIN_PER_LINE
+    ) {
+      return [line1, line2]
+    }
     const a = []
     const b = []
-    photos.forEach((p, i) => (i % 2 ? b : a).push({ ...p, globalIndex: i }))
+    indexed.forEach((p, i) => (i % 2 ? b : a).push(p))
     return [a, b]
   }, [photos])
 

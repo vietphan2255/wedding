@@ -68,6 +68,9 @@ export interface StoryItem extends OrderedItem {
 export interface Photo extends OrderedItem {
   src: string
   tall: boolean
+  // Which gallery marquee row this photo belongs to. Missing or !== 2 ⇒ Line 1,
+  // so photos saved before this field existed fall back to the first row.
+  line?: 1 | 2
   placeholder?: string
 }
 
