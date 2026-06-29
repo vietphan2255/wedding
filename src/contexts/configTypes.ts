@@ -135,26 +135,29 @@ export interface Effects {
   petalColor: string // hex like '#e58aa0'; '' = use the theme accent color
 }
 
-// One travel pass of the mobile FloatingGift effect. Slot A is the left→right
-// pass ("enters from left"); slot B is the right→left pass ("enters from
-// right"). An empty `image` means that direction is unconfigured — the runtime
-// reuses the other slot's image, horizontally mirrored. Both empty ⇒ the effect
-// renders nothing.
-export interface FloatingGiftSlot {
-  image: string // Cloudinary URL ('' = this direction not configured)
+// One travel pass of the mobile effect. Slot A is the left→right pass ("enters
+// from left"); slot B is the right→left pass ("enters from right"). An empty
+// `image` means that direction is unconfigured — the runtime reuses the other
+// slot's image, horizontally mirrored. Both empty ⇒ the effect renders nothing.
+export interface MobileEffectSlot {
+  image: string // flying sprite Cloudinary URL ('' = this direction not configured)
   size: number // rendered WIDTH in px (height auto by aspect ratio)
   offset: number // px gap between the image bottom and the dock top
   speed: number // travel speed in px/sec (viewport-width independent)
   wait: number // pause off-screen at the edge before entering, in seconds
+  // Character-script modal shown when this slot's sprite is tapped:
+  character: string // portrait image URL ('' = fall back to the flying `image`)
+  name: string // optional character name plate ('' = hidden)
+  script: string[] // dialogue lines the visitor taps through ([] = none)
 }
 
-// Mobile-only decorative gift that ping-pongs across the bottom lane, just above
-// the MobileRsvpBar dock. Mirrors the Gifts slice shape (top-level `enabled` +
-// two nested children) so it gets the same per-field default merge.
-export interface FloatingGift {
+// Mobile-only decorative effect: a sprite that ping-pongs across the bottom lane,
+// just above the MobileRsvpBar dock. Mirrors the Gifts slice shape (top-level
+// `enabled` + two nested children) so it gets the same per-field default merge.
+export interface MobileEffect {
   enabled: boolean // master on/off (keeps images/settings when off)
-  slotA: FloatingGiftSlot // left → right
-  slotB: FloatingGiftSlot // right → left
+  slotA: MobileEffectSlot // left → right
+  slotB: MobileEffectSlot // right → left
 }
 
 // Per-section GIF cursor. Elements carry `data-cursor-id="<cursorId>"`; the
@@ -248,7 +251,7 @@ export interface WeddingConfig {
   faqs: Faq[]
   invitation: Invitation
   effects: Effects
-  floatingGift: FloatingGift
+  mobileEffect: MobileEffect
   cursors: CursorConfig[]
   qr: Qr
 }

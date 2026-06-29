@@ -11,13 +11,14 @@
 
 import {
   DEFAULT_CONFIG,
-  DEFAULT_FLOATING_GIFT,
+  DEFAULT_MOBILE_EFFECT,
   DEFAULT_GIFTS,
   decodeLabelMap,
   sortByOrder,
   toArray,
+  toLines,
 } from './configDefaults'
-import type { WeddingConfig, OrderedItem, Labels, Gifts, FloatingGift, FloatingGiftSlot } from './configTypes'
+import type { WeddingConfig, OrderedItem, Labels, Gifts, MobileEffect, MobileEffectSlot } from './configTypes'
 
 // Each variant's `default` is intentionally loose — the kind dispatches to a
 // merge function that re-narrows. This keeps the table declarative without
@@ -27,7 +28,7 @@ type SliceDef =
   | { kind: 'labels'; default: Labels }
   | { kind: 'nested'; default: unknown; children: string[] }
   | { kind: 'gifts'; default: Gifts }
-  | { kind: 'floatingGift'; default: FloatingGift }
+  | { kind: 'mobileEffect'; default: MobileEffect }
   | { kind: 'list'; default: OrderedItem[] }
 
 const SLICE_DEFS: Record<keyof WeddingConfig, SliceDef> = {
@@ -44,7 +45,7 @@ const SLICE_DEFS: Record<keyof WeddingConfig, SliceDef> = {
   story:      { kind: 'list',    default: DEFAULT_CONFIG.story },
   gallery:    { kind: 'list',    default: DEFAULT_CONFIG.gallery },
   effects:    { kind: 'shallow', default: DEFAULT_CONFIG.effects },
-  floatingGift: { kind: 'floatingGift', default: DEFAULT_FLOATING_GIFT },
+  mobileEffect: { kind: 'mobileEffect', default: DEFAULT_MOBILE_EFFECT },
   cursors:    { kind: 'list',    default: DEFAULT_CONFIG.cursors },
   qr:         { kind: 'shallow', default: DEFAULT_CONFIG.qr },
 }
@@ -83,18 +84,20 @@ function mergeGifts(def: Gifts, data: unknown): Gifts {
   }
 }
 
-// FloatingGift has a top-level `enabled` flag plus nested slotA/slotB blocks —
-// same shape as gifts, so missing per-slot fields fall back to defaults.
-function mergeSlot(def: FloatingGiftSlot, data: unknown): FloatingGiftSlot {
-  return { ...def, ...((data || {}) as Partial<FloatingGiftSlot>) }
+// MobileEffect has a top-level `enabled` flag plus nested slotA/slotB blocks —
+// same shape as gifts, so missing per-slot fields fall back to defaults. `script`
+// is coerced to an array because Firebase stores arrays as objects sometimes.
+function mergeMobileEffectSlot(def: MobileEffectSlot, data: unknown): MobileEffectSlot {
+  const d = (data || {}) as Partial<MobileEffectSlot>
+  return { ...def, ...d, script: toLines('script' in d ? d.script : def.script) }
 }
 
-function mergeFloatingGift(def: FloatingGift, data: unknown): FloatingGift {
-  const d = (data || {}) as Partial<FloatingGift>
+function mergeMobileEffect(def: MobileEffect, data: unknown): MobileEffect {
+  const d = (data || {}) as Partial<MobileEffect>
   return {
     enabled: typeof d.enabled === 'boolean' ? d.enabled : def.enabled,
-    slotA: mergeSlot(def.slotA, d.slotA),
-    slotB: mergeSlot(def.slotB, d.slotB),
+    slotA: mergeMobileEffectSlot(def.slotA, d.slotA),
+    slotB: mergeMobileEffectSlot(def.slotB, d.slotB),
   }
 }
 
@@ -111,7 +114,7 @@ function mergeSlice(def: SliceDef, data: unknown): unknown {
     case 'labels':  return mergeLabels(def.default, data)
     case 'nested':  return mergeNested(def.default, data, def.children)
     case 'gifts':   return mergeGifts(def.default, data)
-    case 'floatingGift': return mergeFloatingGift(def.default, data)
+    case 'mobileEffect': return mergeMobileEffect(def.default, data)
     case 'list':    return mergeList(def.default, data)
   }
 }

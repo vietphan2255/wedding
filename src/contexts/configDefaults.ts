@@ -2,7 +2,7 @@
 // pipeline and the admin draft system. Lives in its own module so the
 // WeddingConfigContext file stays focused on React subscription wiring.
 
-import type { Common, CursorConfig, Faq, FloatingGift, FloatingGiftSlot, Gifts, Labels, OrderedItem, WeddingConfig } from './configTypes'
+import type { Common, CursorConfig, Faq, Gifts, Labels, MobileEffect, MobileEffectSlot, OrderedItem, WeddingConfig } from './configTypes'
 
 // Seed one starter cursor config per wired section id (see CustomCursor +
 // the data-cursor-id attributes in the section components). Empty image →
@@ -55,19 +55,32 @@ export const DEFAULT_GIFTS: Gifts = {
 }
 
 // Both slot images empty by default → the effect is invisible until an admin
-// uploads one (see resolveLeg in FloatingGift). Speed in px/sec, size = width.
-const FLOATING_GIFT_SLOT_DEFAULT: FloatingGiftSlot = {
+// uploads one (see resolveLeg in MobileEffect). Speed in px/sec, size = width.
+const MOBILE_EFFECT_SLOT_DEFAULT: MobileEffectSlot = {
   image: '',
   size: 72,
   offset: 8,
   speed: 60,
   wait: 1.5,
+  character: '',
+  name: '',
+  script: [],
 }
 
-export const DEFAULT_FLOATING_GIFT: FloatingGift = {
+export const DEFAULT_MOBILE_EFFECT: MobileEffect = {
   enabled: true,
-  slotA: { ...FLOATING_GIFT_SLOT_DEFAULT },
-  slotB: { ...FLOATING_GIFT_SLOT_DEFAULT },
+  slotA: { ...MOBILE_EFFECT_SLOT_DEFAULT },
+  slotB: { ...MOBILE_EFFECT_SLOT_DEFAULT },
+}
+
+// Coerce a stored value into a string[]. Firebase Realtime DB returns arrays as
+// objects when keys aren't contiguous, so tolerate both shapes (used by the
+// mobileEffect script lines on read and on admin save).
+export function toLines(x: unknown): string[] {
+  if (Array.isArray(x)) return x.filter((s): s is string => typeof s === 'string')
+  if (x && typeof x === 'object')
+    return Object.values(x as Record<string, unknown>).filter((s): s is string => typeof s === 'string')
+  return []
 }
 
 export const DEFAULT_FAQS: Faq[] = [
@@ -237,7 +250,7 @@ export const DEFAULT_CONFIG: WeddingConfig = {
     petalSpeed: 1,
     petalColor: '',
   },
-  floatingGift: DEFAULT_FLOATING_GIFT,
+  mobileEffect: DEFAULT_MOBILE_EFFECT,
   cursors: DEFAULT_CURSORS,
   qr: {
     link: '',

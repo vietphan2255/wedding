@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { motion, useAnimationControls, useReducedMotion } from 'framer-motion'
 import useIsPhone from '../hooks/useIsPhone'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
-import { useLanguage } from '../contexts/LanguageContext'
+import CharacterScriptModal from './CharacterScriptModal.jsx'
 
 // Px the MobileRsvpBar dock occupies from the viewport bottom (≈60–70px bar +
 // its 12px bottom padding). The gift floats this far up PLUS the active leg's
@@ -14,56 +14,53 @@ const DOCK_RESERVED = 72
 const MIN_SPEED = 10
 
 /**
- * Resolve which image + settings a travel leg uses, applying the single-image
- * mirror fallback. `dir` is 'A' (left→right) or 'B' (right→left). A leg prefers
- * its own slot's image; if that's empty it borrows the other slot's image,
- * horizontally mirrored, along with that slot's size/offset/speed/wait. Returns
- * null when neither slot has an image (effect off). Exported for unit tests.
+ * Resolve which sprite + settings + modal content a travel leg uses, applying
+ * the single-image mirror fallback. `dir` is 'A' (left→right) or 'B'
+ * (right→left). A leg prefers its own slot's image; if that's empty it borrows
+ * the other slot's image, horizontally mirrored, along with that slot's
+ * settings AND its character/name/script. The modal `character` falls back to
+ * the flying sprite when no separate portrait is set. Returns null when neither
+ * slot has an image (effect off). Exported for unit tests.
  */
 export function resolveLeg(dir, fg) {
   const own = dir === 'A' ? fg.slotA : fg.slotB
   const other = dir === 'A' ? fg.slotB : fg.slotA
-  if ((own?.image || '').trim()) {
-    return {
-      src: own.image.trim(),
-      flip: false,
-      size: own.size,
-      offset: own.offset,
-      speed: own.speed,
-      wait: own.wait,
-    }
-  }
-  if ((other?.image || '').trim()) {
-    return {
-      src: other.image.trim(),
-      flip: true,
-      size: other.size,
-      offset: other.offset,
-      speed: other.speed,
-      wait: other.wait,
-    }
-  }
+  const fromSlot = (slot, flip) => ({
+    src: slot.image.trim(),
+    flip,
+    size: slot.size,
+    offset: slot.offset,
+    speed: slot.speed,
+    wait: slot.wait,
+    // Character-script modal content (shown on tap).
+    character: (slot.character || '').trim() || slot.image.trim(),
+    name: (slot.name || '').trim(),
+    script: Array.isArray(slot.script) ? slot.script : [],
+  })
+  if ((own?.image || '').trim()) return fromSlot(own, false)
+  if ((other?.image || '').trim()) return fromSlot(other, true)
   return null
 }
 
 /**
- * Mobile-only decorative gift that ping-pongs across the bottom lane, just above
- * the MobileRsvpBar dock. One sprite at a time: it enters off-left, crosses to
- * off-right, pauses, then returns, forever. Image/settings swap per leg.
- *
- * @param {{ onGiftClick?: () => void }} props `onGiftClick` opens the gift modal.
+ * Mobile-only decorative effect: a sprite that ping-pongs across the bottom
+ * lane, just above the MobileRsvpBar dock. One sprite at a time: it enters
+ * off-left, crosses to off-right, pauses, then returns, forever. Image/settings
+ * swap per leg. Tapping the sprite opens a character-script modal configured for
+ * that leg's slot.
  */
-export default function FloatingGift({ onGiftClick }) {
+export default function MobileEffect() {
   const { config } = useWeddingConfig()
-  const { t } = useLanguage()
   const reduce = useReducedMotion()
   const isPhone = useIsPhone()
   const controls = useAnimationControls()
   const [leg, setLeg] = useState('A') // which pass is currently on screen
   const [tabHidden, setTabHidden] = useState(false)
   const [geomKey, setGeomKey] = useState(0) // bump on resize → re-run the loop
+  // Snapshot of the leg that was tapped, driving the character-script modal.
+  const [modal, setModal] = useState(null)
 
-  const fg = config.floatingGift
+  const fg = config.mobileEffect
   const legA = useMemo(() => (fg ? resolveLeg('A', fg) : null), [fg])
   const legB = useMemo(() => (fg ? resolveLeg('B', fg) : null), [fg])
 
@@ -142,33 +139,46 @@ export default function FloatingGift({ onGiftClick }) {
   const active = leg === 'A' ? legA : legB
 
   return (
-    <motion.div
-      animate={controls}
-      initial={{ x: -legA.size }} // parked off-left before the first frame
-      className="md:hidden fixed left-0 z-[45] pointer-events-none will-change-transform"
-      style={{ bottom: DOCK_RESERVED + (active.offset || 0) }}
-    >
-      {/* Only the sprite is a tap target; the lane stays pointer-events-none so
-          it never blocks the dock or page content underneath. */}
-      <button
-        type="button"
-        onClick={onGiftClick}
-        aria-label={t('nav.gift')}
-        className="pointer-events-auto block active:scale-95 transition-transform"
+    <>
+      <motion.div
+        animate={controls}
+        initial={{ x: -legA.size }} // parked off-left before the first frame
+        className="md:hidden fixed left-0 z-[45] pointer-events-none will-change-transform"
+        style={{ bottom: DOCK_RESERVED + (active.offset || 0) }}
       >
-        <img
-          src={active.src}
-          alt=""
-          draggable={false}
-          decoding="async"
-          style={{
-            width: active.size,
-            height: 'auto',
-            display: 'block',
-            transform: active.flip ? 'scaleX(-1)' : undefined,
-          }}
-        />
-      </button>
-    </motion.div>
+        {/* Only the sprite is a tap target; the lane stays pointer-events-none so
+            it never blocks the dock or page content underneath. Tapping opens the
+            character-script modal for the tapped leg's slot. */}
+        <button
+          type="button"
+          onClick={() =>
+            setModal({ image: active.character, name: active.name, lines: active.script })
+          }
+          aria-label={active.name || 'Open message'}
+          className="pointer-events-auto block active:scale-95 transition-transform"
+        >
+          <img
+            src={active.src}
+            alt=""
+            draggable={false}
+            decoding="async"
+            style={{
+              width: active.size,
+              height: 'auto',
+              display: 'block',
+              transform: active.flip ? 'scaleX(-1)' : undefined,
+            }}
+          />
+        </button>
+      </motion.div>
+
+      <CharacterScriptModal
+        open={Boolean(modal)}
+        image={modal?.image}
+        name={modal?.name}
+        lines={modal?.lines || []}
+        onClose={() => setModal(null)}
+      />
+    </>
   )
 }

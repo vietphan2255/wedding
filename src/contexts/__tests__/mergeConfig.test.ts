@@ -71,30 +71,41 @@ describe('mergeConfig', () => {
     expect(result.venues.thanhhon.mapEmbed).toBe(DEFAULT_CONFIG.venues.thanhhon.mapEmbed)
   })
 
-  it('falls back to default floatingGift when the slice is missing', () => {
+  it('falls back to default mobileEffect when the slice is missing', () => {
     const result = mergeConfig({ common: { coupleNameLeft: 'Alice' } })
-    expect(result.floatingGift).toEqual(DEFAULT_CONFIG.floatingGift)
+    expect(result.mobileEffect).toEqual(DEFAULT_CONFIG.mobileEffect)
   })
 
-  it('partial floatingGift merge fills slot defaults and keeps the other slot', () => {
-    const result = mergeConfig({ floatingGift: { slotA: { image: 'x.png' } } })
-    expect(result.floatingGift.slotA.image).toBe('x.png')
+  it('partial mobileEffect merge fills slot defaults and keeps the other slot', () => {
+    const result = mergeConfig({ mobileEffect: { slotA: { image: 'x.png' } } })
+    expect(result.mobileEffect.slotA.image).toBe('x.png')
     // Missing slotA fields fall back to defaults
-    expect(result.floatingGift.slotA.size).toBe(DEFAULT_CONFIG.floatingGift.slotA.size)
-    expect(result.floatingGift.slotA.speed).toBe(DEFAULT_CONFIG.floatingGift.slotA.speed)
+    expect(result.mobileEffect.slotA.size).toBe(DEFAULT_CONFIG.mobileEffect.slotA.size)
+    expect(result.mobileEffect.slotA.speed).toBe(DEFAULT_CONFIG.mobileEffect.slotA.speed)
+    // New per-slot modal fields default
+    expect(result.mobileEffect.slotA.character).toBe('')
+    expect(result.mobileEffect.slotA.name).toBe('')
+    expect(result.mobileEffect.slotA.script).toEqual([])
     // slotB stays fully default
-    expect(result.floatingGift.slotB).toEqual(DEFAULT_CONFIG.floatingGift.slotB)
+    expect(result.mobileEffect.slotB).toEqual(DEFAULT_CONFIG.mobileEffect.slotB)
   })
 
-  it('preserves floatingGift.enabled === false', () => {
-    const result = mergeConfig({ floatingGift: { enabled: false } })
-    expect(result.floatingGift.enabled).toBe(false)
-  })
-
-  it('uses default floatingGift.enabled when value is not boolean', () => {
+  it('coerces a Firebase-style object script into a string array', () => {
     const result = mergeConfig({
-      floatingGift: { enabled: 'yes' as unknown as boolean },
+      mobileEffect: { slotA: { script: { 0: 'a', 1: 'b' } as unknown as string[] } },
     })
-    expect(result.floatingGift.enabled).toBe(DEFAULT_CONFIG.floatingGift.enabled)
+    expect(result.mobileEffect.slotA.script).toEqual(['a', 'b'])
+  })
+
+  it('preserves mobileEffect.enabled === false', () => {
+    const result = mergeConfig({ mobileEffect: { enabled: false } })
+    expect(result.mobileEffect.enabled).toBe(false)
+  })
+
+  it('uses default mobileEffect.enabled when value is not boolean', () => {
+    const result = mergeConfig({
+      mobileEffect: { enabled: 'yes' as unknown as boolean },
+    })
+    expect(result.mobileEffect.enabled).toBe(DEFAULT_CONFIG.mobileEffect.enabled)
   })
 })

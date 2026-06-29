@@ -50,7 +50,7 @@ import FooterSection from './sections/FooterSection'
 import RsvpLabelsSection from './sections/RsvpLabelsSection'
 import WishesLabelsSection from './sections/WishesLabelsSection'
 import EffectsSection from './sections/EffectsSection'
-import FloatingGiftSection from './sections/FloatingGiftSection'
+import MobileEffectSection from './sections/MobileEffectSection'
 import CursorsSection from './sections/CursorsSection'
 import QrCodeSection from './sections/QrCodeSection'
 import { DraftConfigProvider } from './DraftConfigContext'
@@ -94,10 +94,10 @@ const GROUPS = [
       { id: 'footer', label: 'Footer', icon: Layout, Component: FooterSection },
       { id: 'effects', label: 'Effects', icon: MousePointer2, Component: EffectsSection },
       {
-        id: 'floating-gift',
-        label: 'Floating gift',
+        id: 'mobile-effect',
+        label: 'Mobile effect',
         icon: PartyPopper,
-        Component: FloatingGiftSection,
+        Component: MobileEffectSection,
       },
       {
         id: 'cursors',

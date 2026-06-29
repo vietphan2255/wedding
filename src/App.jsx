@@ -18,7 +18,7 @@ import FloatingDock from './components/FloatingDock.jsx'
 import ScrollProgress from './components/ScrollProgress.jsx'
 import ParallaxPetals from './components/ParallaxPetals.jsx'
 import MobileRsvpBar from './components/MobileRsvpBar.jsx'
-import FloatingGift from './components/FloatingGift.jsx'
+import MobileEffect from './components/MobileEffect.jsx'
 import GiftModal from './components/GiftModal.jsx'
 import InvitationOverlay from './components/InvitationOverlay.jsx'
 import { MusicProvider } from './contexts/MusicContext.jsx'
@@ -98,7 +98,7 @@ function WeddingSite() {
             <Footer />
             <FloatingDock onGiftClick={() => setGiftOpen(true)} />
             <MobileRsvpBar onGiftClick={() => setGiftOpen(true)} />
-            <FloatingGift onGiftClick={() => setGiftOpen(true)} />
+            <MobileEffect />
             <GiftModal open={giftOpen} onClose={() => setGiftOpen(false)} />
           </WishesProvider>
         </ToastProvider>
