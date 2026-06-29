@@ -70,4 +70,31 @@ describe('mergeConfig', () => {
     expect(result.venues.vuquy.mapEmbed).toBe('https://example.com/embed')
     expect(result.venues.thanhhon.mapEmbed).toBe(DEFAULT_CONFIG.venues.thanhhon.mapEmbed)
   })
+
+  it('falls back to default floatingGift when the slice is missing', () => {
+    const result = mergeConfig({ common: { coupleNameLeft: 'Alice' } })
+    expect(result.floatingGift).toEqual(DEFAULT_CONFIG.floatingGift)
+  })
+
+  it('partial floatingGift merge fills slot defaults and keeps the other slot', () => {
+    const result = mergeConfig({ floatingGift: { slotA: { image: 'x.png' } } })
+    expect(result.floatingGift.slotA.image).toBe('x.png')
+    // Missing slotA fields fall back to defaults
+    expect(result.floatingGift.slotA.size).toBe(DEFAULT_CONFIG.floatingGift.slotA.size)
+    expect(result.floatingGift.slotA.speed).toBe(DEFAULT_CONFIG.floatingGift.slotA.speed)
+    // slotB stays fully default
+    expect(result.floatingGift.slotB).toEqual(DEFAULT_CONFIG.floatingGift.slotB)
+  })
+
+  it('preserves floatingGift.enabled === false', () => {
+    const result = mergeConfig({ floatingGift: { enabled: false } })
+    expect(result.floatingGift.enabled).toBe(false)
+  })
+
+  it('uses default floatingGift.enabled when value is not boolean', () => {
+    const result = mergeConfig({
+      floatingGift: { enabled: 'yes' as unknown as boolean },
+    })
+    expect(result.floatingGift.enabled).toBe(DEFAULT_CONFIG.floatingGift.enabled)
+  })
 })

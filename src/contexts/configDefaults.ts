@@ -2,7 +2,7 @@
 // pipeline and the admin draft system. Lives in its own module so the
 // WeddingConfigContext file stays focused on React subscription wiring.
 
-import type { Common, CursorConfig, Faq, Gifts, Labels, OrderedItem, WeddingConfig } from './configTypes'
+import type { Common, CursorConfig, Faq, FloatingGift, FloatingGiftSlot, Gifts, Labels, OrderedItem, WeddingConfig } from './configTypes'
 
 // Seed one starter cursor config per wired section id (see CustomCursor +
 // the data-cursor-id attributes in the section components). Empty image →
@@ -52,6 +52,22 @@ export const DEFAULT_GIFTS: Gifts = {
     account: '105678105298',
     qrUrl: '/qr/groom.png',
   },
+}
+
+// Both slot images empty by default → the effect is invisible until an admin
+// uploads one (see resolveLeg in FloatingGift). Speed in px/sec, size = width.
+const FLOATING_GIFT_SLOT_DEFAULT: FloatingGiftSlot = {
+  image: '',
+  size: 72,
+  offset: 8,
+  speed: 60,
+  wait: 1.5,
+}
+
+export const DEFAULT_FLOATING_GIFT: FloatingGift = {
+  enabled: true,
+  slotA: { ...FLOATING_GIFT_SLOT_DEFAULT },
+  slotB: { ...FLOATING_GIFT_SLOT_DEFAULT },
 }
 
 export const DEFAULT_FAQS: Faq[] = [
@@ -221,6 +237,7 @@ export const DEFAULT_CONFIG: WeddingConfig = {
     petalSpeed: 1,
     petalColor: '',
   },
+  floatingGift: DEFAULT_FLOATING_GIFT,
   cursors: DEFAULT_CURSORS,
   qr: {
     link: '',
