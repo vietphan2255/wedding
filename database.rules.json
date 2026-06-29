@@ -1,0 +1,60 @@
+{
+  "rules": {
+    "config": {
+      ".read": true,
+      ".write": "auth.uid === 'ADMIN_UID_1' || auth.uid === 'ADMIN_UID_2'"
+    },
+    "rsvps": {
+      ".read": "auth.uid === 'ADMIN_UID_1' || auth.uid === 'ADMIN_UID_2'",
+      "$id": {
+        ".write": "(!data.exists() && newData.exists()) || auth.uid === 'ADMIN_UID_1' || auth.uid === 'ADMIN_UID_2'",
+        ".validate": "newData.hasChildren(['name', 'attending', 'createdAt'])",
+        "name": { ".validate": "newData.isString() && newData.val().length <= 80" },
+        "email": { ".validate": "newData.isString() && newData.val().length <= 120" },
+        "phone": { ".validate": "newData.isString() && newData.val().length <= 40" },
+        "attending": {
+          ".validate": "newData.isString() && newData.val().matches(/^(yes|no)$/)"
+        },
+        "events": {
+          ".validate": "newData.isString() && newData.val().matches(/^(vuquy|thanhhon|both)$/)"
+        },
+        "guests": {
+          ".validate": "(newData.isString() && newData.val().matches(/^(1[0-2]|[1-9])$/)) || (newData.isNumber() && newData.val() >= 1 && newData.val() <= 12)"
+        },
+        "meal": { ".validate": "newData.isString() && newData.val().length <= 80" },
+        "message": { ".validate": "newData.isString() && newData.val().length <= 1000" },
+        "createdAt": { ".validate": "newData.val() != null" },
+        "$other": { ".validate": false }
+      }
+    },
+    "wishes": {
+      ".read": true,
+      "$id": {
+        ".write": "(!data.exists() && newData.exists()) || auth.uid === 'ADMIN_UID_1' || auth.uid === 'ADMIN_UID_2'",
+        ".validate": "newData.hasChildren(['name', 'message', 'createdAt'])",
+        "name": { ".validate": "newData.isString() && newData.val().length <= 60" },
+        "message": { ".validate": "newData.isString() && newData.val().length <= 400" },
+        "createdAt": { ".validate": "newData.val() != null" },
+        "$other": { ".validate": false }
+      }
+    },
+    "guests": {
+      ".read": "auth.uid === 'ADMIN_UID_1' || auth.uid === 'ADMIN_UID_2'",
+      ".write": "auth.uid === 'ADMIN_UID_1' || auth.uid === 'ADMIN_UID_2'",
+      "$code": {
+        ".read": true,
+        ".validate": "newData.hasChildren(['invitationName', 'party'])",
+        "name": { ".validate": "newData.isString() && newData.val().length <= 120" },
+        "invitationName": {
+          ".validate": "newData.isString() && newData.val().length <= 160"
+        },
+        "party": {
+          ".validate": "newData.isString() && newData.val().matches(/^(vuquy|thanhhon|both)$/)"
+        },
+        "order": { ".validate": "newData.isNumber()" },
+        "createdAt": { ".validate": "newData.val() != null" },
+        "$other": { ".validate": false }
+      }
+    }
+  }
+}

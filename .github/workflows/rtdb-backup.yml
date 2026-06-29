@@ -1,0 +1,37 @@
+# Daily off-site backup of the Realtime Database, kept as a private GitHub
+# Actions artifact (NOT committed to the repo — the export contains guest PII
+# and the repo may be public). Recovers from an accidental or malicious wipe of
+# the guests/config nodes (Spark has no built-in scheduled backups).
+#
+# Setup (one time):
+#   1. Run `firebase login:ci` locally and copy the printed token.
+#   2. Repo → Settings → Secrets and variables → Actions → add secret
+#      FIREBASE_TOKEN with that value.
+# Download a backup: repo → Actions → this workflow → a run → Artifacts.
+name: RTDB backup
+
+on:
+  schedule:
+    - cron: '17 19 * * *' # ~02:17 ICT daily (UTC+7)
+  workflow_dispatch: {}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Export Realtime Database
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          npx -y firebase-tools@13 database:get / \
+            --project vp-wedding-a7af4 \
+            --instance vp-wedding-a7af4-default-rtdb \
+            > backup.json
+          echo "Exported $(wc -c < backup.json) bytes"
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtdb-backup-${{ github.run_id }}
+          path: backup.json
+          retention-days: 30

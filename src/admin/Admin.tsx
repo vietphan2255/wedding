@@ -30,7 +30,7 @@ import {
 } from 'lucide-react'
 import { isConfigured } from '../firebase/config'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
-import AdminAuth, { isAuthed, clearAuth } from './AdminAuth'
+import AdminAuth, { useAuthUser, clearAuth } from './AdminAuth'
 import DatesSection from './sections/DatesSection'
 import VenuesSection from './sections/VenuesSection'
 import InvitationSection from './sections/InvitationSection'
@@ -76,7 +76,12 @@ const GROUPS = [
     label: 'Sections',
     items: [
       { id: 'hero', label: 'Hero', icon: Sparkles, Component: HeroSection },
-      { id: 'hero-slides', label: 'Hero slideshow', icon: Images, Component: HeroSlidesSection },
+      {
+        id: 'hero-slides',
+        label: 'Hero slideshow',
+        icon: Images,
+        Component: HeroSlidesSection,
+      },
       { id: 'countdown', label: 'Countdown', icon: Timer, Component: CountdownSection },
       { id: 'story', label: 'Story', icon: Heart, Component: StorySection },
       { id: 'timeline', label: 'Timeline', icon: MapPin, Component: VenuesSection },
@@ -131,18 +136,28 @@ const GROUPS = [
 const ALL_ITEMS = GROUPS.flatMap((g) => g.items.map((i) => ({ ...i, groupId: g.id })))
 
 export default function Admin() {
-  const [authed, setAuthed] = useState(() => isAuthed())
+  const { user, loading } = useAuthUser()
 
-  if (!authed) return <AdminAuth onSuccess={() => setAuthed(true)} />
+  // Wait for Firebase to rehydrate the session — a sync check would bounce an
+  // already-signed-in admin to the login form on every reload.
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-bg text-muted text-sm">
+        Loading…
+      </div>
+    )
+  }
+
+  if (!user) return <AdminAuth />
 
   return (
     <DraftConfigProvider>
-      <AdminShell onLogout={() => setAuthed(false)} />
+      <AdminShell />
     </DraftConfigProvider>
   )
 }
 
-function AdminShell({ onLogout }) {
+function AdminShell() {
   const [tab, setTab] = useState('common-couple')
   const [openGroups, setOpenGroups] = useState({
     common: true,
@@ -156,8 +171,8 @@ function AdminShell({ onLogout }) {
   const ActiveComponent = active.Component
 
   const logout = () => {
+    // signOut → onAuthStateChanged fires → Admin re-renders to the login screen.
     clearAuth()
-    onLogout()
   }
 
   const toggleGroup = (gid) => setOpenGroups((s) => ({ ...s, [gid]: !s[gid] }))

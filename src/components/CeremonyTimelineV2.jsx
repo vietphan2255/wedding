@@ -10,6 +10,7 @@ import {
   ArrowUpRight,
   Map as MapIcon,
 } from 'lucide-react'
+import { sanitizeUrl } from '../lib/sanitizeUrl'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
@@ -334,9 +335,10 @@ function CeremonyDetails({
                   <div className="rounded-2xl overflow-hidden border border-line aspect-[16/10]">
                     <iframe
                       title={`${name} map`}
-                      src={mapEmbed}
+                      src={sanitizeUrl(mapEmbed)}
                       loading="lazy"
                       referrerPolicy="no-referrer-when-downgrade"
+                      sandbox="allow-scripts allow-same-origin allow-popups"
                       allowFullScreen
                       className="w-full h-full border-0"
                     />

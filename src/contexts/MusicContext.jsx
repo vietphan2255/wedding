@@ -4,6 +4,7 @@ import { Music } from 'lucide-react'
 import { useWeddingConfig } from './WeddingConfigContext'
 import useIsPhone from '../hooks/useIsPhone'
 import useInterval from '../hooks/useInterval'
+import { sanitizeUrl } from '../lib/sanitizeUrl'
 
 // Single source of truth for the background music: one <audio> element plus the
 // autostart/gesture/mute logic, exposed via useMusic() so both the desktop
@@ -135,7 +136,7 @@ export function MusicProvider({ children }) {
       {enabled && (
         <audio
           ref={audioRef}
-          src={music.url}
+          src={sanitizeUrl(music.url)}
           loop
           preload="none"
           onEnded={() => setPlaying(false)}

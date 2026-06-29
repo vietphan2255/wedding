@@ -50,78 +50,45 @@ npm run dev                  # http://localhost:5173
 > to the console and the guestbook shows demo wishes. Add the env vars to enable real
 > persistence.
 
-## Firebase Realtime Database — rules
+## Firebase Realtime Database — rules & admin auth
 
-Paste these into **Firebase Console → Realtime Database → Rules** so the public can
-write RSVPs and wishes, but nothing else, and reads of the wishes are public while
-RSVPs stay private:
+Security rules are version-controlled in [`database.rules.json`](database.rules.json) and
+deployed (after `firebase login`) with:
 
-```json
-{
-  "rules": {
-    "rsvps": {
-      ".read": false,
-      "$id": {
-        ".write": "!data.exists()",
-        ".validate": "newData.hasChildren(['name', 'attending', 'createdAt'])",
-        "name":       { ".validate": "newData.isString() && newData.val().length <= 80" },
-        "email":      { ".validate": "newData.isString() && newData.val().length <= 120" },
-        "phone":      { ".validate": "newData.isString() && newData.val().length <= 40" },
-        "attending":  { ".validate": "newData.isString() && newData.val().matches(/^(yes|no)$/)" },
-        "events":     { ".validate": "newData.isString() && newData.val().matches(/^(vuquy|thanhhon|both)$/)" },
-        "guests":     { ".validate": "newData.isString() || newData.isNumber()" },
-        "meal":       { ".validate": "newData.isString()" },
-        "message":    { ".validate": "newData.isString() && newData.val().length <= 1000" },
-        "createdAt":  { ".validate": "newData.val() != null" },
-        "$other":     { ".validate": false }
-      }
-    },
-    "wishes": {
-      ".read": true,
-      "$id": {
-        ".write": "!data.exists()",
-        ".validate": "newData.hasChildren(['name', 'message', 'createdAt'])",
-        "name":      { ".validate": "newData.isString() && newData.val().length <= 60" },
-        "message":   { ".validate": "newData.isString() && newData.val().length <= 400" },
-        "createdAt": { ".validate": "newData.val() != null" },
-        "$other":    { ".validate": false }
-      }
-    },
-    "guests": {
-      ".read": true,
-      ".write": true,
-      "$code": {
-        ".validate": "newData.hasChildren(['invitationName', 'party'])",
-        "name":           { ".validate": "newData.isString() && newData.val().length <= 120" },
-        "invitationName": { ".validate": "newData.isString() && newData.val().length <= 160" },
-        "party":          { ".validate": "newData.isString() && newData.val().matches(/^(vuquy|thanhhon|both)$/)" },
-        "order":          { ".validate": "newData.isNumber()" },
-        "createdAt":      { ".validate": "newData.val() != null" },
-        "$other":         { ".validate": false }
-      }
-    }
-  }
-}
+```bash
+npm run deploy:rules   # npx firebase-tools deploy --only database
 ```
 
-RSVPs are private (only the Firebase console / Admin SDK can read them) while
-wishes are publicly readable so the guestbook can stream them live.
+Admin actions require a **real Firebase Auth session**, not a client-side password. Access:
 
-The **guests** node powers personalized `?invite=<code>` links — the public site
-reads a single `guests/<code>` to print the guest's name and highlight their
-ceremony, and the `/admin` → **Guests** screen reads/writes the whole list to
-import and manage it. Like the `config` node, it's read+write so the client-side
-admin can manage it; access is gated by the secret `/admin` URL + password rather
-than by rules. The field validation above still constrains what can be written.
-**Hardening (optional, not yet wired):** add Firebase Auth for the admin, then set
-`guests` `.write` to the authed admin only and expose just `guests/$code` for public
-read — the runtime lookup already reads one record by code, so it keeps working.
+| Node | Public read | Public write | Admin (signed-in admin UID) |
+|---|---|---|---|
+| `config` | ✅ (drives the site) | ❌ | read + write |
+| `guests` | only `guests/$code` (invite lookup) | ❌ | read + write (whole list) |
+| `rsvps` | ❌ | append-only (create new) | read + delete |
+| `wishes` | ✅ (guestbook) | append-only (create new) | read + delete |
+
+Writes are gated on a **specific allow-list** of admin UIDs
+(`auth.uid === 'ADMIN_UID_1' || auth.uid === 'ADMIN_UID_2'`), not `auth != null`,
+because anyone can self-register with the Email/Password provider. One-time setup:
+
+1. **Firebase Console → Authentication** → enable **Email/Password** → create one or more admin users.
+2. Copy each user's **UID** into `database.rules.json` (replace `ADMIN_UID_1` / `ADMIN_UID_2`; add more `|| auth.uid === '…'` clauses for additional admins).
+3. `npm run deploy:rules`.
+
+Per-field `.validate` rules bound the shape/length of every public submission, and a daily
+off-site backup runs via [`.github/workflows/rtdb-backup.yml`](.github/workflows/rtdb-backup.yml)
+(needs a `FIREBASE_TOKEN` repo secret — `firebase login:ci`).
+
+**App Check** (reCAPTCHA v3) blocks scripted abuse / quota-exhaustion DoS and self-signup from
+non-app clients: set `VITE_RECAPTCHA_SITE_KEY`, then enable enforcement on Realtime Database
+(and Authentication) in the Firebase console.
 
 ## Deploy to Vercel
 
 1. Push this repo to GitHub / GitLab.
 2. In Vercel, **Add New Project** → import the repo. Framework preset = **Vite**.
-3. Under **Environment Variables**, add all six values from `.env.example`:
+3. Under **Environment Variables**, add the values from `.env.example`:
    - `VITE_FIREBASE_API_KEY`
    - `VITE_FIREBASE_AUTH_DOMAIN`
    - `VITE_FIREBASE_DATABASE_URL`
@@ -129,8 +96,14 @@ read — the runtime lookup already reads one record by code, so it keeps workin
    - `VITE_FIREBASE_STORAGE_BUCKET`
    - `VITE_FIREBASE_MESSAGING_SENDER_ID`
    - `VITE_FIREBASE_APP_ID`
-4. Deploy. `vercel.json` already rewrites every path to `/index.html` so the SPA
-   never 404s, and `dist/` is the output directory.
+   - `VITE_CLOUDINARY_CLOUD_NAME`, `VITE_CLOUDINARY_UPLOAD_PRESET` (admin uploads)
+   - `VITE_RECAPTCHA_SITE_KEY` (App Check)
+
+   All `VITE_*` vars ship in the public bundle — none are secrets. Scope them to
+   **Production** and disable preview deploys so a branch preview can't expose a
+   second writable client against the same backend.
+4. Deploy. `vercel.json` adds security headers (CSP, `X-Frame-Options`, …) and
+   rewrites every path to `/index.html` so the SPA never 404s; `dist/` is the output.
 
 ## Customizing
 

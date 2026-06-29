@@ -143,7 +143,8 @@ export default function RSVP() {
                   <input
                     type="text"
                     className={fieldClass}
-                    {...register('name', { required: true })}
+                    maxLength={80}
+                    {...register('name', { required: true, maxLength: 80 })}
                   />
                   {errors.name && (
                     <p className="text-xs text-red-500 mt-1">
@@ -154,7 +155,12 @@ export default function RSVP() {
 
                 <div className="md:col-span-2">
                   <label className={labelClass}>{t('rsvp.phone')}</label>
-                  <input type="tel" className={fieldClass} {...register('phone')} />
+                  <input
+                    type="tel"
+                    className={fieldClass}
+                    maxLength={40}
+                    {...register('phone', { maxLength: 40 })}
+                  />
                 </div>
 
                 <div className="md:col-span-2">
@@ -210,7 +216,12 @@ export default function RSVP() {
 
                 <div className="md:col-span-2">
                   <label className={labelClass}>{t('rsvp.message')}</label>
-                  <textarea rows={4} className={fieldClass} {...register('message')} />
+                  <textarea
+                    rows={4}
+                    className={fieldClass}
+                    maxLength={1000}
+                    {...register('message', { maxLength: 1000 })}
+                  />
                 </div>
 
                 <div className="md:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
