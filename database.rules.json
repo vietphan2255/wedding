@@ -2,12 +2,12 @@
   "rules": {
     "config": {
       ".read": true,
-      ".write": "auth.uid === 'ADMIN_UID_1' || auth.uid === 'ADMIN_UID_2'"
+      ".write": "auth != null && (auth.token.email === 'vietphan2255@gmail.com' || auth.token.email === 'edna.thaonguyen21@gmail.com')"
     },
     "rsvps": {
-      ".read": "auth.uid === 'ADMIN_UID_1' || auth.uid === 'ADMIN_UID_2'",
+      ".read": "auth != null && (auth.token.email === 'vietphan2255@gmail.com' || auth.token.email === 'edna.thaonguyen21@gmail.com')",
       "$id": {
-        ".write": "(!data.exists() && newData.exists()) || auth.uid === 'ADMIN_UID_1' || auth.uid === 'ADMIN_UID_2'",
+        ".write": "(!data.exists() && newData.exists()) || auth != null && (auth.token.email === 'vietphan2255@gmail.com' || auth.token.email === 'edna.thaonguyen21@gmail.com')",
         ".validate": "newData.hasChildren(['name', 'attending', 'createdAt'])",
         "name": { ".validate": "newData.isString() && newData.val().length <= 80" },
         "email": { ".validate": "newData.isString() && newData.val().length <= 120" },
@@ -30,7 +30,7 @@
     "wishes": {
       ".read": true,
       "$id": {
-        ".write": "(!data.exists() && newData.exists()) || auth.uid === 'ADMIN_UID_1' || auth.uid === 'ADMIN_UID_2'",
+        ".write": "(!data.exists() && newData.exists()) || auth != null && (auth.token.email === 'vietphan2255@gmail.com' || auth.token.email === 'edna.thaonguyen21@gmail.com')",
         ".validate": "newData.hasChildren(['name', 'message', 'createdAt'])",
         "name": { ".validate": "newData.isString() && newData.val().length <= 60" },
         "message": { ".validate": "newData.isString() && newData.val().length <= 400" },
@@ -39,8 +39,8 @@
       }
     },
     "guests": {
-      ".read": "auth.uid === 'ADMIN_UID_1' || auth.uid === 'ADMIN_UID_2'",
-      ".write": "auth.uid === 'ADMIN_UID_1' || auth.uid === 'ADMIN_UID_2'",
+      ".read": "auth != null && (auth.token.email === 'vietphan2255@gmail.com' || auth.token.email === 'edna.thaonguyen21@gmail.com')",
+      ".write": "auth != null && (auth.token.email === 'vietphan2255@gmail.com' || auth.token.email === 'edna.thaonguyen21@gmail.com')",
       "$code": {
         ".read": true,
         ".validate": "newData.hasChildren(['invitationName', 'party'])",

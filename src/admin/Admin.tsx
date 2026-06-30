@@ -31,6 +31,7 @@ import {
 import { isConfigured } from '../firebase/config'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import AdminAuth, { useAuthUser, clearAuth } from './AdminAuth'
+import { isAllowedAdminEmail } from '../lib/adminEmails'
 import DatesSection from './sections/DatesSection'
 import VenuesSection from './sections/VenuesSection'
 import InvitationSection from './sections/InvitationSection'
@@ -150,10 +151,33 @@ export default function Admin() {
 
   if (!user) return <AdminAuth />
 
+  // The single allowlist gate: only accounts whose email is in VITE_ADMIN_EMAILS
+  // reach the shell. Anyone else (incl. a freshly signed-in non-admin) gets the
+  // "Not authorized" screen; the RTDB rules independently deny their reads/writes.
+  if (!isAllowedAdminEmail(user.email)) return <AccessDenied />
+
   return (
     <DraftConfigProvider>
       <AdminShell />
     </DraftConfigProvider>
+  )
+}
+
+function AccessDenied() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-bg px-6">
+      <div className="w-full max-w-md glass rounded-3xl p-8 md:p-10 text-center">
+        <AlertTriangle size={28} className="text-red-500 mx-auto" />
+        <h1 className="font-display text-2xl md:text-3xl mt-4">Not authorized</h1>
+        <p className="text-muted mt-2 text-sm">
+          This account isn’t on the admin allowlist. Sign out and use an authorized
+          account.
+        </p>
+        <button onClick={() => clearAuth()} className="btn-primary mt-6 w-full">
+          Sign out
+        </button>
+      </div>
+    </div>
   )
 }
 
