@@ -1,7 +1,7 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app'
 import { getDatabase, type Database } from 'firebase/database'
 import { getAuth, type Auth } from 'firebase/auth'
-import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check'
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check'
 import { getAnalytics, isSupported, type Analytics } from 'firebase/analytics'
 
 const config = {
@@ -17,10 +17,13 @@ const config = {
 
 export const isConfigured: boolean = Boolean(config.apiKey && config.databaseURL)
 
-// App Check site key (reCAPTCHA v3). Optional: without it the app still boots,
-// it just doesn't attach App Check tokens. Set VITE_RECAPTCHA_SITE_KEY in prod
-// and enable App Check enforcement on RTDB in the Firebase console to block
-// scripted abuse / quota-exhaustion (and signup) from non-app clients.
+// App Check site key (reCAPTCHA Enterprise). Optional: without it the app still
+// boots, it just doesn't attach App Check tokens. Set VITE_RECAPTCHA_SITE_KEY in
+// prod and enable App Check enforcement on RTDB in the Firebase console to block
+// scripted abuse / quota-exhaustion (and signup) from non-app clients. The key
+// type MUST match the provider below: an Enterprise key needs
+// ReCaptchaEnterpriseProvider; a classic v3 key would need ReCaptchaV3Provider.
+// Using the wrong one makes the token exchange fail with UNKNOWN_ERROR.
 const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
 
 let app: FirebaseApp | null = null
@@ -41,7 +44,7 @@ if (isConfigured) {
     }
     try {
       initializeAppCheck(app, {
-        provider: new ReCaptchaV3Provider(recaptchaSiteKey),
+        provider: new ReCaptchaEnterpriseProvider(recaptchaSiteKey),
         isTokenAutoRefreshEnabled: true,
       })
     } catch {
