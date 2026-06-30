@@ -1,7 +1,6 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app'
 import { getDatabase, type Database } from 'firebase/database'
 import { getAuth, type Auth } from 'firebase/auth'
-import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check'
 import { getAnalytics, isSupported, type Analytics } from 'firebase/analytics'
 
 const config = {
@@ -17,15 +16,6 @@ const config = {
 
 export const isConfigured: boolean = Boolean(config.apiKey && config.databaseURL)
 
-// App Check site key (reCAPTCHA Enterprise). Optional: without it the app still
-// boots, it just doesn't attach App Check tokens. Set VITE_RECAPTCHA_SITE_KEY in
-// prod and enable App Check enforcement on RTDB in the Firebase console to block
-// scripted abuse / quota-exhaustion (and signup) from non-app clients. The key
-// type MUST match the provider below: an Enterprise key needs
-// ReCaptchaEnterpriseProvider; a classic v3 key would need ReCaptchaV3Provider.
-// Using the wrong one makes the token exchange fail with UNKNOWN_ERROR.
-const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
-
 let app: FirebaseApp | null = null
 let db: Database | null = null
 let auth: Auth | null = null
@@ -33,24 +23,6 @@ let analytics: Analytics | null = null
 
 if (isConfigured) {
   app = initializeApp(config)
-
-  // Initialize App Check right after the app, before db/auth, so their requests
-  // carry tokens. Guarded on the site key (demo/local without one still works);
-  // in dev we opt into a debug token (register it under App Check → Manage debug
-  // tokens). Wrapped in try/catch so Vite HMR re-runs don't throw on re-init.
-  if (recaptchaSiteKey) {
-    if (import.meta.env.DEV) {
-      ;(self as unknown as Record<string, unknown>).FIREBASE_APPCHECK_DEBUG_TOKEN = true
-    }
-    try {
-      initializeAppCheck(app, {
-        provider: new ReCaptchaEnterpriseProvider(recaptchaSiteKey),
-        isTokenAutoRefreshEnabled: true,
-      })
-    } catch {
-      // already initialized (HMR) — ignore
-    }
-  }
 
   db = getDatabase(app)
   auth = getAuth(app)
