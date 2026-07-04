@@ -30,6 +30,7 @@ import {
 } from 'lucide-react'
 import { isConfigured } from '../firebase/config'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
+import { ImageLightboxProvider } from '../components/admin/ImageLightboxProvider'
 import AdminAuth, { useAuthUser, clearAuth } from './AdminAuth'
 import { isAllowedAdminEmail } from '../lib/adminEmails'
 import DatesSection from './sections/DatesSection'
@@ -158,7 +159,9 @@ export default function Admin() {
 
   return (
     <DraftConfigProvider>
-      <AdminShell />
+      <ImageLightboxProvider>
+        <AdminShell />
+      </ImageLightboxProvider>
     </DraftConfigProvider>
   )
 }

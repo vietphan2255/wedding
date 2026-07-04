@@ -3,6 +3,7 @@ import { Plus, Trash2, ArrowUp, ArrowDown, ArrowRightLeft, Save } from 'lucide-r
 import useFirebaseSlice from '../hooks/useFirebaseSlice'
 import ImageInput from '../../components/admin/ImageInput.jsx'
 import UploadButton from '../../components/admin/UploadButton.jsx'
+import ZoomableImg from '../../components/admin/ZoomableImg'
 import LabelsPanel from './LabelsPanel.jsx'
 import LabelField from './LabelField.jsx'
 import { GALLERY_MIN_PER_LINE } from '../../lib/constants'
@@ -163,7 +164,7 @@ export default function GallerySection() {
             <li key={it.id} className="glass rounded-3xl p-5 flex gap-4">
               <div className="w-24 h-24 shrink-0 rounded-xl overflow-hidden bg-bg border border-line">
                 {it.src ? (
-                  <img
+                  <ZoomableImg
                     src={it.src}
                     alt=""
                     className="w-full h-full object-cover"

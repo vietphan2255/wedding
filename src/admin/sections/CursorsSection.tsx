@@ -1,6 +1,7 @@
 import { Plus, Trash2, ArrowUp, ArrowDown, Save, MousePointerClick } from 'lucide-react'
 import useFirebaseSlice, { type SliceItem } from '../hooks/useFirebaseSlice'
 import ImageInput from '../../components/admin/ImageInput.jsx'
+import ZoomableImg from '../../components/admin/ZoomableImg'
 import cssStringToStyle from '../../lib/cssStringToStyle'
 import type { CursorConfig } from '../../contexts/configTypes'
 
@@ -275,7 +276,7 @@ export default function CursorsSection() {
               <div className="mt-4">
                 <p className="eyebrow mb-2">Preview</p>
                 <div className="flex items-center justify-center h-32 rounded-2xl border border-line bg-surface overflow-hidden">
-                  <img
+                  <ZoomableImg
                     src={it.image.trim()}
                     alt=""
                     style={{

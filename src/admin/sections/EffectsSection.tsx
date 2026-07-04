@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Save, MousePointer2, Sparkles } from 'lucide-react'
 import { useDraftConfig } from '../DraftConfigContext'
 import ImageInput from '../../components/admin/ImageInput.jsx'
+import ZoomableImg from '../../components/admin/ZoomableImg'
 import type { Effects, PetalShape } from '../../contexts/configTypes'
 
 const PETAL_SHAPES: PetalShape[] = [
@@ -100,7 +101,7 @@ export default function EffectsSection() {
           <div className="mt-5">
             <p className="eyebrow mb-3">Preview</p>
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl border border-line bg-surface">
-              <img
+              <ZoomableImg
                 src={cursorGif.trim()}
                 alt="Cursor GIF preview"
                 className="max-w-full max-h-full object-contain"

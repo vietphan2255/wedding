@@ -1,5 +1,7 @@
 import { useRef } from 'react'
+import { Maximize2 } from 'lucide-react'
 import ImageInput from './ImageInput.jsx'
+import { useImageLightbox } from './ImageLightboxProvider'
 
 // ImageInput (paste-a-link + upload) plus a draggable focus-point preview. The
 // focal point is stored as x/y percentages (0–100) and applied as the live
@@ -24,6 +26,7 @@ export default function ImageFocalInput({
 }) {
   const url = (value || '').trim()
   const dragging = useRef(false)
+  const openImage = useImageLightbox()
 
   const setFromPointer = (e, el) => {
     const rect = el.getBoundingClientRect()
@@ -108,6 +111,16 @@ export default function ImageFocalInput({
                       <span className="block w-1.5 h-1.5 rounded-full bg-white mx-auto mt-[9px] shadow-[0_0_0_2px_rgba(0,0,0,0.45)]" />
                     </span>
                   </span>
+                  <button
+                    type="button"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={() => openImage(url)}
+                    aria-label="View full image"
+                    title="View full image"
+                    className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-black/50 text-white hover:bg-black/70 transition"
+                  >
+                    <Maximize2 size={14} />
+                  </button>
                 </div>
                 {label ? (
                   <p className="text-[11px] tracking-[0.18em] uppercase text-muted text-center">

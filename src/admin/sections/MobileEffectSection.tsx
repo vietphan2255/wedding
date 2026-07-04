@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Save, PartyPopper } from 'lucide-react'
 import { useDraftConfig } from '../DraftConfigContext'
 import ImageInput from '../../components/admin/ImageInput.jsx'
+import ZoomableImg from '../../components/admin/ZoomableImg'
 import { toLines } from '../../contexts/configDefaults'
 import type { MobileEffect, MobileEffectSlot } from '../../contexts/configTypes'
 
@@ -67,7 +68,7 @@ function SlotEditor({
 
       {image ? (
         <div className="mt-4 inline-flex items-center justify-center w-20 h-20 rounded-2xl border border-line bg-surface">
-          <img
+          <ZoomableImg
             src={image}
             alt="Flying sprite preview"
             className="max-w-full max-h-full object-contain"

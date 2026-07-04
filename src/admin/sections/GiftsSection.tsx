@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Save, Gift } from 'lucide-react'
 import { useDraftConfig } from '../DraftConfigContext'
 import ImageInput from '../../components/admin/ImageInput.jsx'
+import ZoomableImg from '../../components/admin/ZoomableImg'
 import LabelsPanel from './LabelsPanel.jsx'
 import LabelField from './LabelField.jsx'
 
@@ -137,7 +138,7 @@ export default function GiftsSection() {
             </div>
             {form[key]?.qrUrl && (
               <div className="mt-4 flex items-center gap-3 rounded-xl border border-line p-3">
-                <img
+                <ZoomableImg
                   src={form[key].qrUrl}
                   alt="QR preview"
                   className="w-16 aspect-[2/3] rounded-lg object-contain bg-ink"
