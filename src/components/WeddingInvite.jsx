@@ -76,7 +76,14 @@ function FamilyBlock({ label, father, mother, hometown }) {
             <span className="text-ink uppercase font-bold font-display">{mother}</span>
           </p>
         ) : null}
-        {hometown ? <p className="text-muted text-sm">{hometown}</p> : null}
+        {hometown ? (
+          <p
+            className="text-muted"
+            style={{ fontSize: 'clamp(0.6rem, 2.4vw, 0.875rem)' }}
+          >
+            {hometown}
+          </p>
+        ) : null}
       </div>
     </div>
   )
