@@ -169,6 +169,8 @@ export default function Gallery() {
   const sectionRef = useRef(null)
   const dialogRef = useRef(null)
   const closeBtnRef = useRef(null)
+  const imgRef = useRef(null)
+  const [imgReady, setImgReady] = useState(false)
   const [inView, setInView] = useState(false)
   const [tabHidden, setTabHidden] = useState(false)
   useFocusTrap(dialogRef, open !== null, closeBtnRef)
@@ -222,6 +224,26 @@ export default function Gallery() {
       ),
     [photos.length],
   )
+
+  // The lightbox img must NOT remount per photo (no `key={open}`): framer-motion
+  // v11's usePresence never unregisters an unmounted child (fixed upstream in
+  // v12), so a remounting drag-enabled img leaks a zombie exit-registration and
+  // AnimatePresence then never removes the closed dialog — an invisible overlay
+  // that blocks the whole page. Swap `src` on one persistent element instead and
+  // pop it in once the new photo has actually loaded.
+  const lightboxSrc =
+    open !== null && photos[open]
+      ? photos[open].src.replace(/\/\d+\/\d+$/, '/1600/1200')
+      : null
+  useEffect(() => {
+    // Keyed on the src, not `open`: wrapping around to the same photo re-fires
+    // no load event. `complete` covers memory-cache hits that load instantly.
+    if (imgRef.current?.complete) {
+      setImgReady(true)
+      return
+    }
+    setImgReady(false)
+  }, [lightboxSrc])
 
   useEffect(() => {
     if (open === null) return
@@ -358,12 +380,14 @@ export default function Gallery() {
               <ChevronLeft size={26} />
             </button>
             <motion.img
-              key={open}
-              src={photos[open].src.replace(/\/\d+\/\d+$/, '/1600/1200')}
+              ref={imgRef}
+              src={lightboxSrc}
+              onLoad={() => setImgReady(true)}
+              onError={() => setImgReady(true)}
               initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
+              animate={imgReady ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.96 }}
               exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.3 }}
+              transition={imgReady ? { duration: 0.3 } : { duration: 0 }}
               onClick={(e) => e.stopPropagation()}
               drag="y"
               dragConstraints={{ top: 0, bottom: 0 }}
