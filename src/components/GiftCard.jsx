@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Copy, Check, Gift, ZoomIn, Download, X } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
+import useScrollLock from '../hooks/useScrollLock'
 import FadeIn from './FadeIn.jsx'
 import SectionSubtitle from './SectionSubtitle.jsx'
 
@@ -79,6 +80,10 @@ function downloadNameFor(url) {
 // above GiftModal (z-[110]). The capture-phase Esc handler stops the event so
 // closing the zoom does not also close an open GiftModal.
 function QrLightbox({ src, alt, saveLabel, downloadName, onClose }) {
+  // Mounted only while zoomed; the counted lock nests cleanly over an open
+  // GiftModal's own lock.
+  useScrollLock(true)
+
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === 'Escape') {
@@ -87,12 +92,7 @@ function QrLightbox({ src, alt, saveLabel, downloadName, onClose }) {
       }
     }
     document.addEventListener('keydown', onKey, true)
-    const prevOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.removeEventListener('keydown', onKey, true)
-      document.body.style.overflow = prevOverflow
-    }
+    return () => document.removeEventListener('keydown', onKey, true)
   }, [onClose])
 
   return (

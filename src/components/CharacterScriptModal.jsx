@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 import useFocusTrap from '../hooks/useFocusTrap'
+import useScrollLock from '../hooks/useScrollLock'
 
 // Cute, visual-novel-style dialogue modal opened by tapping the MobileEffect
 // sprite. Shows a character portrait, an optional name plate, and a script the
@@ -28,19 +29,17 @@ export default function CharacterScriptModal({ open, onClose, image, name, lines
     if (open) setIdx(0)
   }, [open])
 
-  // Esc to close + lock background scroll while open (same pattern as GiftModal).
+  // Lock background scroll (incl. stopping Lenis) while open.
+  useScrollLock(open)
+
+  // Esc to close (same pattern as GiftModal).
   useEffect(() => {
     if (!open) return
     const onKey = (e) => {
       if (e.key === 'Escape') onClose()
     }
     document.addEventListener('keydown', onKey)
-    const prevOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = prevOverflow
-    }
+    return () => document.removeEventListener('keydown', onKey)
   }, [open, onClose])
 
   const hasLines = lines.length > 0

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, Gift } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
+import useScrollLock from '../hooks/useScrollLock'
 import { GiftBlock } from './GiftCard.jsx'
 
 // Quick-access gift modal: the same bride/groom account cards shown in the
@@ -15,19 +16,17 @@ export default function GiftModal({ open, onClose }) {
   // Which account to show on phones (desktop shows both side by side).
   const [side, setSide] = useState('groom')
 
-  // Esc to close + lock background scroll while the modal is open.
+  // Lock background scroll (incl. stopping Lenis) while the modal is open.
+  useScrollLock(open)
+
+  // Esc to close.
   useEffect(() => {
     if (!open) return
     const onKey = (e) => {
       if (e.key === 'Escape') onClose()
     }
     document.addEventListener('keydown', onKey)
-    const prevOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = prevOverflow
-    }
+    return () => document.removeEventListener('keydown', onKey)
   }, [open, onClose])
 
   const labels = {
@@ -58,10 +57,14 @@ export default function GiftModal({ open, onClose }) {
             className="absolute inset-0 bg-ink/50 backdrop-blur-sm"
           />
 
-          {/* Panel — bottom sheet on phones, centered card on desktop */}
+          {/* Panel — bottom sheet on phones, centered card on desktop.
+              data-lenis-prevent: Lenis checks it before its stopped-guard, so
+              wheel/touch over this scrollable panel scroll it natively while
+              the page behind stays frozen. */}
           <motion.div
             role="dialog"
             aria-modal="true"
+            data-lenis-prevent
             initial={{ y: 48, opacity: 0, scale: 0.98 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 48, opacity: 0, scale: 0.98 }}

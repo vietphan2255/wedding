@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import Lenis from 'lenis'
+import { setLenis } from '../lib/lenis'
 import {
   SMOOTH_SCROLL_IDLE_MS,
   SMOOTH_SCROLL_IDLE_VELOCITY,
@@ -25,6 +26,8 @@ export default function useSmoothScroll(): void {
       syncTouchLerp: 0.075,
       touchMultiplier: 1.6,
     })
+    // Expose the instance so overlays can stop()/start() it (useScrollLock).
+    setLenis(lenis)
 
     // Phones use a coarse pointer; shorten the locked glide there so it feels
     // responsive rather than drawn-out.
@@ -186,6 +189,7 @@ export default function useSmoothScroll(): void {
       window.removeEventListener('touchmove', onInput)
       window.removeEventListener('keydown', onKey)
       if (rafId) cancelAnimationFrame(rafId)
+      setLenis(null)
       lenis.destroy()
     }
   }, [])

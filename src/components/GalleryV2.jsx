@@ -11,13 +11,29 @@ import {
   useReducedMotion,
   wrap,
 } from 'framer-motion'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Mousewheel, Keyboard, Zoom } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/zoom'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import useFocusTrap from '../hooks/useFocusTrap'
-import { GALLERY_BASE_VELOCITY, GALLERY_MIN_PER_LINE } from '../lib/constants'
+import useScrollLock from '../hooks/useScrollLock'
+import {
+  GALLERY_BASE_VELOCITY,
+  GALLERY_MIN_PER_LINE,
+  LIGHTBOX_WHEEL_THRESHOLD_DELTA,
+  LIGHTBOX_SLIDE_SPEED_MS,
+  LIGHTBOX_ZOOM_MAX_RATIO,
+  LIGHTBOX_SLIDE_GAP_PX,
+} from '../lib/constants'
 import SplitText from './fx/SplitText.jsx'
 import SectionSubtitle from './SectionSubtitle.jsx'
+
+// Upscale a gallery entry's URL to lightbox resolution (picsum-style /w/h
+// tail; URLs without that tail pass through unchanged).
+const lightboxUrl = (src) => src.replace(/\/\d+\/\d+$/, '/1600/1200')
 
 // A single photo "plane". rotateY is driven by scroll velocity (passed as a
 // motion value) so tiles tilt as the page scrolls and flatten when still.
@@ -166,14 +182,21 @@ export default function Gallery() {
     [config.gallery],
   )
   const [open, setOpen] = useState(null)
+  const lightboxOpen = open !== null
   const sectionRef = useRef(null)
   const dialogRef = useRef(null)
   const closeBtnRef = useRef(null)
-  const imgRef = useRef(null)
-  const [imgReady, setImgReady] = useState(false)
+  // Live Swiper instance (the chevron buttons drive it) + the active photo
+  // index for the counter — fed by realIndex so it stays correct in loop mode.
+  const swiperRef = useRef(null)
+  const [current, setCurrent] = useState(0)
   const [inView, setInView] = useState(false)
   const [tabHidden, setTabHidden] = useState(false)
-  useFocusTrap(dialogRef, open !== null, closeBtnRef)
+  useFocusTrap(dialogRef, lightboxOpen, closeBtnRef)
+  // Freeze the page behind the lightbox. Body overflow alone can't do it here:
+  // Lenis scrolls programmatically from window-level wheel/touch listeners and
+  // ignores CSS overflow, so the lock also stop()s Lenis.
+  useScrollLock(lightboxOpen)
 
   // Scroll-velocity chain, shared by both rows. Smoothed so the ribbon eases
   // in/out of speed-ups instead of snapping.
@@ -211,54 +234,35 @@ export default function Gallery() {
     return [a, b]
   }, [photos])
 
-  const openAt = useCallback((i) => setOpen(i), [])
+  const openAt = useCallback((i) => {
+    setCurrent(i)
+    setOpen(i)
+  }, [])
   const close = useCallback(() => setOpen(null), [])
-  const next = useCallback(
-    () => setOpen((i) => (i === null ? null : (i + 1) % photos.length)),
-    [photos.length],
-  )
-  const prev = useCallback(
-    () =>
-      setOpen((i) =>
-        i === null ? null : (i - 1 + photos.length) % photos.length,
-      ),
-    [photos.length],
-  )
 
-  // The lightbox img must NOT remount per photo (no `key={open}`): framer-motion
-  // v11's usePresence never unregisters an unmounted child (fixed upstream in
-  // v12), so a remounting drag-enabled img leaks a zombie exit-registration and
-  // AnimatePresence then never removes the closed dialog — an invisible overlay
-  // that blocks the whole page. Swap `src` on one persistent element instead and
-  // pop it in once the new photo has actually loaded.
-  const lightboxSrc =
-    open !== null && photos[open]
-      ? photos[open].src.replace(/\/\d+\/\d+$/, '/1600/1200')
-      : null
+  // Escape only — arrow keys are the Keyboard module's job now.
   useEffect(() => {
-    // Keyed on the src, not `open`: wrapping around to the same photo re-fires
-    // no load event. `complete` covers memory-cache hits that load instantly.
-    if (imgRef.current?.complete) {
-      setImgReady(true)
-      return
-    }
-    setImgReady(false)
-  }, [lightboxSrc])
-
-  useEffect(() => {
-    if (open === null) return
+    if (!lightboxOpen) return
     const onKey = (e) => {
       if (e.key === 'Escape') close()
-      if (e.key === 'ArrowRight') next()
-      if (e.key === 'ArrowLeft') prev()
     }
     window.addEventListener('keydown', onKey)
-    document.body.style.overflow = 'hidden'
-    return () => {
-      window.removeEventListener('keydown', onKey)
-      document.body.style.overflow = ''
+    return () => window.removeEventListener('keydown', onKey)
+  }, [lightboxOpen, close])
+
+  // Swiper's Mousewheel module preventDefaults horizontal wheels over its own
+  // container; this guard covers the leftovers — wheels landing on the overlay
+  // buttons, and every surface under reduced motion (no Lenis mounts there) —
+  // so the browser's two-finger history navigation can never fire while the
+  // lightbox is open. A second preventDefault after Swiper's is a no-op.
+  useEffect(() => {
+    if (!lightboxOpen) return
+    const onWheel = (e) => {
+      if (!e.ctrlKey && Math.abs(e.deltaX) > Math.abs(e.deltaY)) e.preventDefault()
     }
-  }, [open, close, next, prev])
+    window.addEventListener('wheel', onWheel, { passive: false })
+    return () => window.removeEventListener('wheel', onWheel)
+  }, [lightboxOpen])
 
   // Pause the marquee whenever the section is offscreen or the tab is hidden.
   useEffect(() => {
@@ -280,7 +284,7 @@ export default function Gallery() {
   }, [])
 
   // Freeze the ribbon while the lightbox is open OR the section is offscreen/hidden.
-  const paused = open !== null || !inView || tabHidden
+  const paused = lightboxOpen || !inView || tabHidden
 
   return (
     <section ref={sectionRef} id="gallery" data-cursor-id="gallery" className="section-padding relative bg-bg overflow-hidden">
@@ -353,11 +357,67 @@ export default function Gallery() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-[60] bg-black/90 flex items-center justify-center p-4"
-            onClick={close}
+            className="fixed inset-0 z-[60] bg-black/90"
           >
-            <div className="absolute top-5 left-5 text-white/80 text-sm tracking-widest tabular-nums">
-              {String(open + 1).padStart(2, '0')}
+            {/* Swiper owns every gesture: touch swipe, touchpad wheel
+                (Mousewheel), arrows (Keyboard), pinch/double-tap (Zoom, resets
+                on slide change). Slides are plain divs — no keyed motion
+                children inside AnimatePresence, so the framer-motion v11
+                presence-leak hazard is gone by construction. */}
+            <Swiper
+              modules={[Mousewheel, Keyboard, Zoom]}
+              className="absolute inset-0 h-full w-full"
+              data-cursor="drag"
+              initialSlide={open}
+              loop={photos.length > 1}
+              speed={reduce ? 0 : LIGHTBOX_SLIDE_SPEED_MS}
+              spaceBetween={LIGHTBOX_SLIDE_GAP_PX}
+              mousewheel={{
+                forceToAxis: true,
+                thresholdDelta: LIGHTBOX_WHEEL_THRESHOLD_DELTA,
+              }}
+              keyboard={{ enabled: true }}
+              zoom={{ maxRatio: LIGHTBOX_ZOOM_MAX_RATIO }}
+              lazyPreloadPrevNext={1}
+              onSwiper={(s) => {
+                swiperRef.current = s
+              }}
+              onSlideChange={(s) => setCurrent(s.realIndex)}
+            >
+              {photos.map((p, i) => (
+                <SwiperSlide key={p.id}>
+                  {/* zoom.css makes this div fill + flex-center the slide, so
+                      it doubles as the click-outside-the-photo close surface.
+                      defaultPrevented filters Swiper's post-drag ghost clicks
+                      (preventClicks preventDefaults them but only stops their
+                      propagation while a transition is running). */}
+                  {/* role="presentation": backdrop-click surface only —
+                      keyboard closing is Escape + the focus-trapped X. */}
+                  <div
+                    role="presentation"
+                    className="swiper-zoom-container"
+                    onClick={(e) => {
+                      if (e.target === e.currentTarget && !e.defaultPrevented) close()
+                    }}
+                  >
+                    {/* !important sizing: zoom.css's `.swiper-zoom-container >
+                        img` out-specifies Tailwind utilities. */}
+                    <img
+                      src={lightboxUrl(p.src)}
+                      loading="lazy"
+                      draggable={false}
+                      className="!max-w-[92vw] !max-h-[88vh] rounded-lg object-contain shadow-2xl select-none"
+                      alt={`${t('gallery.lightbox.alt')} ${i + 1} / ${photos.length}`}
+                    />
+                  </div>
+                  <div className="swiper-lazy-preloader swiper-lazy-preloader-white" />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            {/* Overlay chrome sits after the Swiper as siblings (z-10), so
+                clicks on it never reach the slides. */}
+            <div className="absolute top-5 left-5 z-10 text-white/80 text-sm tracking-widest tabular-nums">
+              {String(current + 1).padStart(2, '0')}
               <span className="opacity-50"> / {String(photos.length).padStart(2, '0')}</span>
             </div>
             <button
@@ -365,50 +425,28 @@ export default function Gallery() {
               onClick={close}
               aria-label={t('gallery.lightbox.close')}
               data-cursor="close"
-              className="absolute top-5 right-5 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
+              className="absolute top-5 right-5 z-10 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
             >
               <X size={22} />
             </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                prev()
-              }}
-              aria-label={t('gallery.lightbox.prev')}
-              className="absolute left-3 md:left-8 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
-            >
-              <ChevronLeft size={26} />
-            </button>
-            <motion.img
-              ref={imgRef}
-              src={lightboxSrc}
-              onLoad={() => setImgReady(true)}
-              onError={() => setImgReady(true)}
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={imgReady ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.96 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={imgReady ? { duration: 0.3 } : { duration: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              drag="y"
-              dragConstraints={{ top: 0, bottom: 0 }}
-              dragElastic={0.6}
-              onDragEnd={(_, info) => {
-                if (Math.abs(info.offset.y) > 120) close()
-              }}
-              data-cursor="drag"
-              className="max-w-[92vw] max-h-[88vh] rounded-lg object-contain shadow-2xl cursor-grab active:cursor-grabbing"
-              alt={`${t('gallery.lightbox.alt')} ${open + 1} / ${photos.length}`}
-            />
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                next()
-              }}
-              aria-label={t('gallery.lightbox.next')}
-              className="absolute right-3 md:right-8 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
-            >
-              <ChevronRight size={26} />
-            </button>
+            {photos.length > 1 && (
+              <>
+                <button
+                  onClick={() => swiperRef.current?.slidePrev()}
+                  aria-label={t('gallery.lightbox.prev')}
+                  className="absolute left-3 md:left-8 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
+                >
+                  <ChevronLeft size={26} />
+                </button>
+                <button
+                  onClick={() => swiperRef.current?.slideNext()}
+                  aria-label={t('gallery.lightbox.next')}
+                  className="absolute right-3 md:right-8 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
+                >
+                  <ChevronRight size={26} />
+                </button>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
