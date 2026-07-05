@@ -98,11 +98,14 @@ export interface Invitation {
   // Formal invite sentence.
   message_vi: string
   // Per-ceremony lunar date + full street address. Venue *name* is reused from
-  // the existing bilingual `events.{vuquy,thanhhon}.venue` labels.
+  // the existing bilingual `events.{vuquy,thanhhon}.venue` labels. `MapsUrl` is an
+  // optional admin-set Google Maps link; empty falls back to an address search.
   vuquyLunar: string
   vuquyAddress: string
+  vuquyMapsUrl: string
   thanhhonLunar: string
   thanhhonAddress: string
+  thanhhonMapsUrl: string
 }
 
 // Shape of the decorative floating particles in ParallaxPetals. 'petal' is the

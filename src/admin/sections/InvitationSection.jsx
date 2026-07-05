@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Save, Mail } from 'lucide-react'
 import { useDraftConfig } from '../DraftConfigContext'
+import { sanitizeGoogleMapsUrl } from '../../lib/googleMapsUrl'
 import ImageFocalInput from '../../components/admin/ImageFocalInput.jsx'
 import LabelsPanel from './LabelsPanel'
 import LabelField from './LabelField'
@@ -19,16 +20,41 @@ const FAMILY_FIELDS = [
   { key: 'brideHometown', label: 'Bride · Hometown', placeholder: 'TP. Điện Biên' },
 ]
 
+// `kind: 'mapsUrl'` fields render full-width with Google Maps URL validation and
+// helper text; the others are plain single-line text inputs.
+const MAPS_URL_HELP =
+  'Guests tap the address on their invitation card to open this in Google Maps. Leave empty to search by address instead.'
 const CEREMONY_FIELDS = [
   { key: 'vuquyLunar', label: 'Lễ Vu Quy · Lunar date', placeholder: 'Nhằm ngày … (Âm lịch)' },
   { key: 'vuquyAddress', label: 'Lễ Vu Quy · Address', placeholder: '123 Nguyễn Huệ, Quận 1, TP. HCM' },
+  {
+    key: 'vuquyMapsUrl',
+    label: 'Lễ Vu Quy · Google Maps URL',
+    placeholder: 'https://maps.google.com/...',
+    kind: 'mapsUrl',
+    helper: MAPS_URL_HELP,
+  },
   { key: 'thanhhonLunar', label: 'Lễ Thành Hôn · Lunar date', placeholder: 'Nhằm ngày … (Âm lịch)' },
   { key: 'thanhhonAddress', label: 'Lễ Thành Hôn · Address', placeholder: '456 Lê Lợi, Quận 1, TP. HCM' },
+  {
+    key: 'thanhhonMapsUrl',
+    label: 'Lễ Thành Hôn · Google Maps URL',
+    placeholder: 'https://maps.google.com/...',
+    kind: 'mapsUrl',
+    helper: MAPS_URL_HELP,
+  },
 ]
 
 const inputClass =
   'w-full rounded-xl border border-line bg-bg px-4 py-3 text-ink focus:border-accent transition-colors'
 const labelClass = 'block text-[11px] tracking-[0.22em] uppercase text-muted mb-2'
+
+// A maps-URL field is valid when empty (optional) or a recognized Google Maps link.
+// Shared by the live inline check and the save gate so they never disagree.
+const isMapsFieldValid = (value) => {
+  const trimmed = (value ?? '').trim()
+  return trimmed === '' || Boolean(sanitizeGoogleMapsUrl(trimmed))
+}
 
 export default function InvitationSection() {
   const { draft, setSlice, saveSlice, isSliceDirty } = useDraftConfig()
@@ -43,6 +69,19 @@ export default function InvitationSection() {
 
   const save = async (e) => {
     e.preventDefault()
+    // Reject invalid Google Maps URLs before persisting; empty is allowed (the card
+    // falls back to an address search). Blocking keeps a bad value out of Firebase
+    // without touching the other invitation fields.
+    const hasInvalidMapsUrl = CEREMONY_FIELDS.some(
+      (f) => f.kind === 'mapsUrl' && !isMapsFieldValid(inv[f.key]),
+    )
+    if (hasInvalidMapsUrl) {
+      setStatus({
+        type: 'error',
+        message: 'Enter a valid Google Maps link, or leave the field empty.',
+      })
+      return
+    }
     setSaving(true)
     setStatus(null)
     try {
@@ -190,18 +229,42 @@ export default function InvitationSection() {
             Leave empty to hide a line.
           </p>
           <div className="grid md:grid-cols-2 gap-4">
-            {CEREMONY_FIELDS.map(({ key, label, placeholder }) => (
-              <div key={key}>
-                <label className={labelClass}>{label}</label>
-                <input
-                  type="text"
-                  value={inv[key] ?? ''}
-                  onChange={(e) => setField(key, e.target.value)}
-                  placeholder={placeholder}
-                  className={inputClass}
-                />
-              </div>
-            ))}
+            {CEREMONY_FIELDS.map(({ key, label, placeholder, kind, helper }) => {
+              const value = inv[key] ?? ''
+              const isMapsUrl = kind === 'mapsUrl'
+              const invalid = isMapsUrl && !isMapsFieldValid(value)
+              const inputId = `inv-${key}`
+              const helpId = isMapsUrl ? `${inputId}-help` : undefined
+              return (
+                <div key={key} className={isMapsUrl ? 'md:col-span-2' : undefined}>
+                  <label className={labelClass} htmlFor={inputId}>
+                    {label}
+                  </label>
+                  <input
+                    id={inputId}
+                    type={isMapsUrl ? 'url' : 'text'}
+                    value={value}
+                    onChange={(e) => setField(key, e.target.value)}
+                    placeholder={placeholder}
+                    className={`${inputClass}${
+                      invalid ? ' border-red-500 focus:border-red-500' : ''
+                    }`}
+                    aria-invalid={invalid || undefined}
+                    aria-describedby={helpId}
+                  />
+                  {isMapsUrl ? (
+                    <p
+                      id={helpId}
+                      className={`text-xs mt-1.5 ${invalid ? 'text-red-500' : 'text-muted'}`}
+                    >
+                      {invalid
+                        ? 'Enter a valid Google Maps link (maps.google.com, google.com/maps, goo.gl/maps, or maps.app.goo.gl).'
+                        : helper}
+                    </p>
+                  ) : null}
+                </div>
+              )
+            })}
           </div>
         </div>
 

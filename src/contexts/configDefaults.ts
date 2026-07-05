@@ -235,8 +235,10 @@ export const DEFAULT_CONFIG: WeddingConfig = {
       'Trân trọng kính mời quý khách đến chung vui cùng gia đình chúng tôi trong ngày lễ thành hôn của hai con.',
     vuquyLunar: 'Nhằm ngày 12 tháng 6 năm Bính Ngọ (Âm lịch)',
     vuquyAddress: '123 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh',
+    vuquyMapsUrl: '',
     thanhhonLunar: 'Nhằm ngày 19 tháng 6 năm Bính Ngọ (Âm lịch)',
     thanhhonAddress: '456 Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh',
+    thanhhonMapsUrl: '',
   },
   effects: {
     cursorGif: '',

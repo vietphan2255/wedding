@@ -40,3 +40,7 @@ export const LIGHTBOX_ZOOM_MAX_RATIO = 3
 
 // Gap between lightbox slides so neighbors never peek at the edges.
 export const LIGHTBOX_SLIDE_GAP_PX = 24
+
+// How long the startup loading gate waits for the RTDB `.info/connected` signal
+// before showing its retry fallback. Healthy connections resolve in ~1–3s.
+export const FIREBASE_CONNECT_TIMEOUT_MS = 12_000

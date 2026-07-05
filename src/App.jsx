@@ -1,7 +1,9 @@
-import { lazy, Suspense, useRef, useState } from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import useSmoothScroll from './hooks/useSmoothScroll'
-import { useWeddingConfig } from './contexts/WeddingConfigContext'
+import { WeddingConfigProvider, useWeddingConfig } from './contexts/WeddingConfigContext'
+import { LanguageProvider } from './contexts/LanguageContext'
+import { initAnalytics } from './firebase/analytics'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
 import WeddingInvite from './components/WeddingInvite.jsx'
@@ -126,19 +128,33 @@ function NotFound() {
   )
 }
 
+// The whole app is code-split behind ConnectionGate and rendered only once the
+// gate passes, so this component owns the router and the app-wide providers that
+// used to live in main.jsx. GA4 initializes here (dynamically), i.e. after the
+// gate — never in the startup bundle.
 export default function App() {
+  useEffect(() => {
+    initAnalytics()
+  }, [])
+
   return (
-    <ErrorBoundary>
-      <Suspense fallback={<div className="min-h-screen bg-bg" />}>
-        <Routes>
-          <Route path="/" element={<WeddingSite />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/engagement" element={<EngagementPage />} />
-          <Route path="/pay-slip" element={<PaySlipPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
-    </ErrorBoundary>
+    <BrowserRouter>
+      <WeddingConfigProvider>
+        <LanguageProvider>
+          <ErrorBoundary>
+            <Suspense fallback={<div className="min-h-screen bg-bg" />}>
+              <Routes>
+                <Route path="/" element={<WeddingSite />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/engagement" element={<EngagementPage />} />
+                <Route path="/pay-slip" element={<PaySlipPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
+        </LanguageProvider>
+      </WeddingConfigProvider>
+    </BrowserRouter>
   )
 }
 

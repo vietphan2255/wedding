@@ -4,6 +4,7 @@ import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import { useInvitedGuest } from '../contexts/InvitedGuestContext.jsx'
 import { personalizeInvite } from '../lib/guests'
 import { mapsSearchUrl, googleCalendarUrl, formatVnTime } from '../lib/calendar'
+import { sanitizeGoogleMapsUrl } from '../lib/googleMapsUrl'
 import FadeIn from './FadeIn.jsx'
 
 // Formal "thiệp cưới" section, restyled after the cinelove thiep-cuoi-42
@@ -120,8 +121,12 @@ function InvitationCard({
   const time = formatVnTime(dateISO)
   const lunar = inv[`${ceremonyKey}Lunar`] || ''
   const address = inv[`${ceremonyKey}Address`] || ''
-  // Both the venue name and address open Google Maps; prefer the precise address.
-  const mapUrl = address || venue ? mapsSearchUrl(address || venue) : null
+  // Both the venue name and address open Google Maps. Prefer the admin-configured
+  // Maps link for this ceremony; fall back to a search over the address/venue text
+  // when it is unset or invalid, so legacy records keep their existing link.
+  const configuredMapUrl = sanitizeGoogleMapsUrl(inv[`${ceremonyKey}MapsUrl`])
+  const mapUrl =
+    configuredMapUrl || (address || venue ? mapsSearchUrl(address || venue) : null)
   const bits = dateBits(dateISO)
   const monthLabel = bits ? `Tháng ${bits.monthNum}` : ''
   const yearLabel = bits ? `Năm ${bits.year}` : ''
@@ -223,7 +228,7 @@ function InvitationCard({
               href={mapUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-accent transition-colors"
+              className="rounded-sm hover:text-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
             >
               {venue}
             </a>
@@ -236,7 +241,7 @@ function InvitationCard({
             href={mapUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-1.5 inline-flex items-center justify-center gap-1.5 text-sm text-muted hover:text-accent transition-colors underline decoration-line decoration-1 underline-offset-4"
+            className="mt-1.5 inline-flex items-center justify-center gap-1.5 rounded-sm text-sm text-muted hover:text-accent transition-colors underline decoration-line decoration-1 underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
           >
             <MapPin size={14} className="shrink-0" />
             {address}

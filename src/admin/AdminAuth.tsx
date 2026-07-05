@@ -8,7 +8,7 @@ import {
   signOut,
   type User,
 } from 'firebase/auth'
-import { auth } from '../firebase/config'
+import { auth } from '../firebase/auth'
 
 // Admin auth is backed by Firebase Authentication (Google or email/password)
 // instead of a client-side password compare. This matters because the RTDB

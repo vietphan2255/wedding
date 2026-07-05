@@ -218,4 +218,9 @@ export default {
   // Mobile RSVP bar
   'mobileRsvp.cta': 'Xác nhận tham dự',
   'mobileRsvp.days': 'ngày nữa',
+
+  // Loading screen
+  'loading.connecting': 'Đang kết nối tới không gian cưới…',
+  'loading.error': 'Không thể kết nối. Vui lòng kiểm tra mạng và thử lại.',
+  'loading.retry': 'Thử lại',
 }

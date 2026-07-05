@@ -1,22 +1,17 @@
-import React from 'react'
+import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import App from './App.jsx'
 import { ThemeProvider } from './contexts/ThemeContext'
-import { LanguageProvider } from './contexts/LanguageContext'
-import { WeddingConfigProvider } from './contexts/WeddingConfigContext'
+import ConnectionGate from './components/ConnectionGate.jsx'
 import './index.css'
 
+// Minimal bootstrap: only React, the theme tokens, and the connection gate load
+// up front. ConnectionGate lazy-imports the entire app (router, providers, all
+// page/feature bundles) itself — only after Firebase RTDB reports connected — so
+// the wedding-themed loader is the smallest possible initial UI path.
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <ThemeProvider>
-        <WeddingConfigProvider>
-          <LanguageProvider>
-            <App />
-          </LanguageProvider>
-        </WeddingConfigProvider>
-      </ThemeProvider>
-    </BrowserRouter>
-  </React.StrictMode>,
+  <StrictMode>
+    <ThemeProvider>
+      <ConnectionGate />
+    </ThemeProvider>
+  </StrictMode>,
 )
