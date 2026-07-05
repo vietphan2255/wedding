@@ -41,6 +41,14 @@ export const LIGHTBOX_ZOOM_MAX_RATIO = 3
 // Gap between lightbox slides so neighbors never peek at the edges.
 export const LIGHTBOX_SLIDE_GAP_PX = 24
 
+// Right-sizing caps (longest edge, px) for gallery images. Decoded-image memory is
+// width×height×4 bytes regardless of JPEG/WebP, so capping *dimensions* is what
+// bounds it — the fix for the iOS WebKit (WKWebView) memory-termination reload that
+// large galleries trigger. Thumbnails render in ~192–288px tiles, so 720 is already
+// generous; the lightbox caps to the device viewport (×DPR, capped at 2) up to this.
+export const GALLERY_THUMB_MAX_EDGE = 720
+export const LIGHTBOX_MAX_EDGE_CAP = 1600
+
 // How long the startup loading gate waits for the RTDB `.info/connected` signal
 // before showing its retry fallback. Healthy connections resolve in ~1–3s.
 export const FIREBASE_CONNECT_TIMEOUT_MS = 12_000

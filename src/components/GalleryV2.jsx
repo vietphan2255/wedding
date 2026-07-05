@@ -23,17 +23,16 @@ import useScrollLock from '../hooks/useScrollLock'
 import {
   GALLERY_BASE_VELOCITY,
   GALLERY_MIN_PER_LINE,
+  GALLERY_THUMB_MAX_EDGE,
   LIGHTBOX_WHEEL_THRESHOLD_DELTA,
   LIGHTBOX_SLIDE_SPEED_MS,
   LIGHTBOX_ZOOM_MAX_RATIO,
   LIGHTBOX_SLIDE_GAP_PX,
 } from '../lib/constants'
+import { galleryImageUrl, viewportMaxEdge } from '../lib/galleryImageUrl'
+import { diagLog } from '../lib/reloadDiag'
 import SplitText from './fx/SplitText.jsx'
 import SectionSubtitle from './SectionSubtitle.jsx'
-
-// Upscale a gallery entry's URL to lightbox resolution (picsum-style /w/h
-// tail; URLs without that tail pass through unchanged).
-const lightboxUrl = (src) => src.replace(/\/\d+\/\d+$/, '/1600/1200')
 
 // A single photo "plane". rotateY is driven by scroll velocity (passed as a
 // motion value) so tiles tilt as the page scrolls and flatten when still.
@@ -52,7 +51,7 @@ function Tile({ p, photosLength, onOpen, tilt }) {
       {/* Fixed height, auto width → each photo keeps its own aspect ratio and
           shows in full (no crop). */}
       <img
-        src={p.src}
+        src={galleryImageUrl(p.src, GALLERY_THUMB_MAX_EDGE)}
         alt=""
         loading="lazy"
         decoding="async"
@@ -187,7 +186,7 @@ export default function Gallery() {
   const dialogRef = useRef(null)
   const closeBtnRef = useRef(null)
   // Live Swiper instance (the chevron buttons drive it) + the active photo
-  // index for the counter — fed by realIndex so it stays correct in loop mode.
+  // index for the counter — fed by realIndex (equals activeIndex in rewind mode).
   const swiperRef = useRef(null)
   const [current, setCurrent] = useState(0)
   const [inView, setInView] = useState(false)
@@ -234,11 +233,19 @@ export default function Gallery() {
     return [a, b]
   }, [photos])
 
+  // Cap the lightbox image to the device viewport — bounds decoded-image memory on
+  // iOS. A plain viewport read (no reflow); stable while the viewport doesn't change.
+  const lightboxMaxEdge = viewportMaxEdge()
+
   const openAt = useCallback((i) => {
     setCurrent(i)
     setOpen(i)
+    diagLog('lightbox-open', `index=${i}`)
   }, [])
-  const close = useCallback(() => setOpen(null), [])
+  const close = useCallback(() => {
+    setOpen(null)
+    diagLog('lightbox-close')
+  }, [])
 
   // Escape only — arrow keys are the Keyboard module's job now.
   useEffect(() => {
@@ -369,7 +376,7 @@ export default function Gallery() {
               className="absolute inset-0 h-full w-full"
               data-cursor="drag"
               initialSlide={open}
-              loop={photos.length > 1}
+              rewind={photos.length > 1}
               speed={reduce ? 0 : LIGHTBOX_SLIDE_SPEED_MS}
               spaceBetween={LIGHTBOX_SLIDE_GAP_PX}
               mousewheel={{
@@ -382,7 +389,10 @@ export default function Gallery() {
               onSwiper={(s) => {
                 swiperRef.current = s
               }}
-              onSlideChange={(s) => setCurrent(s.realIndex)}
+              onSlideChange={(s) => {
+                setCurrent(s.realIndex)
+                diagLog('slide-change', `index=${s.realIndex}`)
+              }}
             >
               {photos.map((p, i) => (
                 <SwiperSlide key={p.id}>
@@ -403,8 +413,9 @@ export default function Gallery() {
                     {/* !important sizing: zoom.css's `.swiper-zoom-container >
                         img` out-specifies Tailwind utilities. */}
                     <img
-                      src={lightboxUrl(p.src)}
+                      src={galleryImageUrl(p.src, lightboxMaxEdge)}
                       loading="lazy"
+                      decoding="async"
                       draggable={false}
                       className="!max-w-[92vw] !max-h-[88vh] rounded-lg object-contain shadow-2xl select-none"
                       alt={`${t('gallery.lightbox.alt')} ${i + 1} / ${photos.length}`}
