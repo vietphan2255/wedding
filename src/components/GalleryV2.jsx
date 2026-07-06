@@ -31,6 +31,7 @@ import {
 } from '../lib/constants'
 import { galleryImageUrl, viewportMaxEdge } from '../lib/galleryImageUrl'
 import { diagLog } from '../lib/reloadDiag'
+import { hasExp } from '../lib/expFlags'
 import SplitText from './fx/SplitText.jsx'
 import SectionSubtitle from './SectionSubtitle.jsx'
 
@@ -237,6 +238,11 @@ export default function Gallery() {
   // iOS. A plain viewport read (no reflow); stable while the viewport doesn't change.
   const lightboxMaxEdge = viewportMaxEdge()
 
+  // Temporary experiment flags (?exp=nozoom / ?exp=lite) to isolate the iOS
+  // content-process crash on slide transition. No effect unless enabled.
+  const noZoom = hasExp('nozoom')
+  const liteExp = hasExp('lite')
+
   const openAt = useCallback((i) => {
     setCurrent(i)
     setOpen(i)
@@ -289,6 +295,14 @@ export default function Gallery() {
     document.addEventListener('visibilitychange', onVis)
     return () => document.removeEventListener('visibilitychange', onVis)
   }, [])
+
+  // ?exp=lite: strip GPU-heavy compositing (film-grain, backdrop blur) while the
+  // lightbox is open, to test the compositor-exhaustion crash hypothesis.
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    document.documentElement.classList.toggle('exp-lite', liteExp && lightboxOpen)
+    return () => document.documentElement.classList.remove('exp-lite')
+  }, [liteExp, lightboxOpen])
 
   // Freeze the ribbon while the lightbox is open OR the section is offscreen/hidden.
   const paused = lightboxOpen || !inView || tabHidden
@@ -372,7 +386,7 @@ export default function Gallery() {
                 children inside AnimatePresence, so the framer-motion v11
                 presence-leak hazard is gone by construction. */}
             <Swiper
-              modules={[Mousewheel, Keyboard, Zoom]}
+              modules={noZoom ? [Mousewheel, Keyboard] : [Mousewheel, Keyboard, Zoom]}
               className="absolute inset-0 h-full w-full"
               data-cursor="drag"
               initialSlide={open}
@@ -384,7 +398,7 @@ export default function Gallery() {
                 thresholdDelta: LIGHTBOX_WHEEL_THRESHOLD_DELTA,
               }}
               keyboard={{ enabled: true }}
-              zoom={{ maxRatio: LIGHTBOX_ZOOM_MAX_RATIO }}
+              zoom={noZoom ? undefined : { maxRatio: LIGHTBOX_ZOOM_MAX_RATIO }}
               lazyPreloadPrevNext={1}
               onSwiper={(s) => {
                 swiperRef.current = s
@@ -405,7 +419,11 @@ export default function Gallery() {
                       keyboard closing is Escape + the focus-trapped X. */}
                   <div
                     role="presentation"
-                    className="swiper-zoom-container"
+                    className={
+                      noZoom
+                        ? 'flex h-full w-full items-center justify-center'
+                        : 'swiper-zoom-container'
+                    }
                     onClick={(e) => {
                       if (e.target === e.currentTarget && !e.defaultPrevented) close()
                     }}
@@ -417,7 +435,9 @@ export default function Gallery() {
                       loading="lazy"
                       decoding="async"
                       draggable={false}
-                      className="!max-w-[92vw] !max-h-[88vh] rounded-lg object-contain shadow-2xl select-none"
+                      className={`!max-w-[92vw] !max-h-[88vh] rounded-lg object-contain select-none${
+                        liteExp ? '' : ' shadow-2xl'
+                      }`}
                       alt={`${t('gallery.lightbox.alt')} ${i + 1} / ${photos.length}`}
                     />
                   </div>

@@ -197,6 +197,17 @@ html.lenis body {
   mix-blend-mode: overlay;
 }
 
+/* Temporary iOS-crash experiment (?exp=lite): drop GPU-heavy compositing while the
+   lightbox is open, to test the compositor-exhaustion hypothesis. Removed once the
+   crash cause is confirmed. */
+.exp-lite .film-grain::after {
+  display: none !important;
+}
+.exp-lite .glass {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
