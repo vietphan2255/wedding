@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { galleryImageUrl, viewportMaxEdge } from '../lib/galleryImageUrl'
 
 const DEFAULT_DURATION = 6 // seconds, when a slide omits/zeros its duration
 const MIN_DURATION = 2 // floor so a typo can't strobe the hero
@@ -77,13 +78,15 @@ export default function useHeroSlideshow(slides, { calm = false } = {}) {
     return () => clearTimeout(t)
   }, [active, safeIndex, duration, count, calm])
 
-  // Preload the upcoming image so the swap never pops in.
+  // Preload the upcoming image so the swap never pops in. Sized through the same
+  // viewport cap as HeroSlideshow's render URL — the strings must match exactly
+  // or the preload warms the wrong cache entry.
   const nextSrc = count > 1 ? ordered[(safeIndex + 1) % count]?.src : null
   useEffect(() => {
     if (!nextSrc) return
     const img = new Image()
     img.decoding = 'async'
-    img.src = nextSrc
+    img.src = galleryImageUrl(nextSrc, viewportMaxEdge())
   }, [nextSrc])
 
   return {

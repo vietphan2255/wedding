@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import useIsPhone from '../hooks/useIsPhone'
 import HeroSlideshow from './HeroSlideshow'
+import { galleryImageUrl, viewportMaxEdge } from '../lib/galleryImageUrl'
 
 const HERO_IMAGE =
   'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=2400&q=80'
@@ -93,7 +94,7 @@ export default function Hero({
           ) : (
             <>
               <img
-                src={heroImage}
+                src={galleryImageUrl(heroImage, viewportMaxEdge())}
                 alt="Couple silhouette"
                 decoding="async"
                 fetchPriority="high"

@@ -49,10 +49,20 @@ export const LIGHTBOX_EDGE_GUARD_PX = 24
 // Right-sizing caps (longest edge, px) for gallery images. Decoded-image memory is
 // width×height×4 bytes regardless of JPEG/WebP, so capping *dimensions* is what
 // bounds it — the fix for the iOS WebKit (WKWebView) memory-termination reload that
-// large galleries trigger. Thumbnails render in ~192–288px tiles, so 720 is already
-// generous; the lightbox caps to the device viewport (×DPR, capped at 2) up to this.
+// large galleries trigger. Marquee tiles are h-72 (288px) from the `md:` breakpoint
+// up and h-48 (192px) below it, so the mobile cap keys off that same boundary; the
+// lightbox caps to the device viewport (×DPR, capped at 2) up to LIGHTBOX_MAX_EDGE_CAP.
 export const GALLERY_THUMB_MAX_EDGE = 720
+export const GALLERY_THUMB_MAX_EDGE_MOBILE = 480
 export const LIGHTBOX_MAX_EDGE_CAP = 1600
+
+// Lightbox image windowing: only slides within this loop-aware distance of the
+// current index keep their <img> mounted, bounding live decoded images to 2*R+1
+// (~34MB at the 1600px cap) regardless of gallery size — with all N slides mounted,
+// every photo paged past stayed decoded and 40+ photos jetsammed the iOS tab.
+// Must be >= 2: the neighbor slide is visible mid-drag before slideChange fires,
+// and one long drag can commit 2 slides.
+export const LIGHTBOX_IMG_WINDOW_RADIUS = 2
 
 // How long the startup loading gate waits for the RTDB `.info/connected` signal
 // before showing its retry fallback. Healthy connections resolve in ~1–3s.

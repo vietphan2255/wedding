@@ -20,17 +20,21 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import useFocusTrap from '../hooks/useFocusTrap'
 import useScrollLock from '../hooks/useScrollLock'
+import useMediaQuery from '../hooks/useMediaQuery'
 import {
   GALLERY_BASE_VELOCITY,
   GALLERY_MIN_PER_LINE,
   GALLERY_THUMB_MAX_EDGE,
+  GALLERY_THUMB_MAX_EDGE_MOBILE,
   LIGHTBOX_WHEEL_THRESHOLD_DELTA,
   LIGHTBOX_SLIDE_SPEED_MS,
   LIGHTBOX_ZOOM_MAX_RATIO,
   LIGHTBOX_SLIDE_GAP_PX,
   LIGHTBOX_EDGE_GUARD_PX,
+  LIGHTBOX_IMG_WINDOW_RADIUS,
 } from '../lib/constants'
 import { galleryImageUrl, viewportMaxEdge } from '../lib/galleryImageUrl'
+import { loopDistance } from '../lib/lightboxWindow'
 import { diagLog } from '../lib/reloadDiag'
 import { hasExp } from '../lib/expFlags'
 import SplitText from './fx/SplitText.jsx'
@@ -38,7 +42,7 @@ import SectionSubtitle from './SectionSubtitle.jsx'
 
 // A single photo "plane". rotateY is driven by scroll velocity (passed as a
 // motion value) so tiles tilt as the page scrolls and flatten when still.
-function Tile({ p, photosLength, onOpen, tilt }) {
+function Tile({ p, photosLength, onOpen, tilt, thumbMaxEdge }) {
   return (
     <motion.button
       type="button"
@@ -53,7 +57,7 @@ function Tile({ p, photosLength, onOpen, tilt }) {
       {/* Fixed height, auto width → each photo keeps its own aspect ratio and
           shows in full (no crop). */}
       <img
-        src={galleryImageUrl(p.src, GALLERY_THUMB_MAX_EDGE)}
+        src={galleryImageUrl(p.src, thumbMaxEdge)}
         alt=""
         loading="lazy"
         decoding="async"
@@ -74,7 +78,7 @@ function Tile({ p, photosLength, onOpen, tilt }) {
 // scrolling down accelerates the ribbon and scrolling up reverses it. The row
 // content is repeated enough times to always overflow the viewport and wrapped
 // in pixels over one measured set width for a seamless loop.
-function VelocityRow({ items, baseVelocity, velocityFactor, tilt, paused, onOpen, photosLength }) {
+function VelocityRow({ items, baseVelocity, velocityFactor, tilt, paused, onOpen, photosLength, thumbMaxEdge }) {
   const baseX = useMotionValue(0)
   const directionFactor = useRef(1)
   const containerRef = useRef(null)
@@ -159,6 +163,7 @@ function VelocityRow({ items, baseVelocity, velocityFactor, tilt, paused, onOpen
             photosLength={photosLength}
             onOpen={onOpen}
             tilt={tilt}
+            thumbMaxEdge={thumbMaxEdge}
           />
         ))}
       </motion.div>
@@ -238,6 +243,18 @@ export default function Gallery() {
   // Cap the lightbox image to the device viewport — bounds decoded-image memory on
   // iOS. A plain viewport read (no reflow); stable while the viewport doesn't change.
   const lightboxMaxEdge = viewportMaxEdge()
+  // Thumbnail cap keyed to the same `md:` boundary that switches the tile height
+  // (h-48 → h-72), so small screens decode ~½ the pixels per thumb. Live query:
+  // rotating across the boundary re-buckets (and the row re-measures itself).
+  const mdUp = useMediaQuery('(min-width: 768px)')
+  const thumbMaxEdge = mdUp ? GALLERY_THUMB_MAX_EDGE : GALLERY_THUMB_MAX_EDGE_MOBILE
+
+  // While the lightbox is open the marquee sits behind an opaque backdrop doing
+  // nothing — display:none it so its ~N decoded thumbnails become evictable while
+  // the lightbox needs the memory. Veiled only after the backdrop finishes fading
+  // in (so rows never visibly vanish) and restored immediately on close (the exit
+  // fade masks it).
+  const [veiled, setVeiled] = useState(false)
 
   // Temporary experiment flags (?exp=nozoom / ?exp=lite) to isolate the iOS
   // content-process crash on slide transition. No effect unless enabled.
@@ -251,8 +268,15 @@ export default function Gallery() {
   }, [])
   const close = useCallback(() => {
     setOpen(null)
+    setVeiled(false)
     diagLog('lightbox-close')
   }, [])
+
+  // Safety net for close paths that bypass close() (e.g. photos emptying while
+  // open): never leave the marquee hidden without a lightbox over it.
+  useEffect(() => {
+    if (!lightboxOpen) setVeiled(false)
+  }, [lightboxOpen])
 
   // Escape only — arrow keys are the Keyboard module's job now.
   useEffect(() => {
@@ -343,7 +367,7 @@ export default function Gallery() {
 
       {/* Full-bleed ribbon so photos run edge to edge. */}
       {reduce ? (
-        <div className="mt-14 space-y-5 md:space-y-8">
+        <div className={`mt-14 space-y-5 md:space-y-8${veiled ? ' hidden' : ''}`}>
           {[rowA, rowB].map((row, ri) => (
             <div
               key={ri}
@@ -355,13 +379,14 @@ export default function Gallery() {
                   p={p}
                   photosLength={photos.length}
                   onOpen={openAt}
+                  thumbMaxEdge={thumbMaxEdge}
                 />
               ))}
             </div>
           ))}
         </div>
       ) : (
-        <div className="mt-14 space-y-5 md:space-y-8">
+        <div className={`mt-14 space-y-5 md:space-y-8${veiled ? ' hidden' : ''}`}>
           <VelocityRow
             items={rowA}
             baseVelocity={GALLERY_BASE_VELOCITY}
@@ -370,6 +395,7 @@ export default function Gallery() {
             paused={paused}
             onOpen={openAt}
             photosLength={photos.length}
+            thumbMaxEdge={thumbMaxEdge}
           />
           <VelocityRow
             items={rowB}
@@ -379,6 +405,7 @@ export default function Gallery() {
             paused={paused}
             onOpen={openAt}
             photosLength={photos.length}
+            thumbMaxEdge={thumbMaxEdge}
           />
         </div>
       )}
@@ -398,6 +425,12 @@ export default function Gallery() {
             // Contain overscroll so it can't chain into a browser back/forward nav.
             // (touch-action is left to Swiper so pinch-zoom / horizontal drag work.)
             style={{ overscrollBehavior: 'contain' }}
+            // Veil the marquee only once the backdrop is fully opaque — hiding it in
+            // the same render as open would visibly yank the rows away mid-fade. The
+            // opacity guard skips the exit animation's completion (opacity: 0).
+            onAnimationComplete={(def) => {
+              if (def?.opacity === 1) setVeiled(true)
+            }}
           >
             {/* Swiper owns every gesture: touch swipe, touchpad wheel
                 (Mousewheel), arrows (Keyboard), pinch/double-tap (Zoom, resets
@@ -431,42 +464,58 @@ export default function Gallery() {
                 diagLog('slide-change', `index=${s.realIndex}`)
               }}
             >
-              {photos.map((p, i) => (
-                <SwiperSlide key={p.id}>
-                  {/* zoom.css makes this div fill + flex-center the slide, so
-                      it doubles as the click-outside-the-photo close surface.
-                      defaultPrevented filters Swiper's post-drag ghost clicks
-                      (preventClicks preventDefaults them but only stops their
-                      propagation while a transition is running). */}
-                  {/* role="presentation": backdrop-click surface only —
-                      keyboard closing is Escape + the focus-trapped X. */}
-                  <div
-                    role="presentation"
-                    className={
-                      noZoom
-                        ? 'flex h-full w-full items-center justify-center'
-                        : 'swiper-zoom-container'
-                    }
-                    onClick={(e) => {
-                      if (e.target === e.currentTarget && !e.defaultPrevented) close()
-                    }}
-                  >
-                    {/* !important sizing: zoom.css's `.swiper-zoom-container >
-                        img` out-specifies Tailwind utilities. */}
-                    <img
-                      src={galleryImageUrl(p.src, lightboxMaxEdge)}
-                      loading="lazy"
-                      decoding="async"
-                      draggable={false}
-                      className={`!max-w-[92vw] !max-h-[88vh] rounded-lg object-contain select-none${
-                        liteExp ? '' : ' shadow-2xl'
-                      }`}
-                      alt={`${t('gallery.lightbox.alt')} ${i + 1} / ${photos.length}`}
-                    />
-                  </div>
-                  <div className="swiper-lazy-preloader swiper-lazy-preloader-white" />
-                </SwiperSlide>
-              ))}
+              {photos.map((p, i) => {
+                // Image windowing: every slide keeps its shell (so Swiper's loop,
+                // sizing and the backdrop-click surface are undisturbed), but only
+                // slides within a small loop-aware distance of the active one mount
+                // a live <img>. Live decoded images stay at 2R+1 no matter how many
+                // photos the gallery holds — with all N mounted, every photo paged
+                // past stayed decoded and 40+ photos jetsammed the tab on iOS.
+                const dist = loopDistance(i, current, photos.length)
+                const mountImg = dist <= LIGHTBOX_IMG_WINDOW_RADIUS
+                return (
+                  <SwiperSlide key={p.id}>
+                    {/* zoom.css makes this div fill + flex-center the slide, so
+                        it doubles as the click-outside-the-photo close surface.
+                        defaultPrevented filters Swiper's post-drag ghost clicks
+                        (preventClicks preventDefaults them but only stops their
+                        propagation while a transition is running). */}
+                    {/* role="presentation": backdrop-click surface only —
+                        keyboard closing is Escape + the focus-trapped X. */}
+                    <div
+                      role="presentation"
+                      className={
+                        noZoom
+                          ? 'flex h-full w-full items-center justify-center'
+                          : 'swiper-zoom-container'
+                      }
+                      onClick={(e) => {
+                        if (e.target === e.currentTarget && !e.defaultPrevented) close()
+                      }}
+                    >
+                      {/* !important sizing: zoom.css's `.swiper-zoom-container >
+                          img` out-specifies Tailwind utilities. */}
+                      {mountImg ? (
+                        <img
+                          src={galleryImageUrl(p.src, lightboxMaxEdge)}
+                          // dist<=1 loads eagerly: the neighbor is already visible
+                          // mid-drag, before slideChange updates `current`. dist 2
+                          // stays lazy; Swiper's lazyPreloadPrevNext strips the attr
+                          // the moment it becomes a neighbor.
+                          loading={dist <= 1 ? 'eager' : 'lazy'}
+                          decoding="async"
+                          draggable={false}
+                          className={`!max-w-[92vw] !max-h-[88vh] rounded-lg object-contain select-none${
+                            liteExp ? '' : ' shadow-2xl'
+                          }`}
+                          alt={`${t('gallery.lightbox.alt')} ${i + 1} / ${photos.length}`}
+                        />
+                      ) : null}
+                    </div>
+                    <div className="swiper-lazy-preloader swiper-lazy-preloader-white" />
+                  </SwiperSlide>
+                )
+              })}
             </Swiper>
             {/* Overlay chrome sits after the Swiper as siblings (z-10), so
                 clicks on it never reach the slides. */}

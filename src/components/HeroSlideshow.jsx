@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import useHeroSlideshow from '../hooks/useHeroSlideshow'
+import { galleryImageUrl, viewportMaxEdge } from '../lib/galleryImageUrl'
 
 // Entrance/exit defs, keyed to the variant names in useHeroSlideshow. `animate`
 // is the neutral resting state; enter (initial→animate) and exit only differ by
@@ -43,6 +44,10 @@ const TRANSITION = { duration: 1.4, ease: [0.4, 0, 0.2, 1] }
 // slides — and `initial={false}` so the first slide doesn't animate in on load.
 export default function HeroSlideshow({ slides, calm = false }) {
   const { slide, index, variant } = useHeroSlideshow(slides, { calm })
+  // Cap hero decodes to the viewport (an uncapped 2000px upload decodes ~16MB+;
+  // full-screen only ever needs viewport×DPR). Must match the preload URL in
+  // useHeroSlideshow exactly, or the preload is wasted.
+  const heroMaxEdge = viewportMaxEdge()
   if (!slide) return null
 
   const v = VARIANTS[variant] || VARIANTS.crossfade
@@ -54,7 +59,7 @@ export default function HeroSlideshow({ slides, calm = false }) {
       <AnimatePresence initial={false}>
         <motion.img
           key={slide.id ?? index}
-          src={slide.src}
+          src={galleryImageUrl(slide.src, heroMaxEdge)}
           alt=""
           decoding="async"
           fetchPriority="high"
