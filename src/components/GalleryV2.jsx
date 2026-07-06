@@ -28,6 +28,7 @@ import {
   LIGHTBOX_SLIDE_SPEED_MS,
   LIGHTBOX_ZOOM_MAX_RATIO,
   LIGHTBOX_SLIDE_GAP_PX,
+  LIGHTBOX_EDGE_GUARD_PX,
 } from '../lib/constants'
 import { galleryImageUrl, viewportMaxEdge } from '../lib/galleryImageUrl'
 import { diagLog } from '../lib/reloadDiag'
@@ -187,7 +188,7 @@ export default function Gallery() {
   const dialogRef = useRef(null)
   const closeBtnRef = useRef(null)
   // Live Swiper instance (the chevron buttons drive it) + the active photo
-  // index for the counter — fed by realIndex (equals activeIndex in rewind mode).
+  // index for the counter — fed by realIndex so it stays correct in loop mode.
   const swiperRef = useRef(null)
   const [current, setCurrent] = useState(0)
   const [inView, setInView] = useState(false)
@@ -263,18 +264,33 @@ export default function Gallery() {
     return () => window.removeEventListener('keydown', onKey)
   }, [lightboxOpen, close])
 
-  // Swiper's Mousewheel module preventDefaults horizontal wheels over its own
-  // container; this guard covers the leftovers — wheels landing on the overlay
-  // buttons, and every surface under reduced motion (no Lenis mounts there) —
-  // so the browser's two-finger history navigation can never fire while the
-  // lightbox is open. A second preventDefault after Swiper's is a no-op.
+  // Stop the browser's history navigation from firing while the lightbox is open:
+  //  • horizontal wheel — the trackpad "two-finger back" (Swiper's Mousewheel
+  //    handles its own container; this covers wheels over the overlay buttons and
+  //    every surface under reduced motion where no Lenis mounts).
+  //  • touchstart within the screen-edge band — iOS's system swipe-back, which
+  //    otherwise hijacks a horizontal Swiper drag (or an edge-hugging arrow-button
+  //    tap) into a back/forward navigation. Control taps are exempt so close/prev/
+  //    next still work; Swiper's wrapper handler runs before this window-bubble
+  //    handler, so the slide still moves while only the default gesture is cancelled.
   useEffect(() => {
     if (!lightboxOpen) return
     const onWheel = (e) => {
       if (!e.ctrlKey && Math.abs(e.deltaX) > Math.abs(e.deltaY)) e.preventDefault()
     }
+    const onTouchStart = (e) => {
+      const x = e.touches?.[0]?.clientX
+      if (x == null || e.target?.closest?.('button, a')) return
+      if (x <= LIGHTBOX_EDGE_GUARD_PX || x >= window.innerWidth - LIGHTBOX_EDGE_GUARD_PX) {
+        e.preventDefault()
+      }
+    }
     window.addEventListener('wheel', onWheel, { passive: false })
-    return () => window.removeEventListener('wheel', onWheel)
+    window.addEventListener('touchstart', onTouchStart, { passive: false })
+    return () => {
+      window.removeEventListener('wheel', onWheel)
+      window.removeEventListener('touchstart', onTouchStart)
+    }
   }, [lightboxOpen])
 
   // Pause the marquee whenever the section is offscreen or the tab is hidden.
@@ -379,6 +395,9 @@ export default function Gallery() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
             className="fixed inset-0 z-[60] bg-black/90"
+            // Contain overscroll so it can't chain into a browser back/forward nav.
+            // (touch-action is left to Swiper so pinch-zoom / horizontal drag work.)
+            style={{ overscrollBehavior: 'contain' }}
           >
             {/* Swiper owns every gesture: touch swipe, touchpad wheel
                 (Mousewheel), arrows (Keyboard), pinch/double-tap (Zoom, resets
@@ -390,9 +409,13 @@ export default function Gallery() {
               className="absolute inset-0 h-full w-full"
               data-cursor="drag"
               initialSlide={open}
-              rewind={photos.length > 1}
+              loop={photos.length > 1}
               speed={reduce ? 0 : LIGHTBOX_SLIDE_SPEED_MS}
               spaceBetween={LIGHTBOX_SLIDE_GAP_PX}
+              // Cancel the iOS system swipe-back so a horizontal drag changes slides
+              // instead of navigating back; needs non-passive listeners to work.
+              edgeSwipeDetection="prevent"
+              passiveListeners={false}
               mousewheel={{
                 forceToAxis: true,
                 thresholdDelta: LIGHTBOX_WHEEL_THRESHOLD_DELTA,
@@ -465,14 +488,14 @@ export default function Gallery() {
                 <button
                   onClick={() => swiperRef.current?.slidePrev()}
                   aria-label={t('gallery.lightbox.prev')}
-                  className="absolute left-3 md:left-8 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
+                  className="absolute left-6 md:left-8 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
                 >
                   <ChevronLeft size={26} />
                 </button>
                 <button
                   onClick={() => swiperRef.current?.slideNext()}
                   aria-label={t('gallery.lightbox.next')}
-                  className="absolute right-3 md:right-8 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
+                  className="absolute right-6 md:right-8 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
                 >
                   <ChevronRight size={26} />
                 </button>

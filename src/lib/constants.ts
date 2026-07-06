@@ -41,6 +41,11 @@ export const LIGHTBOX_ZOOM_MAX_RATIO = 3
 // Gap between lightbox slides so neighbors never peek at the edges.
 export const LIGHTBOX_SLIDE_GAP_PX = 24
 
+// Screen-edge band (px) where the lightbox swallows touchstart so an iOS system
+// swipe-back gesture can't hijack a horizontal Swiper drag into a browser
+// back/forward navigation. Slightly wider than iOS's ~20px edge zone.
+export const LIGHTBOX_EDGE_GUARD_PX = 24
+
 // Right-sizing caps (longest edge, px) for gallery images. Decoded-image memory is
 // width×height×4 bytes regardless of JPEG/WebP, so capping *dimensions* is what
 // bounds it — the fix for the iOS WebKit (WKWebView) memory-termination reload that
