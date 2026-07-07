@@ -23,6 +23,16 @@ export const GALLERY_BASE_VELOCITY = 50
 // merged even/odd split so neither marquee looks sparse.
 export const GALLERY_MIN_PER_LINE = 10
 
+// Gallery pin + scroll-scrub: when the section top reaches the viewport top it
+// pins (sticky) and further scroll scrubs both rows through exactly one content
+// period. The extra scroll runway is proportional to the widest row's period —
+// SCRUB_RATIO converts row px to scroll px (0.7 → rows travel ~1.4× scroll
+// speed) — clamped between MIN/MAX viewport-heights so tiny galleries still get
+// a felt pin and huge ones can't pin forever (they scrub faster instead).
+export const GALLERY_SCRUB_RATIO = 0.7
+export const GALLERY_PIN_MIN_VH = 120
+export const GALLERY_PIN_MAX_VH = 320
+
 // Lightbox Swiper tuning. THRESHOLD_DELTA is the Mousewheel module's
 // per-event floor (NOT an accumulator): a deliberate touchpad flick peaks
 // well above it while momentum-tail jitter and small nudges stay below, and

@@ -35,6 +35,7 @@ import {
 } from '../lib/constants'
 import { galleryImageUrl, viewportMaxEdge } from '../lib/galleryImageUrl'
 import { loopDistance } from '../lib/lightboxWindow'
+import { pinExtraPx } from '../lib/galleryPin'
 import { diagLog } from '../lib/reloadDiag'
 import { hasExp } from '../lib/expFlags'
 import SplitText from './fx/SplitText.jsx'
@@ -78,7 +79,13 @@ function Tile({ p, photosLength, onOpen, tilt, thumbMaxEdge }) {
 // scrolling down accelerates the ribbon and scrolling up reverses it. The row
 // content is repeated enough times to always overflow the viewport and wrapped
 // in pixels over one measured set width for a seamless loop.
-function VelocityRow({ items, baseVelocity, velocityFactor, tilt, paused, onOpen, photosLength, thumbMaxEdge }) {
+//
+// `pinProgress` (0→1 across the gallery's pinned phase) scrubs the row by
+// exactly one period on top of the drift — at 1 the added offset is a full
+// period ≡ 0 (mod period), so the unpin hand-off is seamless by construction.
+// `onPeriodChange` reports the measured set width up so the parent can size
+// the pin's scroll runway proportionally.
+function VelocityRow({ items, baseVelocity, velocityFactor, tilt, paused, onOpen, photosLength, thumbMaxEdge, pinProgress, onPeriodChange }) {
   const baseX = useMotionValue(0)
   const directionFactor = useRef(1)
   const containerRef = useRef(null)
@@ -104,7 +111,9 @@ function VelocityRow({ items, baseVelocity, velocityFactor, tilt, paused, onOpen
       if (!first || !nextSet || !first.offsetWidth) return
       const setW = nextSet.offsetLeft - first.offsetLeft
       if (!setW) return
+      const changed = periodRef.current !== setW
       periodRef.current = setW
+      if (changed) onPeriodChange?.(setW)
       // Re-base the accumulator into one period so the px wrap below stays in
       // range (and stops unbounded growth over long sessions).
       baseX.set(wrap(-setW, 0, baseX.get()))
@@ -118,13 +127,16 @@ function VelocityRow({ items, baseVelocity, velocityFactor, tilt, paused, onOpen
     if (containerRef.current) ro.observe(containerRef.current)
     if (trackRef.current) ro.observe(trackRef.current)
     return () => ro.disconnect()
-  }, [items.length, baseX])
+  }, [items.length, baseX, onPeriodChange])
 
-  // Wrap in pixels by the measured period; read it from a ref so it is always
-  // current after a resize.
-  const x = useTransform(baseX, (v) => {
-    const p = periodRef.current
-    return p ? `${wrap(-p, 0, v)}px` : '0px'
+  // Wrap in pixels by the measured period (read from a ref so it is always
+  // current after a resize), with the pin scrub added on top of the drift:
+  // scroll progress p slides the row dir·p·period px along its own direction.
+  const x = useTransform([baseX, pinProgress], ([b, p]) => {
+    const per = periodRef.current
+    if (!per) return '0px'
+    const dir = baseVelocity >= 0 ? 1 : -1
+    return `${wrap(-per, 0, b + dir * p * per)}px`
   })
 
   useAnimationFrame((t, delta) => {
@@ -203,6 +215,31 @@ export default function Gallery() {
   // Lenis scrolls programmatically from window-level wheel/touch listeners and
   // ignores CSS overflow, so the lock also stop()s Lenis.
   useScrollLock(lightboxOpen)
+
+  // Pin + scroll-scrub: the section is a runway taller than the viewport with a
+  // sticky inner. Progress spans exactly the pinned phase — 0 while approaching
+  // (rows auto-drift only), 0→1 while pinned (scroll scrubs each row through one
+  // full period), 1 after release (offset ≡ 0 mod period → seamless hand-off).
+  const { scrollYProgress: pinProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  })
+  // Rows report their measured periods so the runway length can scale with the
+  // widest row (clamped in pinExtraPx). State feeds only the section height.
+  const [periods, setPeriods] = useState({ a: 0, b: 0 })
+  const reportPeriodA = useCallback(
+    (p) => setPeriods((s) => (s.a === p ? s : { ...s, a: p })),
+    [],
+  )
+  const reportPeriodB = useCallback(
+    (p) => setPeriods((s) => (s.b === p ? s : { ...s, b: p })),
+    [],
+  )
+  const pinEnabled = !reduce && photos.length > 0
+  const pinExtra = pinExtraPx(
+    Math.max(periods.a, periods.b),
+    typeof window !== 'undefined' ? window.innerHeight : 0,
+  )
 
   // Scroll-velocity chain, shared by both rows. Smoothed so the ribbon eases
   // in/out of speed-ups instead of snapping.
@@ -347,67 +384,100 @@ export default function Gallery() {
   // Freeze the ribbon while the lightbox is open OR the section is offscreen/hidden.
   const paused = lightboxOpen || !inView || tabHidden
 
-  return (
-    <section ref={sectionRef} id="gallery" data-cursor-id="gallery" className="section-padding relative bg-bg overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center max-w-2xl mx-auto">
-          <p className="eyebrow">{t('gallery.eyebrow')}</p>
-          <SplitText
-            as="h2"
-            text={t('gallery.title')}
-            className="font-display mt-3 text-4xl md:text-6xl text-center"
-          />
-          <SectionSubtitle text={t('gallery.subhead')} />
-          <div className="divider-leaf my-6">
-            <span className="font-script text-2xl">{t('gallery.divider')}</span>
-          </div>
-          <p className="text-muted">{t('gallery.subtitle')}</p>
+  const headingBlock = (
+    <div className="max-w-7xl mx-auto px-6">
+      <div className="text-center max-w-2xl mx-auto">
+        <p className="eyebrow">{t('gallery.eyebrow')}</p>
+        <SplitText
+          as="h2"
+          text={t('gallery.title')}
+          className="font-display mt-3 text-4xl md:text-6xl text-center"
+        />
+        <SectionSubtitle text={t('gallery.subhead')} />
+        <div className="divider-leaf my-6">
+          <span className="font-script text-2xl">{t('gallery.divider')}</span>
         </div>
+        <p className="text-muted">{t('gallery.subtitle')}</p>
       </div>
+    </div>
+  )
 
-      {/* Full-bleed ribbon so photos run edge to edge. */}
-      {reduce ? (
-        <div className={`mt-14 space-y-5 md:space-y-8${veiled ? ' hidden' : ''}`}>
-          {[rowA, rowB].map((row, ri) => (
-            <div
-              key={ri}
-              className="flex overflow-x-auto px-6 pb-2 [scrollbar-width:none]"
-            >
-              {row.map((p) => (
-                <Tile
-                  key={p.id}
-                  p={p}
-                  photosLength={photos.length}
-                  onOpen={openAt}
-                  thumbMaxEdge={thumbMaxEdge}
-                />
-              ))}
-            </div>
+  // Full-bleed ribbon so photos run edge to edge. The velocity branch tightens
+  // its top margin below md so heading + both rows fit the pinned 100svh on
+  // small phones.
+  const rowsBlock = reduce ? (
+    <div className={`mt-14 space-y-5 md:space-y-8${veiled ? ' hidden' : ''}`}>
+      {[rowA, rowB].map((row, ri) => (
+        <div
+          key={ri}
+          className="flex overflow-x-auto px-6 pb-2 [scrollbar-width:none]"
+        >
+          {row.map((p) => (
+            <Tile
+              key={p.id}
+              p={p}
+              photosLength={photos.length}
+              onOpen={openAt}
+              thumbMaxEdge={thumbMaxEdge}
+            />
           ))}
         </div>
-      ) : (
-        <div className={`mt-14 space-y-5 md:space-y-8${veiled ? ' hidden' : ''}`}>
-          <VelocityRow
-            items={rowA}
-            baseVelocity={GALLERY_BASE_VELOCITY}
-            velocityFactor={velocityFactor}
-            tilt={tiltA}
-            paused={paused}
-            onOpen={openAt}
-            photosLength={photos.length}
-            thumbMaxEdge={thumbMaxEdge}
-          />
-          <VelocityRow
-            items={rowB}
-            baseVelocity={-GALLERY_BASE_VELOCITY}
-            velocityFactor={velocityFactor}
-            tilt={tiltB}
-            paused={paused}
-            onOpen={openAt}
-            photosLength={photos.length}
-            thumbMaxEdge={thumbMaxEdge}
-          />
+      ))}
+    </div>
+  ) : (
+    <div className={`mt-8 md:mt-14 space-y-5 md:space-y-8${veiled ? ' hidden' : ''}`}>
+      <VelocityRow
+        items={rowA}
+        baseVelocity={GALLERY_BASE_VELOCITY}
+        velocityFactor={velocityFactor}
+        tilt={tiltA}
+        paused={paused}
+        onOpen={openAt}
+        photosLength={photos.length}
+        thumbMaxEdge={thumbMaxEdge}
+        pinProgress={pinProgress}
+        onPeriodChange={reportPeriodA}
+      />
+      <VelocityRow
+        items={rowB}
+        baseVelocity={-GALLERY_BASE_VELOCITY}
+        velocityFactor={velocityFactor}
+        tilt={tiltB}
+        paused={paused}
+        onOpen={openAt}
+        photosLength={photos.length}
+        thumbMaxEdge={thumbMaxEdge}
+        pinProgress={pinProgress}
+        onPeriodChange={reportPeriodB}
+      />
+    </div>
+  )
+
+  return (
+    // Pinned mode: the section is a scroll runway (100svh + pinExtra) whose
+    // sticky inner holds the heading + rows for the scrub phase. No overflow
+    // class on the runway itself — an overflow wrapper between the scroller and
+    // a sticky element breaks pinning (the sticky inner carries the clip). The
+    // reduce / empty-gallery branch keeps today's padded static section.
+    <section
+      ref={sectionRef}
+      id="gallery"
+      data-cursor-id="gallery"
+      className={
+        pinEnabled ? 'relative bg-bg' : 'section-padding relative bg-bg overflow-hidden'
+      }
+      style={pinEnabled ? { height: `calc(100svh + ${pinExtra}px)` } : undefined}
+    >
+      {pinEnabled ? (
+        <div className="sticky top-0 h-[100svh] overflow-hidden flex flex-col justify-center">
+          {headingBlock}
+          {rowsBlock}
         </div>
+      ) : (
+        <>
+          {headingBlock}
+          {rowsBlock}
+        </>
       )}
 
       <AnimatePresence>
