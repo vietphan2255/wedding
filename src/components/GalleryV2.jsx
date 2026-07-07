@@ -391,13 +391,13 @@ export default function Gallery() {
         <SplitText
           as="h2"
           text={t('gallery.title')}
-          className="font-display mt-3 text-4xl md:text-6xl text-center"
+          className="font-display section-title text-center"
         />
         <SectionSubtitle text={t('gallery.subhead')} />
-        <div className="divider-leaf my-6">
+        <div className="divider-leaf section-divider">
           <span className="font-script text-2xl">{t('gallery.divider')}</span>
         </div>
-        <p className="text-muted">{t('gallery.subtitle')}</p>
+        <p className="text-muted section-desc">{t('gallery.subtitle')}</p>
       </div>
     </div>
   )

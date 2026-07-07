@@ -100,12 +100,12 @@ export default function RSVP() {
       <div className="max-w-3xl mx-auto px-6">
         <FadeIn className="text-center">
           <p className="eyebrow">{t('rsvp.eyebrow')}</p>
-          <h2 className="font-display mt-3 text-4xl md:text-6xl">{t('rsvp.title')}</h2>
+          <h2 className="font-display section-title">{t('rsvp.title')}</h2>
           <SectionSubtitle text={t('rsvp.subhead')} />
-          <div className="divider-leaf my-6">
+          <div className="divider-leaf section-divider">
             <span className="font-script text-2xl">{t('rsvp.divider')}</span>
           </div>
-          <p className="text-muted">{t('rsvp.subtitle')}</p>
+          <p className="text-muted section-desc">{t('rsvp.subtitle')}</p>
           {t('rsvp.deadline') && (
             <p className="mt-3 text-[12px]">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-highlight/40 bg-highlight/10 px-3.5 py-1.5 tracking-[0.06em] font-medium text-highlight">

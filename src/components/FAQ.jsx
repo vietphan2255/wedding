@@ -19,14 +19,14 @@ export default function FAQ() {
       <div className="max-w-3xl mx-auto px-6">
         <FadeIn className="text-center">
           <p className="eyebrow">{t('faq.eyebrow')}</p>
-          <h2 className="font-display mt-3 text-4xl md:text-6xl">
+          <h2 className="font-display section-title">
             {t('faq.title')}
           </h2>
           <SectionSubtitle text={t('faq.subhead')} />
-          <div className="divider-leaf my-6">
+          <div className="divider-leaf section-divider">
             <HelpCircle size={16} className="text-accent" />
           </div>
-          <p className="text-muted">{t('faq.subtitle')}</p>
+          <p className="text-muted section-desc">{t('faq.subtitle')}</p>
         </FadeIn>
 
         <ul className="mt-12 space-y-3">

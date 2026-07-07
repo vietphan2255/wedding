@@ -96,13 +96,13 @@ export default function CeremonyTimeline() {
           <SplitText
             as="h2"
             text={t('timeline.title')}
-            className="font-display mt-3 text-4xl md:text-6xl text-center"
+            className="font-display section-title text-center"
           />
           <SectionSubtitle text={t('timeline.subhead')} />
-          <div className="divider-leaf my-6">
+          <div className="divider-leaf section-divider">
             <span className="font-script text-2xl">{t('timeline.divider')}</span>
           </div>
-          <p className="text-muted">{t('timeline.subtitle')}</p>
+          <p className="text-muted section-desc">{t('timeline.subtitle')}</p>
         </div>
 
         <div ref={railRef} className="mt-20 relative">

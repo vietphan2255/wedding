@@ -55,12 +55,12 @@ export default function Wishes() {
       <div className="max-w-5xl mx-auto px-6">
         <FadeIn className="text-center">
           <p className="eyebrow">{t('wishes.eyebrow')}</p>
-          <h2 className="font-display mt-3 text-4xl md:text-6xl">{t('wishes.title')}</h2>
+          <h2 className="font-display section-title">{t('wishes.title')}</h2>
           <SectionSubtitle text={t('wishes.subhead')} />
-          <div className="divider-leaf my-6">
+          <div className="divider-leaf section-divider">
             <Heart size={16} className="text-accent" />
           </div>
-          <p className="text-muted">{t('wishes.subtitle')}</p>
+          <p className="text-muted section-desc">{t('wishes.subtitle')}</p>
         </FadeIn>
 
         <FadeIn delay={0.1}>

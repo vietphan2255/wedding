@@ -30,13 +30,13 @@ export default function Story() {
           <SplitText
             as="h2"
             text={t('story.title')}
-            className="font-display mt-3 text-4xl md:text-6xl text-center"
+            className="font-display section-title text-center"
           />
           <SectionSubtitle text={t('story.subhead')} />
-          <div className="divider-leaf my-6">
+          <div className="divider-leaf section-divider">
             <span className="font-script text-2xl">{t('story.divider')}</span>
           </div>
-          <p className="text-muted leading-relaxed">{t('story.intro')}</p>
+          <p className="text-muted leading-relaxed section-desc">{t('story.intro')}</p>
         </div>
 
         <div ref={timelineRef} className="mt-20 relative">
