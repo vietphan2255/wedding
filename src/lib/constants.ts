@@ -74,6 +74,13 @@ export const LIGHTBOX_MAX_EDGE_CAP = 1600
 // and one long drag can commit 2 slides.
 export const LIGHTBOX_IMG_WINDOW_RADIUS = 2
 
+// Hero slideshow cross-dissolve. A gentle symmetric ease (not the front-loaded
+// material curve) so the long fade progresses evenly instead of settling early;
+// the dwell floor in useHeroSlideshow derives from the duration so an admin-set
+// slide time can never re-fire mid-dissolve.
+export const HERO_FADE_DURATION_S = 2.6
+export const HERO_FADE_EASE = [0.45, 0.05, 0.55, 0.95]
+
 // How long the startup loading gate waits for the RTDB `.info/connected` signal
 // before showing its retry fallback. Healthy connections resolve in ~1–3s.
 export const FIREBASE_CONNECT_TIMEOUT_MS = 12_000

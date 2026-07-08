@@ -1,42 +1,51 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import useHeroSlideshow from '../hooks/useHeroSlideshow'
 import { galleryImageUrl, viewportMaxEdge } from '../lib/galleryImageUrl'
+import { HERO_FADE_DURATION_S, HERO_FADE_EASE } from '../lib/constants'
 
 // Entrance/exit defs, keyed to the variant names in useHeroSlideshow. `animate`
-// is the neutral resting state; enter (initial→animate) and exit only differ by
-// opacity plus a small transform, so the outgoing and incoming layers overlap
-// smoothly. The pan variants keep scale ≥ 1.06 so the ±3% slide never reveals an
-// empty edge. The exiting image keeps the variant it entered with (AnimatePresence
+// is the neutral resting state. The incoming image dissolves in ON TOP of the
+// outgoing one (AnimatePresence keeps the exiting element first in the DOM, so
+// the entering sibling paints above it) — exits therefore HOLD opacity at 1 and
+// only drift their transform: if both layers faded at once, the pair would be
+// ~75% opaque mid-swap and the page background would flash through as a dip.
+// The outgoing layer unmounts invisibly once the incoming is fully opaque. The
+// pan variants keep scale ≥ 1.06 so the ±3% slide never reveals an empty edge.
+// The exiting image keeps the variant it entered with (AnimatePresence
 // snapshots its props), so each swap mixes one random enter with the prior exit.
 const VARIANTS = {
   crossfade: {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
-    exit: { opacity: 0 },
+    // No transform delta here, and a 1→1 opacity "animation" would complete
+    // instantly — unmounting the outgoing under a half-faded incoming (flash).
+    // 1→0.999 runs the full duration and is imperceptible; opacity-only, so the
+    // calm (phone / reduced-motion) path stays motion-minimal.
+    exit: { opacity: 0.999 },
   },
   zoomIn: {
     initial: { opacity: 0, scale: 1.12 },
     animate: { opacity: 1, scale: 1.05 },
-    exit: { opacity: 0, scale: 1.0 },
+    exit: { opacity: 1, scale: 1.0 },
   },
   zoomOut: {
     initial: { opacity: 0, scale: 1.0 },
     animate: { opacity: 1, scale: 1.05 },
-    exit: { opacity: 0, scale: 1.12 },
+    exit: { opacity: 1, scale: 1.12 },
   },
   panLeft: {
     initial: { opacity: 0, x: '3%', scale: 1.06 },
     animate: { opacity: 1, x: '0%', scale: 1.06 },
-    exit: { opacity: 0, x: '-3%', scale: 1.06 },
+    exit: { opacity: 1, x: '-3%', scale: 1.06 },
   },
   panRight: {
     initial: { opacity: 0, x: '-3%', scale: 1.06 },
     animate: { opacity: 1, x: '0%', scale: 1.06 },
-    exit: { opacity: 0, x: '3%', scale: 1.06 },
+    exit: { opacity: 1, x: '3%', scale: 1.06 },
   },
 }
 
-const TRANSITION = { duration: 1.4, ease: [0.4, 0, 0.2, 1] }
+const TRANSITION = { duration: HERO_FADE_DURATION_S, ease: HERO_FADE_EASE }
 
 // Cycling hero background. Stacks absolutely-positioned image layers under a
 // single overlay so swaps never flash. Uses the default (overlapping)

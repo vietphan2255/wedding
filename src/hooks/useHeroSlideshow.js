@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { galleryImageUrl, viewportMaxEdge } from '../lib/galleryImageUrl'
+import { HERO_FADE_DURATION_S } from '../lib/constants'
 
 const DEFAULT_DURATION = 6 // seconds, when a slide omits/zeros its duration
-const MIN_DURATION = 2 // floor so a typo can't strobe the hero
+// Dwell floor: transition-aware so an admin-set short slide time can never
+// re-fire mid-dissolve (which would stack three layers and churn constantly).
+const MIN_DURATION = Math.ceil(HERO_FADE_DURATION_S + 1.5)
 
 // Rich entrance variants picked at random per transition (visual defs live in
 // HeroSlideshow). Exported so the component and picker share one source of truth.
