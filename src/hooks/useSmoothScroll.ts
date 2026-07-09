@@ -6,6 +6,12 @@ import {
   SMOOTH_SCROLL_IDLE_VELOCITY,
 } from '../lib/constants'
 
+// TEMP: hero auto-snap disabled. When on, the first downward scroll in the hero
+// hijacked the page and glided (uninterruptibly) down to #invitation, blocking
+// normal scrolling. Flip to `true` to restore — the whole implementation below
+// is left intact; only its event listeners are gated on this flag.
+const HERO_AUTOSNAP_ENABLED: boolean = false
+
 // Lenis smooth scroll, but only ticks while the user is scrolling or Lenis is
 // still settling. When the page is idle the rAF stops, so phones aren't burning
 // a frame per 16ms for nothing. Anchor links and `prefers-reduced-motion` work
@@ -171,11 +177,15 @@ export default function useSmoothScroll(): void {
         snapToNext()
       }
     }
-    window.addEventListener('wheel', onWheelSnap, opts)
-    window.addEventListener('touchstart', onTouchStartSnap, opts)
-    window.addEventListener('touchmove', onTouchMoveSnap, opts)
-    window.addEventListener('touchend', onTouchEndSnap, opts)
-    window.addEventListener('keydown', onKeySnap)
+    // Attaching these is what arms the hero auto-snap; gated off for now so the
+    // hero scrolls like any other section (handlers/refs above kept intact).
+    if (HERO_AUTOSNAP_ENABLED) {
+      window.addEventListener('wheel', onWheelSnap, opts)
+      window.addEventListener('touchstart', onTouchStartSnap, opts)
+      window.addEventListener('touchmove', onTouchMoveSnap, opts)
+      window.addEventListener('touchend', onTouchEndSnap, opts)
+      window.addEventListener('keydown', onKeySnap)
+    }
 
     return () => {
       document.removeEventListener('click', onAnchor)
