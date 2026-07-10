@@ -174,3 +174,66 @@ test('reduced motion keeps the static, unpinned gallery', async ({ page }) => {
   await expect(page.locator('#gallery > div.sticky')).toHaveCount(0)
   await expect(page.locator('#gallery [class*="overflow-x-auto"]')).toHaveCount(2)
 })
+
+// Short / landscape viewports can't fit the heading + both marquee rows in one
+// 100svh. The pinned box scales the tiles with svh and, via `safe center` under
+// the reserved Navbar height, keeps the whole heading (title/subtitle/desc)
+// below the fixed nav and never clips it — overflow spills off the bottom row.
+test('gallery heading clears the fixed nav and stays fully visible on a short viewport', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 812, height: 375 })
+  await page.goto('/')
+  await page.locator('#gallery').waitFor({ state: 'attached', timeout: 20_000 })
+
+  const roughTop = await page.evaluate(
+    () =>
+      (document.querySelector('#gallery')?.getBoundingClientRect().top ?? 0) +
+      window.scrollY,
+  )
+  await wheelScrollTo(page, roughTop)
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          document
+            .querySelector('#gallery button[aria-label^="Open photo"]')
+            ?.getBoundingClientRect().width ?? 0,
+      ),
+    )
+    .toBeGreaterThan(0)
+
+  // Wheel solidly into the pinned phase so the sticky inner locks to the top.
+  const g = await page.evaluate(() => {
+    const s = document.querySelector('#gallery') as HTMLElement
+    return {
+      top: s.getBoundingClientRect().top + window.scrollY,
+      h: s.offsetHeight,
+      vpH: window.innerHeight,
+    }
+  })
+  await wheelScrollTo(page, g.top + (g.h - g.vpH) * 0.3)
+
+  const geo = await page.evaluate(() => {
+    const box = document.querySelector('#gallery > div.sticky') as HTMLElement
+    const b = box.getBoundingClientRect()
+    const heading = (box.children[0] as HTMLElement).getBoundingClientRect()
+    const header = document.querySelector('header') as HTMLElement
+    return {
+      stickyTop: b.top,
+      boxTop: b.top,
+      boxBottom: b.bottom,
+      headingTop: heading.top,
+      headingBottom: heading.bottom,
+      navBottom: header.getBoundingClientRect().bottom,
+    }
+  })
+
+  // Pinned at the viewport top.
+  expect(Math.abs(geo.stickyTop)).toBeLessThanOrEqual(2)
+  // The whole heading sits below the fixed nav (title never hidden behind it) …
+  expect(geo.headingTop).toBeGreaterThanOrEqual(geo.navBottom - 1)
+  // … and is fully within the pinned viewport box (never clipped off the top).
+  expect(geo.headingTop).toBeGreaterThanOrEqual(geo.boxTop - 1)
+  expect(geo.headingBottom).toBeLessThanOrEqual(geo.boxBottom + 1)
+})

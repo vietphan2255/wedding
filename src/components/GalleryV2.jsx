@@ -43,7 +43,7 @@ import SectionSubtitle from './SectionSubtitle.jsx'
 
 // A single photo "plane". rotateY is driven by scroll velocity (passed as a
 // motion value) so tiles tilt as the page scrolls and flatten when still.
-function Tile({ p, photosLength, onOpen, tilt, thumbMaxEdge }) {
+function Tile({ p, photosLength, onOpen, tilt, thumbMaxEdge, heightClass = 'h-48 md:h-72' }) {
   return (
     <motion.button
       type="button"
@@ -53,7 +53,7 @@ function Tile({ p, photosLength, onOpen, tilt, thumbMaxEdge }) {
       style={tilt ? { rotateY: tilt } : undefined}
       whileHover={{ scale: 1.6 }}
       transition={{ type: 'spring', duration: 0.8, bounce: 0.15 }}
-      className="group relative shrink-0 mr-5 md:mr-8 h-48 md:h-72 w-auto overflow-hidden rounded-xl cursor-pointer [backface-visibility:hidden] will-change-transform transition-shadow duration-300 hover:shadow-[0_22px_45px_-12px_rgba(0,0,0,0.55)] hover:z-10"
+      className={`group relative shrink-0 mr-5 md:mr-8 ${heightClass} w-auto overflow-hidden rounded-xl cursor-pointer [backface-visibility:hidden] will-change-transform transition-shadow duration-300 hover:shadow-[0_22px_45px_-12px_rgba(0,0,0,0.55)] hover:z-10`}
     >
       {/* Fixed height, auto width → each photo keeps its own aspect ratio and
           shows in full (no crop). */}
@@ -85,7 +85,7 @@ function Tile({ p, photosLength, onOpen, tilt, thumbMaxEdge }) {
 // period ≡ 0 (mod period), so the unpin hand-off is seamless by construction.
 // `onPeriodChange` reports the measured set width up so the parent can size
 // the pin's scroll runway proportionally.
-function VelocityRow({ items, baseVelocity, velocityFactor, tilt, paused, onOpen, photosLength, thumbMaxEdge, pinProgress, onPeriodChange }) {
+function VelocityRow({ items, baseVelocity, velocityFactor, tilt, paused, onOpen, photosLength, thumbMaxEdge, pinProgress, onPeriodChange, heightClass }) {
   const baseX = useMotionValue(0)
   const directionFactor = useRef(1)
   const containerRef = useRef(null)
@@ -176,6 +176,7 @@ function VelocityRow({ items, baseVelocity, velocityFactor, tilt, paused, onOpen
             onOpen={onOpen}
             tilt={tilt}
             thumbMaxEdge={thumbMaxEdge}
+            heightClass={heightClass}
           />
         ))}
       </motion.div>
@@ -425,7 +426,7 @@ export default function Gallery() {
       ))}
     </div>
   ) : (
-    <div className={`mt-8 md:mt-14 space-y-5 md:space-y-8${veiled ? ' hidden' : ''}`}>
+    <div className={`mt-[clamp(0.75rem,3svh,3.5rem)] space-y-[clamp(0.5rem,2svh,2rem)]${veiled ? ' hidden' : ''}`}>
       <VelocityRow
         items={rowA}
         baseVelocity={GALLERY_BASE_VELOCITY}
@@ -437,6 +438,7 @@ export default function Gallery() {
         thumbMaxEdge={thumbMaxEdge}
         pinProgress={pinProgress}
         onPeriodChange={reportPeriodA}
+        heightClass="gallery-tile-fit"
       />
       <VelocityRow
         items={rowB}
@@ -449,6 +451,7 @@ export default function Gallery() {
         thumbMaxEdge={thumbMaxEdge}
         pinProgress={pinProgress}
         onPeriodChange={reportPeriodB}
+        heightClass="gallery-tile-fit"
       />
     </div>
   )
@@ -469,7 +472,13 @@ export default function Gallery() {
       style={pinEnabled ? { height: `calc(100svh + ${pinExtra}px)` } : undefined}
     >
       {pinEnabled ? (
-        <div className="sticky top-0 h-[100svh] overflow-hidden flex flex-col justify-center">
+        // pt reserves the fixed Navbar (h-16) so the heading never sits under it;
+        // `safe center` keeps the heading + rows vertically centered when they fit
+        // but falls back to top-alignment when they don't — so on very short screens
+        // any overflow spills off the bottom (a decorative marquee row), never
+        // clipping the title/subtitle/description off the top. Tile heights below
+        // scale with svh so this overflow only happens on the shortest viewports.
+        <div className="sticky top-0 h-[100svh] overflow-hidden flex flex-col [justify-content:safe_center] pt-[4.5rem]">
           {headingBlock}
           {rowsBlock}
         </div>

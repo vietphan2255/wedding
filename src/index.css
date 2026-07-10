@@ -181,6 +181,17 @@ html.lenis body {
   margin-block: clamp(1rem, 3vw, 1.5rem);
 }
 
+/* Gallery pinned viewport: scale the marquee tile height + heading divider
+   rhythm to the viewport HEIGHT so the heading + both rows always fit one
+   screen (no crop) on short / landscape screens. Caps equal today's sizes, so
+   normal / tall screens are unchanged. */
+.gallery-tile-fit {
+  height: clamp(5.5rem, 29svh, 18rem); /* 88px … 29svh … 288px (= today's h-72) */
+}
+#gallery .section-divider {
+  margin-block: clamp(0.4rem, 1.6svh, 1.5rem);
+}
+
 .section-padding {
   padding-top: clamp(4rem, 9vw, 8rem);
   padding-bottom: clamp(4rem, 9vw, 8rem);
