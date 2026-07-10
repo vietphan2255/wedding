@@ -116,6 +116,57 @@ test('arrow keys navigate, clicking outside the photo closes', async ({
   await expect(page.locator('[role="dialog"]')).toHaveCount(0)
 })
 
+test('arrow keys navigate after the page has scrolled to the gallery', async ({
+  page,
+}) => {
+  // Production repro: Swiper's Keyboard module defaults to onlyInViewport,
+  // whose check adds window.scrollY to the fixed dialog's rect and compares
+  // the result against the viewport box — so once the page is scrolled past
+  // one viewport (every real visit; the gallery sits far down the page) all
+  // four corners "leave" the window and arrows are silently ignored.
+  // openLightbox() above opens at scrollY=0, which is why the arrow test
+  // there never caught it.
+  await page.goto('/')
+  // The app mounts behind the Firebase connection gate — wait for the gallery
+  // before wheeling, or the page has no scroll height yet.
+  const tile = page.locator('#gallery button[aria-label^="Open photo"]').first()
+  await tile.waitFor({ state: 'attached' })
+  // Wheel is the input path Lenis owns (programmatic window.scrollTo gets
+  // reverted by its smoothing loop) — step past one viewport, then settle.
+  await page.mouse.move(640, 360)
+  for (let i = 0; i < 40; i++) {
+    const past = await page.evaluate(
+      () => window.scrollY > window.innerHeight * 1.5,
+    )
+    if (past) break
+    await page.mouse.wheel(0, 1200)
+    await page.waitForTimeout(90)
+  }
+  await expect
+    .poll(async () => {
+      const a = await scrollY(page)
+      await page.waitForTimeout(120)
+      const b = await scrollY(page)
+      return Math.abs(b - a)
+    })
+    .toBeLessThan(1)
+  expect(await scrollY(page)).toBeGreaterThan(720)
+
+  await tile.dispatchEvent('click')
+  const dialog = page.locator('[role="dialog"]')
+  await expect(dialog).toContainText('01 /')
+  const scrollAtOpen = await scrollY(page)
+
+  await page.keyboard.press('ArrowRight')
+  await expect(dialog).toContainText('02 /')
+  await waitForSlideSettled(page)
+  await page.keyboard.press('ArrowLeft')
+  await expect(dialog).toContainText('01 /')
+
+  // Arrows must act on the slides only — never scroll the frozen page.
+  expect(await scrollY(page)).toBe(scrollAtOpen)
+})
+
 test('reduced motion: wheel navigation works, page stays frozen', async ({
   page,
 }) => {

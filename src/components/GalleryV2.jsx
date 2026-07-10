@@ -523,7 +523,17 @@ export default function Gallery() {
                 forceToAxis: true,
                 thresholdDelta: LIGHTBOX_WHEEL_THRESHOLD_DELTA,
               }}
-              keyboard={{ enabled: true }}
+              keyboard={{
+                enabled: true,
+                // onlyInViewport:false — Swiper's viewport check adds
+                // window.scrollY to this fixed-position dialog's rect, so with
+                // the page scrolled past one viewport (always true at the
+                // gallery) every corner lands outside the window box and arrow
+                // keys are silently ignored. The swiper only exists while the
+                // lightbox is open, so skipping the check can't leak arrows to
+                // a closed state.
+                onlyInViewport: false,
+              }}
               zoom={noZoom ? undefined : { maxRatio: LIGHTBOX_ZOOM_MAX_RATIO }}
               lazyPreloadPrevNext={1}
               onSwiper={(s) => {
