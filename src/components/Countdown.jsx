@@ -173,7 +173,7 @@ export default function Countdown({
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25 }}
-                className="font-display text-2xl md:text-3xl text-accent"
+                className="font-display text-2xl md:text-3xl text-ink"
               >
                 {label}
               </motion.p>
@@ -276,7 +276,7 @@ export default function Countdown({
                     <span className="font-display text-4xl md:text-6xl tabular-nums">
                       {String(n).padStart(2, '0')}
                     </span>
-                    <span className="eyebrow mt-2 text-[10px]">{lbl}</span>
+                    <span className="eyebrow mt-2 text-[11px]">{lbl}</span>
                   </motion.div>
                 )
               })}
@@ -284,7 +284,7 @@ export default function Countdown({
           </ParallaxFade>
         ) : (
           <ParallaxFade strength={30}>
-            <p className="mt-10 font-display text-2xl text-accent">
+            <p className="mt-10 font-display text-2xl text-ink">
               {t('countdown.passed')}
             </p>
           </ParallaxFade>

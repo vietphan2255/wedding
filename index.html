@@ -6,35 +6,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5" />
     <meta name="theme-color" content="#FAF7F2" />
 
-    <title>Viet & Nguyen · Wedding 2026</title>
+    <title>Quốc Việt &amp; Thảo Nguyên · Đám cưới 2026</title>
     <meta
       name="description"
-      content="Viet & Nguyen are getting married! Join us for Lễ Vu Quy on 26 July 2026 and Lễ Thành Hôn on 02 August 2026. Save the date, RSVP, and leave a wish."
+      content="Chúng mình sắp về chung một nhà! Trân trọng kính mời bạn đến chung vui — Lễ Vu Quy 26.07.2026 (Đà Nẵng) &amp; Lễ Thành Hôn 02.08.2026 (Quảng Trị). Mời bạn xác nhận tham dự và gửi lời chúc."
     />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Viet & Nguyen Wedding" />
-    <meta property="og:title" content="Viet & Nguyen · Wedding 2026" />
+    <meta property="og:site_name" content="Quốc Việt &amp; Thảo Nguyên" />
+    <meta property="og:title" content="Quốc Việt &amp; Thảo Nguyên · Đám cưới 2026" />
     <meta
       property="og:description"
-      content="We are getting married! Save the date — 26.07.2026 & 02.08.2026. RSVP, leave a wish, and send your blessings."
+      content="Chúng mình sắp về chung một nhà — 26.07 &amp; 02.08.2026. Mời bạn xác nhận tham dự và gửi lời chúc!"
     />
-    <meta property="og:image" content="/og.svg" />
-    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:url" content="https://wedding-wheat-seven.vercel.app/" />
+    <meta
+      property="og:image"
+      content="https://res.cloudinary.com/dqdk8u0w5/image/upload/c_fill,g_auto,w_1200,h_630,f_jpg,q_auto/v1783066124/gzjlkw5dd28xhyltam09.jpg"
+    />
+    <meta
+      property="og:image:secure_url"
+      content="https://res.cloudinary.com/dqdk8u0w5/image/upload/c_fill,g_auto,w_1200,h_630,f_jpg,q_auto/v1783066124/gzjlkw5dd28xhyltam09.jpg"
+    />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Viet & Nguyen — Save the date · 26.07.2026 & 02.08.2026" />
+    <meta property="og:image:alt" content="Quốc Việt &amp; Thảo Nguyên — 26.07 &amp; 02.08.2026" />
     <meta property="og:locale" content="vi_VN" />
 
     <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Viet & Nguyen · Wedding 2026" />
+    <meta name="twitter:title" content="Quốc Việt &amp; Thảo Nguyên · Đám cưới 2026" />
     <meta
       name="twitter:description"
-      content="Save the date — 26.07.2026 & 02.08.2026. Join us in celebrating!"
+      content="Chúng mình sắp về chung một nhà — 26.07 &amp; 02.08.2026. Mời bạn đến chung vui!"
     />
-    <meta name="twitter:image" content="/og.svg" />
+    <meta
+      name="twitter:image"
+      content="https://res.cloudinary.com/dqdk8u0w5/image/upload/c_fill,g_auto,w_1200,h_630,f_jpg,q_auto/v1783066124/gzjlkw5dd28xhyltam09.jpg"
+    />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -44,38 +55,52 @@
     />
 
     <!--
-      JSON-LD Event schema — defaults pulled from WeddingConfigContext.DEFAULT_CONFIG.
-      Keep in sync with src/contexts/WeddingConfigContext.jsx dates when the
-      wedding date changes. Both ceremonies are listed as separate Event nodes.
+      JSON-LD Event schema. Names / dates / venues mirror the live wedding config
+      (Firebase). Keep in sync with /admin when the ceremony details change.
+      Both ceremonies are listed as separate Event nodes.
     -->
     <script type="application/ld+json">
       [
         {
           "@context": "https://schema.org",
           "@type": "Event",
-          "name": "Lễ Vu Quy — Viet & Nguyen",
-          "description": "Lễ Vu Quy (traditional Vietnamese engagement) for Viet & Nguyen.",
-          "startDate": "2026-07-26T09:00:00+07:00",
-          "endDate": "2026-07-26T12:00:00+07:00",
+          "name": "Lễ Vu Quy — Quốc Việt & Thảo Nguyên",
+          "description": "Lễ Vu Quy (nhà gái) của Quốc Việt & Thảo Nguyên.",
+          "startDate": "2026-07-26T10:30:00+07:00",
+          "endDate": "2026-07-26T13:30:00+07:00",
           "eventStatus": "https://schema.org/EventScheduled",
           "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "image": "https://res.cloudinary.com/dqdk8u0w5/image/upload/c_fill,g_auto,w_1200,h_630,f_jpg,q_auto/v1783066124/gzjlkw5dd28xhyltam09.jpg",
+          "url": "https://wedding-wheat-seven.vercel.app/",
+          "location": {
+            "@type": "Place",
+            "name": "Nhà Hàng Tiệc Cưới Phúc Khang Plaza 2",
+            "address": "141 Trương Chí Cương, Xã Nam Phước, TP Đà Nẵng"
+          },
           "organizer": {
             "@type": "Person",
-            "name": "Viet & Nguyen"
+            "name": "Quốc Việt & Thảo Nguyên"
           }
         },
         {
           "@context": "https://schema.org",
           "@type": "Event",
-          "name": "Lễ Thành Hôn — Viet & Nguyen",
-          "description": "Lễ Thành Hôn (wedding reception) for Viet & Nguyen.",
-          "startDate": "2026-08-02T18:00:00+07:00",
-          "endDate": "2026-08-02T22:00:00+07:00",
+          "name": "Lễ Thành Hôn — Quốc Việt & Thảo Nguyên",
+          "description": "Lễ Thành Hôn (nhà trai) của Quốc Việt & Thảo Nguyên.",
+          "startDate": "2026-08-02T10:30:00+07:00",
+          "endDate": "2026-08-02T13:30:00+07:00",
           "eventStatus": "https://schema.org/EventScheduled",
           "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "image": "https://res.cloudinary.com/dqdk8u0w5/image/upload/c_fill,g_auto,w_1200,h_630,f_jpg,q_auto/v1783066124/gzjlkw5dd28xhyltam09.jpg",
+          "url": "https://wedding-wheat-seven.vercel.app/",
+          "location": {
+            "@type": "Place",
+            "name": "Bến Rộng",
+            "address": "Xóm 1, Thôn Thuận Trạch, Xã Tân Mỹ, Tỉnh Quảng Trị"
+          },
           "organizer": {
             "@type": "Person",
-            "name": "Viet & Nguyen"
+            "name": "Quốc Việt & Thảo Nguyên"
           }
         }
       ]

@@ -214,7 +214,7 @@ function InvitationCard({
 
       {/* Lunar date */}
       {lunar ? (
-        <p className="mt-5 text-center font-display text-lg md:text-xl text-accent">
+        <p className="mt-5 text-center font-display text-lg md:text-xl text-muted">
           {lunar}
         </p>
       ) : null}
@@ -262,7 +262,7 @@ function InvitationCard({
             })}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-[12px] tracking-[0.18em] uppercase text-accent font-bold hover:text-ink transition-colors"
+            className="inline-flex items-center gap-1.5 text-[12px] tracking-[0.18em] uppercase text-ink font-bold hover:text-accent transition-colors"
           >
             <CalendarPlus size={15} className="font-bold" />
             {t('timeline.addCalendar')}

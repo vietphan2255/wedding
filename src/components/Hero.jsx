@@ -116,16 +116,11 @@ export default function Hero({
           calm ? '' : ' will-change-transform'
         }`}
       >
-        {/* Soft radial scrim, sized to the centered text, so the labels stay
-            legible over any hero slide. -z-10 keeps it above the photo but
-            beneath the text within this layer. */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10" />
-
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.2 }}
-          className="eyebrow text-ink font-bold"
+          className="eyebrow !text-ink font-bold"
         >
           {t('hero.eyebrow')}
         </motion.p>
@@ -154,7 +149,7 @@ export default function Hero({
           transition={{ duration: 1, delay: 1 }}
           className="mt-10 flex flex-col items-center gap-3"
         >
-          <p className="eyebrow text-ink font-bold">{t('hero.saveTheDate')}</p>
+          <p className="eyebrow !text-ink font-bold">{t('hero.saveTheDate')}</p>
           <p className="font-display text-lg md:text-2xl tracking-wide text-ink font-bold">
             <motion.span
               ref={flightSourceARef}
@@ -192,7 +187,7 @@ export default function Hero({
           transition={{ duration: 1, delay: 1.4 }}
           className="pointer-events-auto flex flex-col items-center gap-2 text-ink/80 hover:text-ink"
         >
-          <span className="eyebrow">{t('hero.scroll')}</span>
+          <span className="eyebrow !text-current">{t('hero.scroll')}</span>
           <motion.span
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
