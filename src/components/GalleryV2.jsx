@@ -43,17 +43,17 @@ import SectionSubtitle from './SectionSubtitle.jsx'
 
 // A single photo "plane". rotateY is driven by scroll velocity (passed as a
 // motion value) so tiles tilt as the page scrolls and flatten when still.
-function Tile({ p, photosLength, onOpen, tilt, thumbMaxEdge, heightClass = 'h-48 md:h-72' }) {
+function Tile({ p, photosLength, onOpen, tilt, thumbMaxEdge, heightPx }) {
   return (
     <motion.button
       type="button"
       onClick={() => onOpen(p.globalIndex)}
       data-cursor="open"
       aria-label={`Open photo ${p.globalIndex + 1}`}
-      style={tilt ? { rotateY: tilt } : undefined}
+      style={{ ...(tilt ? { rotateY: tilt } : {}), ...(heightPx ? { height: heightPx } : {}) }}
       whileHover={{ scale: 1.6 }}
       transition={{ type: 'spring', duration: 0.8, bounce: 0.15 }}
-      className={`group relative shrink-0 mr-5 md:mr-8 ${heightClass} w-auto overflow-hidden rounded-xl cursor-pointer [backface-visibility:hidden] will-change-transform transition-shadow duration-300 hover:shadow-[0_22px_45px_-12px_rgba(0,0,0,0.55)] hover:z-10`}
+      className={`group relative shrink-0 mr-5 md:mr-8 ${heightPx ? '' : 'h-48 md:h-72'} w-auto overflow-hidden rounded-xl cursor-pointer [backface-visibility:hidden] will-change-transform transition-shadow duration-300 hover:shadow-[0_22px_45px_-12px_rgba(0,0,0,0.55)] hover:z-10`}
     >
       {/* Fixed height, auto width → each photo keeps its own aspect ratio and
           shows in full (no crop). */}
@@ -85,7 +85,7 @@ function Tile({ p, photosLength, onOpen, tilt, thumbMaxEdge, heightClass = 'h-48
 // period ≡ 0 (mod period), so the unpin hand-off is seamless by construction.
 // `onPeriodChange` reports the measured set width up so the parent can size
 // the pin's scroll runway proportionally.
-function VelocityRow({ items, baseVelocity, velocityFactor, tilt, paused, onOpen, photosLength, thumbMaxEdge, pinProgress, onPeriodChange, heightClass }) {
+function VelocityRow({ items, baseVelocity, velocityFactor, tilt, paused, onOpen, photosLength, thumbMaxEdge, scrubProgress, onPeriodChange, tilePx }) {
   const baseX = useMotionValue(0)
   const directionFactor = useRef(1)
   const containerRef = useRef(null)
@@ -132,7 +132,7 @@ function VelocityRow({ items, baseVelocity, velocityFactor, tilt, paused, onOpen
   // Wrap in pixels by the measured period (read from a ref so it is always
   // current after a resize), with the pin scrub added on top of the drift:
   // scroll progress p slides the row dir·p·period px along its own direction.
-  const x = useTransform([baseX, pinProgress], ([b, p]) => {
+  const x = useTransform([baseX, scrubProgress], ([b, p]) => {
     const per = periodRef.current
     if (!per) return '0px'
     const dir = baseVelocity >= 0 ? 1 : -1
@@ -176,13 +176,22 @@ function VelocityRow({ items, baseVelocity, velocityFactor, tilt, paused, onOpen
             onOpen={onOpen}
             tilt={tilt}
             thumbMaxEdge={thumbMaxEdge}
-            heightClass={heightClass}
+            heightPx={tilePx}
           />
         ))}
       </motion.div>
     </div>
   )
 }
+
+// Pinned-gallery fit tuning. The heading is the primary shrink lever (scaled
+// down on scroll); photos only shrink as a last resort. NAV_RESERVE matches the
+// sticky box's pt (the fixed Navbar height); SHRINK_RUNWAY_VH is the scroll
+// distance (in viewport heights) the heading takes to shrink before rows scrub.
+const GALLERY_NAV_RESERVE_PX = 72
+const GALLERY_HEADING_MIN_SCALE = 0.55
+const GALLERY_TILE_MIN_PX = 72
+const GALLERY_SHRINK_RUNWAY_VH = 0.7
 
 export default function Gallery() {
   const { t } = useLanguage()
@@ -237,10 +246,32 @@ export default function Gallery() {
     [],
   )
   const pinEnabled = !reduce && photos.length > 0
-  const pinExtra = pinExtraPx(
-    Math.max(periods.a, periods.b),
-    typeof window !== 'undefined' ? window.innerHeight : 0,
+
+  // Viewport height (reactive) drives the fit math + runway sizing below.
+  const [vh, setVh] = useState(() =>
+    typeof window !== 'undefined' ? window.innerHeight : 800,
   )
+  useEffect(() => {
+    const onResize = () => setVh(window.innerHeight)
+    onResize()
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  // Natural (unscaled) height of the heading block. transform: scale leaves
+  // offsetHeight untouched, so this stays correct even while the heading scales.
+  const headingRef = useRef(null)
+  const [headingNat, setHeadingNat] = useState(0)
+  useLayoutEffect(() => {
+    const el = headingRef.current
+    if (!el) return
+    const measure = () =>
+      setHeadingNat((h) => (h === el.offsetHeight ? h : el.offsetHeight))
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [pinEnabled])
 
   // Scroll-velocity chain, shared by both rows. Smoothed so the ribbon eases
   // in/out of speed-ups instead of snapping.
@@ -286,6 +317,45 @@ export default function Gallery() {
   // rotating across the boundary re-buckets (and the row re-measures itself).
   const mdUp = useMediaQuery('(min-width: 768px)')
   const thumbMaxEdge = mdUp ? GALLERY_THUMB_MAX_EDGE : GALLERY_THUMB_MAX_EDGE_MOBILE
+
+  // Fit math. The heading is the primary shrink lever (scaled on scroll); photos
+  // only shrink as a last resort on short/wide screens where even a fully-shrunk
+  // heading can't fit two full rows. Sizes off the heading's natural height and
+  // the known full tile height (h-48/h-72) for the current breakpoint.
+  const fit = useMemo(() => {
+    const tileFull = mdUp ? 288 : 192 // h-72 / h-48
+    const headingRowsGap = mdUp ? 56 : 32 // mt-14 / mt-8
+    const interRowGap = mdUp ? 32 : 20 // space-y-8 / space-y-5
+    const avail = vh - GALLERY_NAV_RESERVE_PX
+    const contentFull = headingNat + headingRowsGap + 2 * tileFull + interRowGap
+    if (!headingNat || contentFull <= avail) return { scaleMin: 1, tilePx: tileFull }
+    const excess = contentFull - avail
+    const headingGive = headingNat * (1 - GALLERY_HEADING_MIN_SCALE)
+    if (excess <= headingGive)
+      return { scaleMin: 1 - excess / headingNat, tilePx: tileFull }
+    const tilePx = Math.max(GALLERY_TILE_MIN_PX, tileFull - (excess - headingGive) / 2)
+    return { scaleMin: GALLERY_HEADING_MIN_SCALE, tilePx }
+  }, [mdUp, headingNat, vh])
+
+  // Two-phase pinned runway: a shrink phase (heading 1→scaleMin) then the scrub
+  // phase (rows travel one period). No shrink phase when the heading fits as-is,
+  // so tall screens behave exactly as before (pure scrub over the whole pin).
+  const scrubPx = pinExtraPx(Math.max(periods.a, periods.b), vh)
+  const shrinkPx = fit.scaleMin < 1 ? Math.round(GALLERY_SHRINK_RUNWAY_VH * vh) : 0
+  const pinExtra = shrinkPx + scrubPx
+  const p1 = pinExtra > 0 ? shrinkPx / pinExtra : 0
+
+  // Phase 1 scales the heading toward the top; the rows translate up by the
+  // reclaimed pixels so they follow with no layout reflow. Phase 2 scrubs.
+  const headingScale = useTransform(pinProgress, (v) => {
+    const end = p1 || 0.0001
+    const t = Math.min(1, Math.max(0, v / end))
+    return 1 + (fit.scaleMin - 1) * t
+  })
+  const rowsShift = useTransform(headingScale, (s) => headingNat * (s - 1))
+  const scrubProgress = useTransform(pinProgress, (v) =>
+    p1 >= 1 ? 0 : Math.min(1, Math.max(0, (v - p1) / (1 - p1))),
+  )
 
   // While the lightbox is open the marquee sits behind an opaque backdrop doing
   // nothing — display:none it so its ~N decoded thumbnails become evictable while
@@ -386,7 +456,13 @@ export default function Gallery() {
   const paused = lightboxOpen || !inView || tabHidden
 
   const headingBlock = (
-    <div className="max-w-7xl mx-auto px-6">
+    <motion.div
+      ref={headingRef}
+      style={
+        pinEnabled ? { scale: headingScale, transformOrigin: 'top center' } : undefined
+      }
+      className="max-w-7xl mx-auto px-6"
+    >
       <div className="text-center max-w-2xl mx-auto">
         <p className="eyebrow">{t('gallery.eyebrow')}</p>
         <SplitText
@@ -400,7 +476,7 @@ export default function Gallery() {
         </div>
         <p className="text-muted section-desc">{t('gallery.subtitle')}</p>
       </div>
-    </div>
+    </motion.div>
   )
 
   // Full-bleed ribbon so photos run edge to edge. The velocity branch tightens
@@ -426,7 +502,10 @@ export default function Gallery() {
       ))}
     </div>
   ) : (
-    <div className={`mt-[clamp(0.75rem,3svh,3.5rem)] space-y-[clamp(0.5rem,2svh,2rem)]${veiled ? ' hidden' : ''}`}>
+    <motion.div
+      style={{ y: rowsShift }}
+      className={`mt-8 md:mt-14 space-y-5 md:space-y-8${veiled ? ' hidden' : ''}`}
+    >
       <VelocityRow
         items={rowA}
         baseVelocity={GALLERY_BASE_VELOCITY}
@@ -436,9 +515,9 @@ export default function Gallery() {
         onOpen={openAt}
         photosLength={photos.length}
         thumbMaxEdge={thumbMaxEdge}
-        pinProgress={pinProgress}
+        scrubProgress={scrubProgress}
         onPeriodChange={reportPeriodA}
-        heightClass="gallery-tile-fit"
+        tilePx={fit.tilePx}
       />
       <VelocityRow
         items={rowB}
@@ -449,11 +528,11 @@ export default function Gallery() {
         onOpen={openAt}
         photosLength={photos.length}
         thumbMaxEdge={thumbMaxEdge}
-        pinProgress={pinProgress}
+        scrubProgress={scrubProgress}
         onPeriodChange={reportPeriodB}
-        heightClass="gallery-tile-fit"
+        tilePx={fit.tilePx}
       />
-    </div>
+    </motion.div>
   )
 
   return (
