@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { ref, get } from 'firebase/database'
 import { useSearchParams } from 'react-router-dom'
 import { db, isConfigured } from '../firebase/config'
+import { trackEvent } from '../firebase/analytics'
 
 // Resolves the guest behind a personalized link (`/?invite=<code>`) once, and
 // exposes it via useInvitedGuest() so the envelope, invitation cards, RSVP form
@@ -28,6 +29,10 @@ export function useInvitedGuest() {
 }
 
 const cacheKey = (code) => `vn-invite-${code}`
+
+// Codes already reported to GA this page load — dedupes StrictMode's double
+// effect and provider remounts, while a fresh load still counts as an access.
+const trackedCodes = new Set()
 
 function readCache(code) {
   try {
@@ -96,6 +101,18 @@ export function InvitedGuestProvider({ children }) {
       active = false
     }
   }, [code])
+
+  // GA4 "access" event once a real guest resolves — reacting to state covers
+  // both the cache-hit and RTDB branches with a single call site.
+  useEffect(() => {
+    if (!state.found || !state.invitationName || !state.code) return
+    if (trackedCodes.has(state.code)) return
+    trackedCodes.add(state.code)
+    trackEvent('access', {
+      invitation_name: state.invitationName.slice(0, 100), // GA4 param-value limit
+      invite_code: state.code,
+    })
+  }, [state])
 
   return (
     <InvitedGuestContext.Provider value={state}>{children}</InvitedGuestContext.Provider>
