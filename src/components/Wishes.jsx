@@ -107,13 +107,19 @@ export default function Wishes() {
           </form>
         </FadeIn>
 
-        <div className="mt-12 grid sm:grid-cols-2 gap-4 md:gap-5">
+        {/* Single-row horizontal snap strip — data-lenis-prevent so touch
+            gestures over it scroll the strip natively instead of the Lenis
+            page scroll. */}
+        <div
+          data-lenis-prevent
+          className="mt-9 flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-5 -mx-6 px-6 pt-3 pb-6 [scrollbar-width:none]"
+        >
           {loading &&
             Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={`skeleton-${i}`}
                 aria-hidden
-                className="rounded-2xl border border-line bg-surface p-5 animate-pulse"
+                className="snap-start shrink-0 w-[80vw] max-w-xs rounded-2xl border border-line bg-surface p-5 animate-pulse"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="h-5 w-32 rounded-md bg-line/70" />
@@ -128,7 +134,7 @@ export default function Wishes() {
               </div>
             ))}
           {!loading && wishes.length === 0 && (
-            <p className="text-muted text-sm col-span-full text-center">
+            <p className="text-muted text-sm w-full shrink-0 text-center">
               {t('wishes.empty')}
             </p>
           )}
@@ -140,8 +146,9 @@ export default function Wishes() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
+                whileHover={{ y: -6 }}
                 transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                className="rounded-2xl border border-line bg-surface p-5"
+                className="snap-start shrink-0 w-[80vw] max-w-xs rounded-2xl border border-line bg-surface p-5 hover:border-[color-mix(in_srgb,var(--color-accent)_40%,var(--color-line))] hover:shadow-[0_18px_40px_-20px_var(--color-accent)] transition-colors"
               >
                 <div className="flex items-start justify-between gap-3">
                   <h4 className="font-display text-xl">{w.name}</h4>
