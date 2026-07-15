@@ -214,16 +214,6 @@ export default function RSVP() {
                   </>
                 )}
 
-                <div className="md:col-span-2">
-                  <label className={labelClass}>{t('rsvp.message')}</label>
-                  <textarea
-                    rows={4}
-                    className={fieldClass}
-                    maxLength={1000}
-                    {...register('message', { maxLength: 1000 })}
-                  />
-                </div>
-
                 <div className="md:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
                   {status === 'error' && (
                     <p className="text-sm text-red-500">{t('rsvp.error')}</p>

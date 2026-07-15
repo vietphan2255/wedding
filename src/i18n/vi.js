@@ -129,7 +129,6 @@ export default {
   'rsvp.events.thanhhon': 'Lễ Thành Hôn (02/08)',
   'rsvp.events.both': 'Cả hai',
   'rsvp.guests': 'Số người',
-  'rsvp.message': 'Lời nhắn (không bắt buộc)',
   'rsvp.submit': 'Gửi xác nhận',
   'rsvp.submitting': 'Đang gửi…',
   'rsvp.success.title': 'Cảm ơn bạn!',
