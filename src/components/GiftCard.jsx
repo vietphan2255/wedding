@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Copy, Check, Gift, ZoomIn, Download, X } from 'lucide-react'
+import { Copy, Check, ExternalLink, Gift, ZoomIn, Download, X } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import useScrollLock from '../hooks/useScrollLock'
+import { normalizePaypal } from '../lib/paypalUrl'
 import FadeIn from './FadeIn.jsx'
 import SectionSubtitle from './SectionSubtitle.jsx'
 
@@ -61,6 +62,51 @@ function CopyButton({ value, label, labelCopied }) {
         )}
       </AnimatePresence>
     </button>
+  )
+}
+
+// lucide-react ships no brand icons — inline PayPal mark (Simple Icons path,
+// CC0). currentColor lets it take the accent like the lucide glyphs around it.
+function PaypalMark({ size = 18 }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true">
+      <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z" />
+    </svg>
+  )
+}
+
+// Compact full-width PayPal strip shown under the bank cards (and reused by
+// GiftModal) — horizontal on ≥sm, stacked on phones. Renders nothing until a
+// recognizable PayPal.Me link is configured; that doubles as the off switch.
+export function PaypalBlock({ info, titleLabel, hintLabel, openLabel, copyLabel, copiedLabel }) {
+  const paypal = normalizePaypal(info?.url)
+  if (!paypal) return null
+  return (
+    <article className="rounded-3xl border border-line bg-surface shadow-xl px-6 py-5 flex flex-col sm:flex-row items-center sm:justify-between gap-4 text-center sm:text-left">
+      <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 min-w-0">
+        <span className="flex-none w-11 h-11 rounded-full border border-line bg-bg/80 flex items-center justify-center text-accent">
+          <PaypalMark />
+        </span>
+        <div className="min-w-0">
+          <p className="text-[11px] tracking-[0.22em] uppercase text-muted">{titleLabel}</p>
+          {info.holder && <p className="mt-0.5 text-sm font-bold">{info.holder}</p>}
+          {hintLabel && <p className="mt-0.5 text-xs text-muted">{hintLabel}</p>}
+        </div>
+      </div>
+      <div className="flex-none flex items-center justify-center gap-2.5 flex-wrap">
+        <a
+          href={paypal.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          title={paypal.display}
+          className="inline-flex items-center gap-1.5 rounded-full border border-accent bg-accent text-bg px-4 py-2 text-[11px] tracking-[0.16em] uppercase transition-opacity hover:opacity-90"
+        >
+          <ExternalLink size={13} />
+          {openLabel}
+        </a>
+        <CopyButton value={paypal.href} label={copyLabel} labelCopied={copiedLabel} />
+      </div>
+    </article>
   )
 }
 
@@ -276,6 +322,15 @@ export default function GiftCard() {
     tapToZoomLabel: t('gift.tapToZoom'),
   }
 
+  const paypalConfigured = Boolean(normalizePaypal(gifts.paypal?.url))
+  const paypalLabels = {
+    titleLabel: t('gift.paypalTitle'),
+    hintLabel: t('gift.paypalHint'),
+    openLabel: t('gift.paypalOpen'),
+    copyLabel: t('gift.copy'),
+    copiedLabel: t('gift.copied'),
+  }
+
   return (
     <section
       id="gifts"
@@ -301,6 +356,12 @@ export default function GiftCard() {
             <GiftBlock title={t('gift.bride')} info={gifts.bride || {}} {...labels} />
           </FadeIn>
         </div>
+
+        {paypalConfigured && (
+          <FadeIn delay={0.18} className="mt-5 md:mt-6">
+            <PaypalBlock info={gifts.paypal} {...paypalLabels} />
+          </FadeIn>
+        )}
       </div>
     </section>
   )

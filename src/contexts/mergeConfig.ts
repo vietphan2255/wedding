@@ -74,13 +74,14 @@ function mergeNested(def: unknown, data: unknown, children: string[]) {
   return out
 }
 
-// Gifts has a top-level `enabled` flag plus nested bride/groom blocks.
+// Gifts has a top-level `enabled` flag plus nested bride/groom/paypal blocks.
 function mergeGifts(def: Gifts, data: unknown): Gifts {
   const d = (data || {}) as Partial<Gifts>
   return {
     enabled: typeof d.enabled === 'boolean' ? d.enabled : def.enabled,
     bride: { ...def.bride, ...(d.bride || {}) },
     groom: { ...def.groom, ...(d.groom || {}) },
+    paypal: { ...def.paypal, ...(d.paypal || {}) },
   }
 }
 

@@ -46,10 +46,18 @@ export interface BankAccount {
   qrUrl: string
 }
 
+// One shared PayPal.Me link for the couple — an empty url hides the PayPal
+// card/tab everywhere (there is no separate enabled flag for it).
+export interface PaypalGift {
+  holder: string
+  url: string
+}
+
 export interface Gifts {
   enabled: boolean
   bride: BankAccount
   groom: BankAccount
+  paypal: PaypalGift
 }
 
 export interface OrderedItem {

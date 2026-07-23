@@ -46,6 +46,17 @@ describe('mergeConfig', () => {
     expect(result.gifts.enabled).toBe(DEFAULT_CONFIG.gifts.enabled)
   })
 
+  it('merges partial gifts.paypal and keeps defaults', () => {
+    const result = mergeConfig({ gifts: { paypal: { url: 'paypal.me/foo' } } })
+    expect(result.gifts.paypal.url).toBe('paypal.me/foo')
+    expect(result.gifts.paypal.holder).toBe('')
+  })
+
+  it('defaults gifts.paypal when the stored gifts node predates it', () => {
+    const result = mergeConfig({ gifts: { enabled: true, groom: { bank: 'X' } } })
+    expect(result.gifts.paypal).toEqual(DEFAULT_CONFIG.gifts.paypal)
+  })
+
   it('sorts list slices by order and adds Firebase-style ids', () => {
     const result = mergeConfig({
       faqs: {

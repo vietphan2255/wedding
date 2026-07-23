@@ -52,6 +52,9 @@ export const DEFAULT_GIFTS: Gifts = {
     account: '105678105298',
     qrUrl: '/qr/groom.png',
   },
+  // Shared PayPal.Me link (mainly for guests abroad). Empty url keeps PayPal
+  // hidden everywhere until a link is set in the admin.
+  paypal: { holder: '', url: '' },
 }
 
 // Both slot images empty by default → the effect is invisible until an admin

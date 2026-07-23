@@ -189,6 +189,10 @@ export default {
   'gift.qrLabel': 'Quét QR để chuyển khoản',
   'gift.save': 'Lưu ảnh QR',
   'gift.tapToZoom': 'Nhấn để phóng to',
+  'gift.tabPaypal': 'PayPal',
+  'gift.paypalTitle': 'PayPal',
+  'gift.paypalHint': 'Dành cho khách ở nước ngoài',
+  'gift.paypalOpen': 'Mở PayPal',
 
   // FAQ
   'faq.eyebrow': 'Có thể bạn quan tâm',

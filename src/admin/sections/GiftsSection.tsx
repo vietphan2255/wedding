@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Save, Gift } from 'lucide-react'
 import { useDraftConfig } from '../DraftConfigContext'
+import { normalizePaypal } from '../../lib/paypalUrl'
 import ImageInput from '../../components/admin/ImageInput.jsx'
 import ZoomableImg from '../../components/admin/ZoomableImg'
 import LabelsPanel from './LabelsPanel.jsx'
@@ -22,6 +23,7 @@ export default function GiftsSection() {
   const { draft, setSlice, saveSlice, isSliceDirty } = useDraftConfig()
   const form = draft.gifts || {}
   const dirty = isSliceDirty('gifts')
+  const paypalPreview = normalizePaypal(form.paypal?.url)
   const [saving, setSaving] = useState(false)
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
@@ -45,6 +47,7 @@ export default function GiftsSection() {
         enabled: form.enabled !== false,
         bride: form.bride || {},
         groom: form.groom || {},
+        paypal: { holder: form.paypal?.holder || '', url: form.paypal?.url || '' },
       })
       setStatus({ type: 'success', message: 'Gift details saved.' })
     } catch (err) {
@@ -78,6 +81,11 @@ export default function GiftsSection() {
           label="Description"
           defaultVi="Sự có mặt của bạn đã là món quà lớn nhất — nhưng nếu bạn muốn gửi mừng cưới, đây là thông tin tài khoản."
           multiline
+        />
+        <LabelField
+          fieldKey="gift.paypalHint"
+          label="PayPal hint"
+          defaultVi="Dành cho khách ở nước ngoài"
         />
       </LabelsPanel>
 
@@ -151,6 +159,51 @@ export default function GiftsSection() {
             )}
           </div>
         ))}
+      </div>
+
+      <div className="glass rounded-3xl p-6 md:p-7">
+        <p className="eyebrow">PayPal (shared, optional)</p>
+        <p className="text-sm text-muted mt-2 max-w-2xl">
+          One PayPal.Me link for the couple, shown as a compact card under the
+          bank cards — mainly for guests abroad. Leave the link empty to hide
+          PayPal everywhere (section and gift modal).
+        </p>
+        <div className="mt-4 grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-[11px] tracking-[0.22em] uppercase text-muted mb-2">
+              Account holder
+            </label>
+            <input
+              type="text"
+              value={form.paypal?.holder || ''}
+              onChange={(e) => handle('paypal', 'holder', e.target.value)}
+              className="w-full rounded-xl border border-line bg-bg px-4 py-3 text-ink focus:border-accent"
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] tracking-[0.22em] uppercase text-muted mb-2">
+              PayPal.Me link
+            </label>
+            <input
+              type="text"
+              value={form.paypal?.url || ''}
+              onChange={(e) => handle('paypal', 'url', e.target.value)}
+              placeholder="paypal.me/yourname"
+              className="w-full rounded-xl border border-line bg-bg px-4 py-3 text-ink focus:border-accent"
+            />
+            <p className="mt-2 text-xs text-muted">
+              {!form.paypal?.url ? (
+                'Empty — PayPal is hidden on the site.'
+              ) : paypalPreview ? (
+                <>
+                  Opens <span className="text-accent">{paypalPreview.href}</span>
+                </>
+              ) : (
+                'Not a recognizable PayPal.Me link — PayPal stays hidden.'
+              )}
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="flex items-center justify-between glass rounded-3xl p-5">

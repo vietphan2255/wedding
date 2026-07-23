@@ -4,11 +4,13 @@ import { X, Gift } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useWeddingConfig } from '../contexts/WeddingConfigContext'
 import useScrollLock from '../hooks/useScrollLock'
-import { GiftBlock } from './GiftCard.jsx'
+import { normalizePaypal } from '../lib/paypalUrl'
+import { GiftBlock, PaypalBlock } from './GiftCard.jsx'
 
-// Quick-access gift modal: the same bride/groom account cards shown in the
-// #gifts section, reachable from the FloatingDock and MobileRsvpBar without
-// scrolling. Open/close state is owned by App (WeddingSite).
+// Quick-access gift modal: the same bride/groom account cards (plus the PayPal
+// strip when configured) shown in the #gifts section, reachable from the
+// FloatingDock and MobileRsvpBar without scrolling. Open/close state is owned
+// by App (WeddingSite).
 export default function GiftModal({ open, onClose }) {
   const { t } = useLanguage()
   const { config } = useWeddingConfig()
@@ -38,6 +40,18 @@ export default function GiftModal({ open, onClose }) {
     saveLabel: t('gift.save'),
     tapToZoomLabel: t('gift.tapToZoom'),
   }
+
+  const paypalConfigured = Boolean(normalizePaypal(gifts.paypal?.url))
+  const paypalLabels = {
+    titleLabel: t('gift.paypalTitle'),
+    hintLabel: t('gift.paypalHint'),
+    openLabel: t('gift.paypalOpen'),
+    copyLabel: t('gift.copy'),
+    copiedLabel: t('gift.copied'),
+  }
+  // The paypal tab can outlive its config (`side` survives close/reopen, and
+  // the admin can clear the link live) — fall back to groom, not a blank pane.
+  const effectiveSide = side === 'paypal' && !paypalConfigured ? 'groom' : side
 
   return (
     <AnimatePresence>
@@ -86,27 +100,34 @@ export default function GiftModal({ open, onClose }) {
               <h2 className="font-display text-2xl">{t('gift.title')}</h2>
             </div>
 
-            {/* Desktop: both accounts side by side */}
+            {/* Desktop: both accounts side by side, PayPal strip below */}
             <div className="hidden md:grid md:grid-cols-2 gap-5 mt-6">
               <GiftBlock title={t('gift.groom')} info={gifts.groom || {}} {...labels} />
               <GiftBlock title={t('gift.bride')} info={gifts.bride || {}} {...labels} />
             </div>
+            {paypalConfigured && (
+              <div className="hidden md:block mt-5">
+                <PaypalBlock info={gifts.paypal} {...paypalLabels} />
+              </div>
+            )}
 
-            {/* Mobile: one account at a time via a bride/groom segmented control */}
+            {/* Mobile: one account at a time via a segmented control (groom /
+                bride / paypal when configured) */}
             <div className="md:hidden mt-6">
               <div className="flex justify-center">
                 <div className="inline-flex rounded-full border border-line bg-surface p-1">
                   {[
                     { key: 'groom', label: t('gift.tabGroom') },
                     { key: 'bride', label: t('gift.tabBride') },
+                    ...(paypalConfigured ? [{ key: 'paypal', label: t('gift.tabPaypal') }] : []),
                   ].map((s) => (
                     <button
                       key={s.key}
                       type="button"
                       onClick={() => setSide(s.key)}
-                      aria-pressed={side === s.key}
+                      aria-pressed={effectiveSide === s.key}
                       className={`rounded-full px-5 py-2 text-sm tracking-wide transition ${
-                        side === s.key ? 'bg-accent text-bg' : 'text-ink/70 hover:text-ink'
+                        effectiveSide === s.key ? 'bg-accent text-bg' : 'text-ink/70 hover:text-ink'
                       }`}
                     >
                       {s.label}
@@ -115,11 +136,15 @@ export default function GiftModal({ open, onClose }) {
                 </div>
               </div>
               <div className="mt-5">
-                <GiftBlock
-                  title={side === 'groom' ? t('gift.groom') : t('gift.bride')}
-                  info={(side === 'groom' ? gifts.groom : gifts.bride) || {}}
-                  {...labels}
-                />
+                {effectiveSide === 'paypal' ? (
+                  <PaypalBlock info={gifts.paypal} {...paypalLabels} />
+                ) : (
+                  <GiftBlock
+                    title={effectiveSide === 'groom' ? t('gift.groom') : t('gift.bride')}
+                    info={(effectiveSide === 'groom' ? gifts.groom : gifts.bride) || {}}
+                    {...labels}
+                  />
+                )}
               </div>
             </div>
           </motion.div>
